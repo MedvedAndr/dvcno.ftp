@@ -1,0 +1,97 @@
+label[data-label="number"] {
+    padding             : calc(var(--message-height) + var(--message-margin) + 0px) 0px 0px;
+}
+
+label[data-label="number"] .label__input {
+    display             : flex;
+    flex-direction      : row;
+    align-items         : stretch;
+    width               : 100%;
+}
+
+label[data-label="number"] .label__input input {
+    display             : block;
+    width               : 100%;
+    font-family         : inherit;
+    font-size           : inherit;
+    font-weight         : inherit;
+    line-height         : inherit;
+    color               : inherit;
+    background-color    : var(--white-14);
+    border              : 1px solid var(--white-35);
+    border-radius       : var(--input-border-radius);
+    padding             : 6px 26px 6px 12px;
+    transition-property : border-color, box-shadow;
+    transition-duration : 0.15s;
+}
+
+label[data-label="number"].right .label__input input {
+    padding-right       : 12px;
+    text-align          : right;
+}
+
+label[data-label="number"].right:hover .label__input input {
+    padding-right       : 26px;
+}
+
+label[data-label="number"] .label__input input:focus {
+    background-color    : var(--white-2);
+    border-color        : var(--white-2);
+    outline             : 0;
+    box-shadow          : 0 0 0 3.2px var(--white-36);
+}
+
+label[data-label="number"] .label__input input::-webkit-outer-spin-button,
+label[data-label="number"] .label__input input::-webkit-inner-spin-button {
+    -webkit-appearance  : none;
+    margin              : 0;
+}
+
+label[data-label="number"] .number_chevron_up,
+label[data-label="number"] .number_chevron_down {
+    position            : absolute;
+    bottom              : calc((100% - var(--message-height) - var(--message-margin)) / 2);
+    right               : 8px;
+    z-index             : 0;
+    opacity             : 0;
+    cursor              : pointer;
+    transition-property : opacity;
+    transition-duration : 0.2s;
+}
+
+label[data-label="number"]:hover .number_chevron_up,
+label[data-label="number"]:hover .number_chevron_down {
+    opacity             : 1;
+}
+
+label[data-label="number"] .number_chevron_up {
+    
+}
+
+label[data-label="number"] .number_chevron_down {
+    transform           : translate(0%, 100%);
+}
+
+label[data-label="number"] .number_chevron_up [data-icon],
+label[data-label="number"] .number_chevron_down [data-icon] {
+    --icon-size         : 14px;
+}
+
+label[data-label="number"] .number_chevron_up [data-icon] {
+    mask-image          : url(/assets/icons/chevron-up.svg);
+}
+
+label[data-label="number"] .number_chevron_down [data-icon] {
+    mask-image          : url(/assets/icons/chevron-down.svg);
+}
+
+label[data-label="number"] .label__title {
+    position            : absolute;
+    top                 : 0%;
+    left                : 0%;
+    width               : 100%;
+    font-size           : 14px;
+    line-height         : 1;
+    transition-property : opacity;
+    transition-duration : var(--hover-animation);
+}

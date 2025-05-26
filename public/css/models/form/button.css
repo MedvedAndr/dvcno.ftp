@@ -1,0 +1,151 @@
+button,
+.button {
+    display                 : inline-flex;
+    flex-direction          : row;
+    justify-content         : center;
+    align-items             : center;
+    gap                     : 6px;
+    font-family             : inherit;
+    font-size               : inherit;
+    font-weight             : inherit;
+    line-height             : 1;
+    color                   : inherit;
+    background-color        : var(--white-8);
+    border                  : 1px solid var(--white-24);
+    border-radius           : 4px;
+    padding                 : 6px 12px 6px;
+    cursor                  : pointer;
+    transition-property     : color, background-color, border;
+    transition-duration     : var(--hover-animation);
+}
+
+button.success,
+.button.success {
+    color                   : var(--green-pastel-100);
+    border-color            : var(--green-lime-100);
+}
+
+button.error,
+.button.error {
+    color                   : var(--pink-cameo-100);
+    border-color            : var(--pink-raspberry-100);
+}
+
+button:hover,
+.button:hover {
+    background-color        : var(--white-2);
+    border                  : 1px solid var(--white-54);
+    text-decoration         : none;
+}
+
+button.success:hover,
+.button.success:hover {
+    border-color            : var(--green-lime-54);
+}
+
+button.error:hover,
+.button.error:hover {
+    border-color            : var(--pink-raspberry-54);
+}
+
+button:disabled,
+button:disabled:hover,
+.button:disabled,
+.button:disabled:hover {
+    color                   : var(--white-35);
+    background-color        : var(--white-3);
+    border                  : 1px solid var(--white-14);
+    opacity                 : 0.65;
+    cursor                  : default;
+}
+
+button .button__title,
+.button .button__title {
+
+}
+
+button:hover .button__title,
+.button:hover .button__title {
+    
+}
+
+button .button__icon,
+.button .button__icon {
+    display                 : flex;
+    justify-content         : center;
+    align-items             : center;
+}
+
+button:hover .button__icon,
+.button:hover .button__icon {
+    
+}
+
+button .button__icon [data-icon],
+.button .button__icon [data-icon] {
+    --icon-size             : 20px;
+}
+
+button.success .button__icon [data-icon],
+.button.success .button__icon [data-icon] {
+    background-color        : var(--green-lime-100);
+}
+
+button.error .button__icon [data-icon],
+.button.error .button__icon [data-icon] {
+    background-color        : var(--pink-raspberry-100);
+}
+
+button:hover .button__icon [data-icon],
+.button:hover .button__icon [data-icon] {
+    
+}
+
+button:disabled .button__icon [data-icon],
+.button:disabled .button__icon [data-icon] {
+    background-color        : var(--white-35);
+}
+
+.button__line {
+    display                 : flex;
+    flex-direction          : row;
+    justify-content         : center;
+    align-items             : center;
+    gap                     : 6px;
+    width                   : fit-content;
+    font-family             : inherit;
+    font-size               : inherit;
+    font-weight             : inherit;
+    line-height             : 1;
+    color                   : inherit;
+    cursor                  : pointer;
+    transition-property     : color;
+    transition-duration     : var(--hover-animation);
+}
+
+.button__line.error {
+    color                   : var(--pink-raspberry-100);
+}
+
+.button__line:hover {
+    text-decoration         : none;
+}
+
+.button__line:disabled {
+    opacity                 : 0.65;
+    cursor                  : default;
+}
+
+.button__line .button__icon {
+    display                 : flex;
+    justify-content         : center;
+    align-items             : center;
+}
+
+.button__line .button__icon [data-icon] {
+    --icon-size             : 20px;
+}
+
+.button__line.error .button__icon [data-icon] {
+    background-color        : var(--pink-raspberry-100);
+}

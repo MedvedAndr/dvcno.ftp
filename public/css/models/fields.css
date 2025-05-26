@@ -1,0 +1,23 @@
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.field {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.field__head {
+    flex: 1;
+}
+
+.field__body {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}

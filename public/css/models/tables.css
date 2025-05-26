@@ -1,0 +1,36 @@
+table[data-table="main"] {
+    width               : 100%;
+    border              : none;
+    border-collapse     : collapse;
+}
+
+table[data-table="main"] thead {
+    
+}
+
+table[data-table="main"] th,
+table[data-table="main"] thead td {
+    text-align          : center;
+    vertical-align      : middle;
+    color               : var(--silver-mist-100);
+    border              : 1px solid var(--gray-light-mist-14);
+    border-top          : 1px solid var(--white-14);
+    border-bottom       : 2px solid var(--white-14);
+    padding             : 12px;
+}
+
+table[data-table="main"] tbody tr:nth-of-type(odd) {
+    background-color    : var(--black-5);
+}
+
+table[data-table="main"] tbody tr td {
+    vertical-align      : middle;
+    color               : var(--silver-mist-100);
+    border              : 1px solid var(--gray-light-mist-14);
+    border-top          : 1px solid var(--white-14);
+    padding             : 12px;
+}
+
+table[data-table="main"] tbody tr[data-status="not_set"] td {
+    color               : var(--silver-mist-36);
+}

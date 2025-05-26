@@ -1,0 +1,40 @@
+.breadcrumbs {
+    display             : flex;
+    flex-direction      : row;
+    align-items         : center;
+}
+
+h1 ~ .breadcrumbs {
+    border-left         : 1.5px solid var(--gray-wet-asphalt-100);
+    padding-left        : 16px;
+}
+
+.breadcrumbs .home {
+    display             : block;
+}
+
+.breadcrumbs .home [data-icon] {
+    --icon-size         : 16px;
+    background-color    : var(--silver-mist-100);
+}
+
+.breadcrumbs .home:hover [data-icon] {
+    background-color    : var(--white-100);
+}
+
+.breadcrumbs .chevron {
+
+}
+
+.breadcrumbs .breadcrumb {
+    line-height         : 1;
+}
+
+.breadcrumbs a.breadcrumb {
+    color               : var(--silver-mist-100);
+    transition-property : color;
+}
+
+.breadcrumbs a.breadcrumb:hover {
+    color               : var(--white-100);
+}

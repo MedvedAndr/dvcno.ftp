@@ -1,0 +1,139 @@
+/*-------------------- <Панель навигации> --------------------*/
+
+#navigation_panel {
+    position            : fixed;
+    top                 : 0%;
+    left                : 0%;
+    z-index             : 1000;
+    display             : flex;
+    flex-direction      : column;
+    width               : var(--nav-panel-width);
+    height              : 100%;
+    background-color    : var(--black-24);
+    border-right        : 1px solid var(--white-14);
+    transition-property : width;
+    transition-duration : var(--slide-animation, 0.3s);
+}
+
+/* Заголовок панели */
+.nav__head {
+    width               : 100%;
+    height              : var(--header-height);
+    border-bottom       : 1px solid var(--white-14);
+}
+
+/* Блоки заголовка */
+
+/* Контент панели */
+.nav__body {
+    display             : flex;
+    flex-direction      : column;
+    gap                 : 25px;
+    width               : 100%;
+    height              : calc(100% - var(--header-height));
+    overflow-y          : auto;
+    padding             : 10px;
+    scrollbar-width     : none;
+}
+
+/* Меню */
+.nav__menu {
+    
+}
+
+/* Заголовок меню */
+.nav__menu_title {
+    color               : var(--gray-light-100);
+    text-transform      : uppercase;
+    font-size           : 12px;
+    letter-spacing      : 0.5px;
+    margin-bottom       : 15px;
+}
+
+/* Пункты меню */
+.nav__menu_items {
+    display             : flex;
+    flex-direction      : column;
+    gap                 : 5px;
+    list-style          : none;
+    margin              : 0px;
+    padding             : 0px;
+}
+
+.nav__menu_item {
+    /* position            : relative; */
+    /* list-style          : none; */
+    /* margin              : 0px; */
+    /* padding             : 0px; */
+}
+
+.nav__menu_item > .nav__item_title,
+.nav__submenu_item > .nav__item_title {
+    --font-size         : 15px;
+    --color             : var(--white-65);
+    position            : relative;
+    display             : flex;
+    flex-direction      : row;
+    align-items         : center;
+    gap                 : 10px;
+    width               : 100%;
+    font-size           : var(--font-size);
+    color               : var(--color);
+    letter-spacing      : 0.5px;
+    padding             : 8px 15px;
+    text-decoration     : none;
+    cursor              : pointer;
+    transition-property : background-color, color;
+    transition-duration : var(--slide-animation, 0.3s);
+}
+
+.nav__menu_item:hover > .nav__item_title,
+.nav__submenu_item:hover > .nav__item_title {
+    --color             : var(--white-100);
+    background-color    : var(--background-active);
+}
+
+.nav__menu_item[data-status~="active"] > .nav__item_title,
+.nav__menu_item[data-status~="open"] > .nav__item_title,
+.nav__submenu_item[data-status~="active"] > .nav__item_title,
+.nav__submenu_item[data-status~="open"] > .nav__item_title {
+    --color             : var(--white-100);
+    background-color    : var(--background-active);
+}
+
+.nav__menu_item .nav__item_chevron {
+    --icon-size         : 18px;
+    position            : absolute;
+    top                 : 50%;
+    right               : 3%;
+    transform           : translate(0%, -50%) rotate(0deg);
+    transition-property : transform;
+    transition-duration : var(--hover-animation);
+}
+
+.nav__menu_item[data-status~="active"] .nav__item_chevron,
+.nav__menu_item[data-status~="open"] .nav__item_chevron {
+    transform           : translate(0%, -50%) rotate(-90deg);
+}
+
+.nav__menu_item .nav__submenu_items {
+    display             : none;
+    flex-direction      : column;
+    list-style          : none;
+    background-color    : var(--black-12);
+    margin              : 0px;
+    border              : 1px solid var(--background-active);
+    padding             : 0px;
+}
+
+.nav__menu_item[data-status~="active"] .nav__submenu_items,
+.nav__menu_item[data-status~="open"] .nav__submenu_items {
+    display             : flex;
+    flex-direction      : column;
+}
+
+.nav__submenu_item {
+
+}
+
+/*-------------------- </Панель навигации> --------------------*/

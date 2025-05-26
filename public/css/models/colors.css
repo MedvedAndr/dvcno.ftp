@@ -1,0 +1,78 @@
+:root {
+    /* Белый */
+    --white-100             : rgb(255 255 255);         /* #ffffffff */
+    --white-65              : rgb(255 255 255 / 65%);   /* #ffffffa6 */
+    --white-54              : rgb(255 255 255 / 54%);   /* #ffffff8a */
+    --white-36              : rgb(255 255 255 / 36%);   /* #ffffff5c */
+    --white-35              : rgb(255 255 255 / 35%);   /* #ffffff59 */
+    --white-30              : rgb(255 255 255 / 30%);   /* #ffffff4d */
+    --white-24              : rgb(255 255 255 / 24%);   /* #ffffff3d */
+    --white-18              : rgb(255 255 255 / 18%);   /* #ffffff2e */
+    --white-14              : rgb(255 255 255 / 14%);   /* #ffffff24 */
+    --white-12              : rgb(255 255 255 / 12%);   /* #ffffff1f */
+    --white-8               : rgb(255 255 255 / 8%);    /* #ffffff14 */
+    --white-3               : rgb(255 255 255 / 3%);    /* #ffffff08 */
+    --white-2               : rgb(255 255 255 / 2%);    /* #ffffff05 */
+
+    /* Серый */
+    --gray-lightest-100     : rgb(237 237 237);         /* #edededff */
+    --gray-lightest-12      : rgb(237 237 237 / 12%);   /* #ededed1f */
+    --silver-mist-100       : rgb(229 233 236);         /* #e5e9ecff */
+    --silver-mist-36        : rgb(229 233 236 / 36%);   /* #e5e9ec5c */
+    --gray-light-mist-100   : rgb(222 226 230);         /* #dee2e6ff */
+    --gray-light-mist-14    : rgb(222 226 230 / 14%);   /* #dee2e624 */
+    --gray-light-100        : rgb(220 220 220);         /* #dcdcdcff */
+    --gray-cool-100         : rgb(173 181 189);         /* #adb5bdff */
+    --gray-100              : rgb(170 170 170);         /* #aaaaaaff */
+    --gray-wet-asphalt-100  : rgb(170 164 164);         /* #aaa4a4ff */
+    --gray-graphite-100     : rgb(73 80 87);            /* #495057ff */
+    --gray-charcoal-100     : rgb(52 58 64);            /* #343a40ff */
+    --gunmetal-100          : rgb(33 37 41);            /* #212529ff */
+    --charcoal-100          : rgb(25 26 33);            /* #191a21ff */
+
+    /* Черный */
+    --black-100             : rgb(0 0 0);               /* #000000ff */
+    --black-39              : rgb(0 0 0 / 39%);         /* #00000063 */
+    --black-24              : rgb(0 0 0 / 24%);         /* #0000003d */
+    --black-18              : rgb(0 0 0 / 18%);         /* #0000002e */
+    --black-14              : rgb(0 0 0 / 14%);         /* #00000024 */
+    --black-12              : rgb(0 0 0 / 12%);         /* #0000001f */
+    --black-5               : rgb(0 0 0 / 5%);          /* #0000000d */
+
+    /* Розовый */
+    --pink-raspberry-100    : rgb(240 39 105);          /* #f02769ff */
+    --pink-raspberry-54     : rgb(240 39 105 / 54%);    /* #f027698a */
+    --pink-raspberry-36     : rgb(240 39 105 / 36%);    /* #f027695c */
+    --pink-raspberry-14     : rgb(240 39 105 / 14%);    /* #f0276924 */
+    --crimson-100           : rgb(220 20 60);           /* #dc143cff */
+    --crimson-36            : rgb(220 20 60 / 36%);     /* #dc143c5c */
+    --pink-lace-100         : rgb(253 223 233);         /* #fddfe9ff */
+    --pink-lace-36          : rgb(253 223 233 / 36%);   /* #fddfe95c */
+    --pink-cameo-100        : rgb(238 196 210);         /* #eec4d2ff */
+    --pink-cameo-36         : rgb(238 196 210 / 36%);   /* #eec4d25c */
+
+    /* Желтый */
+    --amber-100             : rgb(255 193 7);           /* #ffc107ff */
+    --amber-36              : rgb(255 193 7 / 36%);     /* #ffc1075c */
+    --amber-14              : rgb(255 193 7 / 14%);     /* #ffc10724 */
+    --golden-yellow         : rgb(211 157 0);           /* #d39d00ff */
+    --vanilla-100           : rgb(255 243 205);         /* #fff3cdff */
+    --vanilla-36            : rgb(255 243 205 / 36%);   /* #fff3cd5c */
+    --yellow-pastel-100     : rgb(255 238 186);         /* #ffeebaff */
+    --yellow-pastel-36      : rgb(255 238 186 / 36%);   /* #ffeeba5c */
+
+    /* Зелёный */
+    --green-lime-100        : rgb(50 171 19);           /* #32ab13ff */
+    --green-lime-54         : rgb(50 171 19 / 54%);     /* #32ab138a */
+    --green-lime-36         : rgb(50 171 19 / 36%);     /* #32ab135c */
+    --green-lime-14         : rgb(50 171 19 / 14%);     /* #32ab1324 */
+    --green-tea-100         : rgb(218 240 212);         /* #daf0d4ff */
+    --green-tea-36          : rgb(218 240 212 / 36%);   /* #daf0d45c */
+    --green-pastel-100      : rgb(205 230 198);         /* #cde6c6ff */
+    --green-pastel-36       : rgb(205 230 198 / 36%);   /* #cde6c65c */
+
+    /* Голубой/синий */
+    --vivid-sky-blue-100    : rgb(25 143 237);          /* #198fedff */
+    --slate-blue-gray-100   : rgb(90 118 132);          /* #5a7684ff */
+    --light-sky-blue-100    : rgb(221 238 252);         /* #ddeefcff */
+}

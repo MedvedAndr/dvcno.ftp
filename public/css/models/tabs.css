@@ -1,0 +1,165 @@
+.tabs {
+    display             : flex;
+    flex-direction      : row;
+    gap                 : 0px;
+    border-bottom       : 1px solid var(--gray-light-mist-100);
+}
+
+.tabs .tab {
+    display             : flex;
+    flex-direction      : row;
+    justify-content     : center;
+    align-items         : center;
+    text-decoration     : none;
+    margin-bottom       : -1px;
+    border              : 1px solid transparent;
+    border-radius       : 4px 4px 0px 0px;
+    padding             : 5px 10px 5px;
+    cursor              : pointer;
+    transition-property : color, background-color, border;
+    transition-duration : var(--hover-animation);
+}
+
+.tabs .tab:hover {
+    background-color    : var(--black-24);
+    border-color        : var(--gray-light-mist-100);
+}
+
+.tabs .tab[data-status~="not_set"] {
+    color               : var(--white-30);
+}
+
+.tabs .tab[data-status~="not_set"]:hover {
+    color               : var(--white-100);
+}
+
+.tabs .tab[data-status~="active"],
+.tabs .tab[data-status~="active"]:hover {
+    color               : var(--gray-graphite-100);
+    background-color    : var(--white-100);
+    border-color        : var(--white-100);
+    cursor              : default;
+}
+
+.tabs .tab[data-status~="disabled"] {
+    color               : var(--white-30);
+    background-color    : transparent;
+    border              : 1px solid transparent;
+    cursor              : not-allowed;
+}
+
+.tab .tab__text {
+
+}
+
+.tab:hover .tab__text {
+
+}
+
+.tab[data-status~="active"] .tab__text {
+
+}
+
+.tab[data-status~="disabled"] .tab__text {
+
+}
+
+.tab__add {
+    padding             : 5px;
+}
+
+.tab__add [data-icon] {
+    --icon-size         : 20px;
+    background-color    : var(--gray-cool-100);
+}
+
+.tab__add:hover [data-icon] {
+    background-color    : var(--white-100);
+}
+
+.tabs__box {
+    padding             : 20px 0px 20px;
+    /* background-color    : var(--black-24); */
+    /* padding             : 20px; */
+    /* border-radius       : 0px 0px 6px 6px; */
+    /* box-shadow          : 0 1.6px 11.2px var(--black-18); */
+}
+
+.tab__box {
+    display             : none;
+}
+
+.tab__box[data-status~="active"] {
+    display             : block;
+}
+
+
+
+
+
+
+
+.pills {
+    display             : flex;
+    flex-direction      : row;
+    gap                 : 0px;
+}
+
+.pills.__vertical {
+    flex-direction      : column;
+}
+
+.pills.__vertical .pill {
+    justify-content     : flex-start;
+}
+
+.pills .pill {
+    display             : flex;
+    flex-direction      : row;
+    justify-content     : center;
+    align-items         : center;
+    text-decoration     : none;
+    color               : var(--silver-mist-100);
+    border-radius       : 4px;
+    padding             : 8px 16px;
+    cursor              : pointer;
+    transition-property : color, background-color;
+    transition-duration : var(--hover-animation);
+}
+
+.pills .pill:hover {
+    color               : var(--white-100);
+}
+
+.pills .pill[data-status~="not_set"] {
+    color               : var(--white-30);
+}
+
+.pills .pill[data-status~="not_set"]:hover {
+    color               : var(--white-100);
+}
+
+.pills .pill[data-status~="active"],
+.pills .pill[data-status~="active"]:hover {
+    color               : var(--white-100);
+    background-color    : var(--white-24);
+    cursor              : default;
+}
+
+.pills .pill[data-status~="disabled"] {
+    color               : var(--slate-blue-gray-100);
+    cursor              : not-allowed;
+}
+
+.pills__box {
+    margin              : 0px;
+}
+
+.pills + .pills__box {
+    margin-top          : 20px;
+}
+
+.pills__box.__vertical {
+    flex                : 1;
+    margin              : 0px;
+}

@@ -1,0 +1,18 @@
+section#sign_in {
+    background-color    : var(--black-24);
+    border-radius       : 15px;
+    padding             : 48px;
+}
+
+section#sign_in .sign_in__title {
+    font-weight         : 700;
+    margin-bottom       : 16px;
+    border-bottom       : 1px solid var(--white-14);
+    padding-bottom      : 16px;
+}
+
+section#sign_in .sign_in_form {
+    display             : flex;
+    flex-direction      : column;
+    gap                 : 16px;
+}

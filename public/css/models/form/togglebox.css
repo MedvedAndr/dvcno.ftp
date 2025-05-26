@@ -1,0 +1,71 @@
+label[data-label="togglebox"] {
+    padding                 : calc(var(--message-height) + var(--message-margin) + 0px) 0px 0px;
+    cursor                  : pointer;
+}
+
+label[data-label="togglebox"] .label__input {
+    display: flex;
+    align-items: center;
+    min-height: calc(1em * var(--line-height));
+}
+
+label[data-label="togglebox"] .label__input > input + .label__checkbox_icon {
+    position                : relative;
+    display                 : block;
+    width                   : 28px;
+    height                  : 16px;
+    background-color        : var(--white-100);
+    border                  : 1px solid var(--gray-cool-100);
+    border-radius           : 100px;
+    transition-property     : background-color;
+    transition-duration     : var(--hover-animation);
+}
+
+label[data-label="togglebox"] .label__input > input:checked + .label__checkbox_icon {
+    background-color        : var(--white-12);
+}
+
+label[data-label="togglebox"] .label__input > input + .label__checkbox_icon::before {
+    content                 : '';
+    position                : absolute;
+    top                     : 50%;
+    left                    : 2px;
+    display                 : block;
+    width                   : 10px;
+    height                  : 10px;
+    background-color        : var(--gray-cool-100);
+    border-radius           : 100px;
+    transform               : translate(0%, -50%);
+    transition-property     : left, background-color, transform;
+    transition-duration     : var(--hover-animation);
+}
+
+label[data-label="togglebox"] .label__input > input:checked + .label__checkbox_icon::before {
+    left                    : calc(100% - 2px);
+    transform               : translate(-100%, -50%);
+    background-color        : var(--white-100);
+}
+
+label[data-label="togglebox"] .label__title_checked {
+    
+}
+
+label[data-label="togglebox"][data-status~="checked"] .label__title_checked {
+    display                 : none;
+}
+
+label[data-label="togglebox"] .label__title {
+    
+}
+
+label[data-label="togglebox"][data-status~="checked"] .label__title {
+    
+}
+
+label[data-label="togglebox"] .label__title_checked + .label__title {
+    display                 : none;
+}
+
+label[data-label="togglebox"][data-status~="checked"] .label__title_checked + .label__title {
+    display                 : block;
+}

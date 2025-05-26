@@ -1,0 +1,126 @@
+/* #region Expander */
+[data-expander] {
+    border: 1px solid var(--white-30);
+    border-radius: 4px;
+}
+
+[data-expander] .expander__head {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--white-12);
+    padding: 10px 16px 10px;
+}
+
+[data-expander] .expander__info{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+[data-expander] .info__image{
+    
+}
+
+[data-expander] .info__icon{
+    
+}
+
+[data-expander] .info__title{
+    flex: 1;
+}
+
+[data-expander] .info__type {
+    font-size: 14px;
+    color: var(--white-54);
+}
+
+[data-expander] .expander__icon {
+    cursor: pointer;
+}
+
+[data-expander] .expander__icon [data-icon] {
+    mask-image: url(/assets/icons/chevron-down.svg);
+}
+
+[data-expander] .expander__body {
+    display: none;
+    padding: 16px 16px 16px;
+}
+
+[data-expander][data-status~="active"] .expander__body {
+    display: block;
+}
+/* #endregion */
+
+/* #region Accordions */
+.accordions {
+    border-radius       : 4px;
+    overflow            : hidden;
+}
+
+.group__container + .accordions {
+    border-radius       : 0px 0px 4px 4px;
+}
+
+.accordion {
+    
+}
+
+.accordion .accordion__head {
+    display             : flex;
+    flex-direction      : row;
+    justify-content     : space-between;
+    align-items         : center;
+    cursor              : pointer;
+    padding             : 12px 20px 11px;
+    transition-property : background-color;
+    transition-duration : var(--hover-animation, 0.3s);
+}
+
+.accordion:not(:last-child) .accordion__head,
+.accordion[data-status~="opening"] .accordion__head,
+.accordion[data-status~="closing"] .accordion__head,
+.accordion[data-status~="active"] .accordion__head {
+    border-bottom       : 1px solid var(--white-14);
+}
+
+.accordion[data-status~="opening"] .accordion__head,
+.accordion[data-status~="active"] .accordion__head {
+    background-color    : var(--white-12);
+}
+
+.accordion .accordion__head_title {
+    
+}
+
+.accordion .accordion__head_icon {
+    
+}
+
+.accordion .accordion__head_icon [data-icon] {
+    mask-image          : url(/assets/icons/chevron-down.svg);
+}
+
+.accordion[data-status~="opening"] .accordion__head_icon [data-icon],
+.accordion[data-status~="active"] .accordion__head_icon [data-icon] {
+    mask-image          : url(/assets/icons/chevron-up.svg);
+}
+
+.accordion .accordion__body {
+    display             : none;
+    padding             : 20px;
+}
+
+.accordion:not(:last-child) .accordion__body {
+    border-bottom       : 1px solid var(--white-14);
+}
+
+.accordion[data-status~="active"] .accordion__body {
+    display             : block;
+}
+/* #endregion */

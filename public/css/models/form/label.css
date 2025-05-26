@@ -1,0 +1,3 @@
+label[data-label="label"] {
+    padding : calc(var(--message-height) + var(--message-margin) + 7px) 0px 7px;
+}

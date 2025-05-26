@@ -1,0 +1,127 @@
+[data-animation] {
+    
+}
+
+[data-animation="spin"] {
+    animation-name              : rotate;
+    animation-duration          : 0.3s;
+    animation-timing-function   : linear;
+    animation-iteration-count   : infinite;
+}
+
+[data-animation="spin_step12"] {
+    animation-name              : rotate;
+    animation-duration          : 0.3s;
+    animation-timing-function   : steps(12, start);
+    animation-iteration-count   : infinite;
+}
+
+[data-animation="pulse"] {
+    animation-name              : pulsate;
+    animation-duration          : 0.6s;
+    animation-timing-function   : linear;
+    animation-iteration-count   : infinite;
+}
+
+[data-animation="flick"] {
+    opacity                     : 0;
+    animation-name              : flicker;
+    animation-duration          : 0.6s;
+    animation-timing-function   : linear;
+    animation-iteration-count   : infinite;
+}
+
+[data-animation="fade_in"] {
+    animation-name              : fade_in;
+    animation-duration          : 0.6s;
+    animation-timing-function   : linear;
+}
+
+[data-animation="fade_out"] {
+    opacity                     : 0;
+    animation-name              : fade_out;
+    animation-duration          : 0.6s;
+    animation-timing-function   : linear;
+}
+
+@keyframes rotate {
+    to {
+        transform               : rotate(360deg);
+    }
+}
+
+@keyframes pulsate {
+    0% {
+        opacity                 : 0;
+        transform               : scale(0);
+    }
+    50% {
+        opacity                 : 1;
+        transform               : none;
+    }
+}
+
+@keyframes flicker {
+    0% {
+        opacity                 : 0;
+    }
+    50% {
+        opacity                 : 1;
+    }
+}
+
+@keyframes fade_in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade_out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fade_in_down {
+    from {
+        opacity: 0;
+        /* -webkit-transform: translate3d(0, -100%, 0); */
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        /* -webkit-transform: translate3d(0, 0, 0); */
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fade_out_down {
+    from {
+      opacity: 1;
+    }
+  
+    to {
+      opacity: 0;
+      /* -webkit-transform: translate3d(0, 100%, 0); */
+      transform: translate3d(0, 100%, 0);
+    }
+  }
+
+  @keyframes progressing {
+    from {
+        width: 0%;
+      }
+    
+      to {
+        width: 100%;
+      }
+  }

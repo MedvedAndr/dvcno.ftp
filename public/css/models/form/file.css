@@ -1,0 +1,3 @@
+label[data-label="file"] .label__input input {
+    display                 : none;
+}

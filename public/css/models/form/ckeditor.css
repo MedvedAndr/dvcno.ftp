@@ -1,0 +1,77 @@
+label[data-label="ckeditor"] {
+    padding                 : calc(var(--message-height) + var(--message-margin) + 0px) 0px 0px;
+}
+
+label[data-label="ckeditor"] .label__input {
+    display                 : flex;
+    flex-direction          : row;
+    align-items             : stretch;
+    width                   : 100%;
+}
+
+label[data-label="ckeditor"] .label__input textarea {
+    display                 : none;
+}
+
+label[data-label="ckeditor"] .label__input .ck.ck-editor {
+    --ck-border-radius      : 0px;
+    width                   : 100%;
+    color                   : var(--black-100);
+}
+
+label[data-label="ckeditor"] .label__input .ck.ck-editor__editable_inline {
+    height                  : 300px;
+}
+
+label[data-label="ckeditor"] .label__title {
+    position                : absolute;
+    top                     : 0%;
+    left                    : 0%;
+    width                   : 100%;
+    font-size               : 14px;
+    line-height             : 1;
+    transition-property     : opacity;
+    transition-duration     : var(--hover-animation);
+}
+
+label[data-label="ckeditor"] .label__message {
+    /* position                : absolute; */
+    /* top                     : 0%; */
+    /* left                    : 0%; */
+    /* width                   : 100%; */
+    /* font-size               : 14px; */
+    /* line-height             : 1; */
+    /* opacity                 : 0; */
+    /* transition-property     : opacity; */
+    /* transition-duration     : var(--hover-animation); */
+}
+
+label[data-label="ckeditor"][data-status~="success"] .label__message {
+    /* color                   : var(--green-lime-100); */
+    /* opacity                 : 1; */
+}
+
+label[data-label="ckeditor"][data-status~="notice"] .label__message {
+    /* color                   : var(--amber-100); */
+    /* opacity                 : 1; */
+}
+
+label[data-label="ckeditor"][data-status~="error"] .label__message {
+    /* color                   : var(--pink-raspberry-100); */
+    /* opacity                 : 1; */
+}
+
+label[data-label="ckeditor"][data-status~="success"] .label__message:not(:empty) ~ .label__title,
+label[data-label="ckeditor"][data-status~="notice"] .label__message:not(:empty) ~ .label__title,
+label[data-label="ckeditor"][data-status~="error"] .label__message:not(:empty) ~ .label__title {
+    /* opacity                 : 0; */
+}
+
+label[data-label="ckeditor"][data-status~="success"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="ckeditor"][data-status~="success"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="ckeditor"][data-status~="notice"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="ckeditor"][data-status~="notice"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="ckeditor"][data-status~="error"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="ckeditor"][data-status~="error"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder {
+    /* opacity                 : 0; */
+}
