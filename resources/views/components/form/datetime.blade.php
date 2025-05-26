@@ -104,3 +104,4 @@ $timestamp = isset($value) ? strtotime($value) : null;
     <span class="label__calendar_icon" data-icon="calendar" tabindex="0"></span>
     <span class="label__calendar"></span>
 </label>
+{{-- Провер очка --}}
