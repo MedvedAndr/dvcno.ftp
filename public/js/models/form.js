@@ -13,7 +13,51 @@ jQuery(document).on('DOMContentLoaded', function() {
 
     // Обработка событий для присвоения статуса
     jQuery(document)
-        .on('click', '[data-label="datetime"]', function(eventObject) {
+        // Получение фокуса
+        .on(
+            'focusin',
+            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea, label[data-label="select"] select',
+            {'status': 'focused'},
+            toggleStatus
+        )
+        // Потеря фокуса
+        .on(
+            'focusout',
+            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea, label[data-label="select"] select',
+            {'status': 'focused'},
+            toggleStatus
+        )
+        // Ввод данных
+        .on(
+            'input',
+            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea',
+            {'status': 'not_empty'},
+            toggleStatus
+        )
+        // Изменение
+        .on(
+            'change',
+            'label[data-label="togglebox"] input',
+            {'status': 'checked'},
+            toggleStatus
+        );
+
+    // Связь элементов через data-sync
+    jQuery(document)
+        // Связывание checkbox
+        .on('change', '[type="checkbox"][data-sync]', {type: 'checkbox'}, syncInput)
+        // Связывание text
+        .on('input change', '[type="text"][data-sync]', {type: 'text'}, syncInput)
+        // Связывание number
+        .on('changed', '[type="number"][data-sync]', {type: 'number'}, syncInput)
+        // Связывание select
+        .on('change', 'select[data-sync]', {type: 'select'}, syncInput);
+
+
+    // Компонента 'datetime'
+    jQuery(document)
+        // Клик внутри 'label'
+        .on('click', 'label[data-label="datetime"]', function(eventObject) {
             const $this_target = jQuery(eventObject.target);
             const $this_label = $this_target.closest('[data-label="datetime"]');
 
@@ -25,7 +69,74 @@ jQuery(document).on('DOMContentLoaded', function() {
                 $this_label.find('[data-segment]:first').focus();
             }
         })
-        .on('focusin', '[data-label="datetime"] [data-segment]', function(eventObject) {
+        // Клик на иконку календаря
+        .on('click', 'label[data-label="datetime"] .label__calendar_icon', function(eventObject) {
+            const $this_calendar_icon = jQuery(eventObject.currentTarget);
+            const $this_label = $this_calendar_icon.closest('[data-label="datetime"]');
+            const $date_input = $this_label.find('input[type="hidden"]');
+            const $this_calendar = $this_label.find('.label__calendar');
+            let selected_date;
+            const current_date = new Date();
+            const edit = [6, 0, 1, 2, 3, 4, 5];
+            
+            if($date_input.val() !== '') {
+                selected_date = new Date($date_input.val());
+            }
+            else {
+                selected_date = new Date();
+            }
+
+            const calendar_date = setGlobal('datetime', {
+                'year'      : selected_date.getFullYear(),
+                'month'     : selected_date.getMonth(),
+                'day'       : selected_date.getDate(),
+                'hour'      : selected_date.getHours(),
+                'minute'    : selected_date.getMinutes(),
+                'second'    : selected_date.getSeconds()
+            });
+            const date = new Date(calendar_date.year, calendar_date.month, calendar_date.day, calendar_date.hour, calendar_date.minute, calendar_date.second);
+            date.setDate(1);
+            date.setDate(1 - edit[date.getDay()]);
+
+            const $mounth_display = $this_calendar.find('.calendar__month_display').children();
+            $mounth_display.eraseData('status', 'active');
+            $mounth_display.eq(calendar_date.month).addData('status', 'active');
+            
+            const $year_display = $this_calendar.find('.calendar__year_display');
+            $year_display.text(calendar_date.year);
+            
+            let $list = jQuery();
+            for(i = 0; i < 42; i++) {
+                const $option = jQuery('<span class="calendar__day">'+ date.getDate() +'</span>');
+                if(calendar_date.month == date.getMonth()) {
+                    if(calendar_date.day == date.getDate()) {
+                        $option.addData('status', 'selected');
+                    }
+                    // Подправить ошибку на текущую дату
+                    if(current_date.getDate() == date.getDate()) {
+                        $option.addData('status', 'current');
+                    }
+                }
+                else {
+                    $option.addData('status', 'other_month');
+                }
+                $list = $list.add($option);
+                
+                date.setDate(date.getDate() + 1);
+            }
+
+            const $days = $this_calendar.find('.calendar__days');
+            $days.empty().append($list);
+
+            $this_label.addData('status', 'open');
+        })
+        // Активность внутри календаря
+        .on('click', 'label[data-label="datetime"] .label__calendar', function(eventObject) {
+            const $this_calendar = jQuery(eventObject.currentTarget);
+            const $action_target = jQuery(eventObject.target);
+        })
+        // Фокус на сегменте даты
+        .on('focusin', 'label[data-label="datetime"] [data-segment]', function(eventObject) {
             const $this_segment = jQuery(eventObject.currentTarget);
             const $this_label = $this_segment.closest('[data-label="datetime"]');
             
@@ -37,8 +148,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                 const $focused_label = $active_segment.closest('[data-label="datetime"]');
                 
                 const segment_name = $active_segment.attr('data-segment');
-                const $data_input = $focused_label.find('.label__input input[type="hidden"]');
-
+                
                 const limits = {
                     day     : [1, 31],
                     month   : [1, 12],
@@ -166,54 +276,127 @@ jQuery(document).on('DOMContentLoaded', function() {
                 }
             });
         })
-        .on('focusout', '[data-label="datetime"] [data-segment]', function(eventObject) {
+        // Потеря фокуса с сегмента даты
+        .on('focusout', 'label[data-label="datetime"] [data-segment]', function(eventObject) {
             const $this_segment = jQuery(eventObject.currentTarget);
             const $this_label = $this_segment.closest('[data-label="datetime"]');
+            const $all_segments = $this_label.find('[data-segment]');
+            const $date_input = $this_label.find('input[type="hidden"]');
 
             $this_label.eraseData('status', 'focused');
-        })
-        // Получение фокуса
-        .on(
-            'focusin',
-            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea, label[data-label="select"] select',
-            {'status': 'focused'},
-            toggleStatus
-        )
-        // Потеря фокуса
-        .on(
-            'focusout',
-            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea, label[data-label="select"] select',
-            {'status': 'focused'},
-            toggleStatus
-        )
-        // Ввод данных
-        .on(
-            'input',
-            'label[data-label="text"] input, label[data-label="password"] input, label[data-label="number"] input, label[data-label="textarea"] textarea',
-            {'status': 'not_empty'},
-            toggleStatus
-        )
-        // Изменение
-        .on(
-            'change',
-            'label[data-label="togglebox"] input',
-            {'status': 'checked'},
-            toggleStatus
-        );
 
-    // Связь элементов через data-sync
-    jQuery(document)
-        // Связывание checkbox
-        .on('change', '[type="checkbox"][data-sync]', {type: 'checkbox'}, syncInput)
-        // Связывание text
-        .on('input change', '[type="text"][data-sync]', {type: 'text'}, syncInput)
-        // Связывание number
-        .on('changed', '[type="number"][data-sync]', {type: 'number'}, syncInput)
-        // Связывание select
-        .on('change', 'select[data-sync]', {type: 'select'}, syncInput);
+            let text = $this_segment.text();
+            if(/^\d+$/.test(text)) {
+                const segment_name = $this_segment.attr('data-segment');
+                const limits = {
+                    day     : [1, 31],
+                    month   : [1, 12],
+                    year    : [1000, 9999],
+                    hour    : [0, 23],
+                    minute  : [0, 59],
+                    second  : [0, 59],
+                }
+                const pad_length = segment_name === 'year' ? 4 : 2;
+                const [min, max] = limits[segment_name];
+    
+                let val = parseInt(text, 10);
+                if (val < min) {
+                    val = min;
+                }
+                else if (val > max) {
+                    val = max;
+                }
+                
+                text = String(val).padStart(pad_length, '0');
+                $this_segment.text(text);
+            }
 
+            const data = {};
+            let insert_to_input = true;
+            $all_segments.each(function(i, segment) {
+                const $segment = jQuery(segment);
+                if(/^\d+$/.test($segment.text())) {
+                    data[$segment.attr('data-segment')] = $segment.text();
+                }
+                else {
+                    data[$segment.attr('data-segment')] = null;
+                    insert_to_input = false;
+                }
+            });
 
-    // Поведение input[type="number"] при изменении
+            if(insert_to_input) {
+                $date_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+            }
+            else {
+                $date_input.val('');
+            }
+        });
+    // jQuery(document)
+        //     .on('click', '#now, #year_prev, #year_next, #month_prev, #month_next', function(e) {
+        //         const $this_button = jQuery(e.currentTarget);
+        //         const edit = [6, 0, 1, 2, 3, 4, 5];
+
+        //         switch($this_button.attr('id')) {
+        //             case 'now':
+        //                 const date_input = jQuery('[name="event[rtus4qme0uf][date_to]"]');
+        //                 let curr;
+
+        //                 if(date_input.val() !== '') {
+        //                     curr = new Date(date_input.val());
+        //                 }
+        //                 else {
+        //                     curr = new Date();
+        //                 }
+
+        //                 setGlobal('test_date', {
+        //                     'year': curr.getFullYear(),
+        //                     'month': curr.getMonth(),
+        //                     'day': curr.getDate(),
+        //                     'hour': curr.getHours(),
+        //                     'minute': curr.getMinutes(),
+        //                     'second': curr.getSeconds()
+        //                 });
+        //                 break;
+        //             case 'year_prev':
+        //                 setGlobal('test_date.year', getGlobal('test_date.year') - 1);
+        //                 break;
+        //             case 'year_next':
+        //                 setGlobal('test_date.year', getGlobal('test_date.year') + 1);
+        //                 break;
+        //             case 'month_prev':
+        //                 setGlobal('test_date.month', getGlobal('test_date.month') - 1);
+        //                 break;
+        //             case 'month_next':
+        //                 setGlobal('test_date.month', getGlobal('test_date.month') + 1);
+        //                 break;
+        //         }
+        //         const calendar_data = getGlobal('test_date');
+                
+        //         const date = new Date(calendar_data.year, calendar_data.month, calendar_data.day, calendar_data.hour, calendar_data.minute, calendar_data.second);
+        //         date.setDate(1);
+        //         date.setDate(1 - edit[date.getDay()]);
+                
+        //         let $list = jQuery();
+        //         for(i = 0; i < 42; i++) {
+        //             const $option = jQuery('<span>'+ date.getDate() +'</span>');
+        //             if(calendar_data.month == date.getMonth()) {
+        //                 if(calendar_data.day == date.getDate()) {
+        //                     $option.addData('status', 'active');
+        //                 }
+        //             }
+        //             else {
+        //                 $option.addData('status', 'other_month');
+        //             }
+        //             $list = $list.add($option);
+                    
+        //             date.setDate(date.getDate() + 1);
+        //         }
+                
+        //         jQuery('#generated_list').empty().append($list);
+        //     });
+        // });
+
+    // Компонента 'number'
     jQuery(document)
         // Изменение input[type="number"] кастомными кнопками
         .on('click', 'label[data-label="number"] .number_chevron_up, label[data-label="number"] .number_chevron_down', changeInputNumber)

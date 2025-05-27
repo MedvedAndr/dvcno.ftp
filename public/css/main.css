@@ -211,6 +211,11 @@ header + main {
     background-color        : var(--black-24);
     box-shadow              : 0 1.6px 11.2px #0000002e;
     border-radius           : 4px;
+    display: flex;
+}
+
+.group_edit {
+    flex-basis: 20%;
 }
 
 .group__container {
@@ -240,6 +245,11 @@ header + main {
 
 .group__body {
     /* padding-bottom          : 20px; */
+    display: flex;
+}
+
+.group_edit {
+    
 }
 
 .group__grid_list {
@@ -565,6 +575,7 @@ header + main {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
 }
 
 .files .add__file {
@@ -577,6 +588,32 @@ header + main {
     border: 2px dashed #ffffff;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.files .edit_button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    opacity: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--black-70);
+    transition-property: opacity;
+    transition-duration: .3s;
+}
+
+.files .file:hover .edit_button {
+    opacity: 1;
+}
+
+.files .edit_button .button:active {
+    transform: translateY(2px);
 }
 
 .files .files_list {

@@ -458,117 +458,6 @@ jQuery(document).on('DOMContentLoaded', function() {
                 });
             }
         });
-
-        // jQuery(document)
-        //     .on('click', '#now, #year_prev, #year_next, #month_prev, #month_next', function(e) {
-        //         const $this_button = jQuery(e.currentTarget);
-        //         const edit = [6, 0, 1, 2, 3, 4, 5];
-
-        //         switch($this_button.attr('id')) {
-        //             case 'now':
-        //                 const date_input = jQuery('[name="event[rtus4qme0uf][date_to]"]');
-        //                 let curr;
-
-        //                 if(date_input.val() !== '') {
-        //                     curr = new Date(date_input.val());
-        //                 }
-        //                 else {
-        //                     curr = new Date();
-        //                 }
-
-        //                 setGlobal('test_date', {
-        //                     'year': curr.getFullYear(),
-        //                     'month': curr.getMonth(),
-        //                     'day': curr.getDate(),
-        //                     'hour': curr.getHours(),
-        //                     'minute': curr.getMinutes(),
-        //                     'second': curr.getSeconds()
-        //                 });
-        //                 break;
-        //             case 'year_prev':
-        //                 setGlobal('test_date.year', getGlobal('test_date.year') - 1);
-        //                 break;
-        //             case 'year_next':
-        //                 setGlobal('test_date.year', getGlobal('test_date.year') + 1);
-        //                 break;
-        //             case 'month_prev':
-        //                 setGlobal('test_date.month', getGlobal('test_date.month') - 1);
-        //                 break;
-        //             case 'month_next':
-        //                 setGlobal('test_date.month', getGlobal('test_date.month') + 1);
-        //                 break;
-        //         }
-        //         const calendar_data = getGlobal('test_date');
-                
-        //         const date = new Date(calendar_data.year, calendar_data.month, calendar_data.day, calendar_data.hour, calendar_data.minute, calendar_data.second);
-        //         date.setDate(1);
-        //         date.setDate(1 - edit[date.getDay()]);
-                
-        //         let $list = jQuery();
-        //         for(i = 0; i < 42; i++) {
-        //             const $option = jQuery('<span>'+ date.getDate() +'</span>');
-        //             if(calendar_data.month == date.getMonth()) {
-        //                 if(calendar_data.day == date.getDate()) {
-        //                     $option.addData('status', 'active');
-        //                 }
-        //             }
-        //             else {
-        //                 $option.addData('status', 'other_month');
-        //             }
-        //             $list = $list.add($option);
-                    
-        //             date.setDate(date.getDate() + 1);
-        //         }
-                
-        //         jQuery('#generated_list').empty().append($list);
-        //     });
-        
-        // const $input = $('[name="datetime"]');
-
-        // // Создаём шаблон ввода
-        // const template = '__.__.____ __:__:__';
-        // $input.val(template);
-    
-        // $input.on('keydown', function (e) {
-        //     const key = e.key;
-        //     const pos = this.selectionStart;
-    
-        //     // Разрешаем только цифры, Backspace, стрелки
-        //     const isControl = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(key);
-        //     if (!/^\d$/.test(key) && !isControl) {
-        //         e.preventDefault();
-        //         return;
-        //     }
-    
-        //     // Обработка ввода цифры
-        //     if (/^\d$/.test(key)) {
-        //         e.preventDefault();
-    
-        //         const val = $input.val().split('');
-        //         const index = getNextInputIndex(pos, val);
-    
-        //         if (index === -1) return;
-    
-        //         // Проверка допустимости значения
-        //         if (!isValidDigit(index, key, val)) {
-        //             // Пропускаем к следующей секции, если ввод невозможен
-        //             const skipTo = getNextSectionIndex(index);
-        //             if (skipTo !== -1) {
-        //                 $input[0].setSelectionRange(skipTo, skipTo);
-        //             }
-        //             return;
-        //         }
-    
-        //         val[index] = key;
-        //         $input.val(val.join(''));
-    
-        //         // Переместить курсор дальше
-        //         const next = getNextInputIndex(index + 1, val);
-        //         if (next !== -1) {
-        //             $input[0].setSelectionRange(next, next);
-        //         }
-        //     }
-        // });
 });
 
 function setGlobal(path, value) {
@@ -582,6 +471,8 @@ function setGlobal(path, value) {
     }
 
     current[keys[0]] = value;
+
+    return value;
 }
 
 function getGlobal(path, defaultValue = undefined) {

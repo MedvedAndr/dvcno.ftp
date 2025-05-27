@@ -29,9 +29,11 @@
     --gray-charcoal-100     : rgb(52 58 64);            /* #343a40ff */
     --gunmetal-100          : rgb(33 37 41);            /* #212529ff */
     --charcoal-100          : rgb(25 26 33);            /* #191a21ff */
+    --charcoal-blue-100     : rgb(22 24 33);            /* #161821ff */
 
     /* Черный */
     --black-100             : rgb(0 0 0);               /* #000000ff */
+    --black-70              : rgb(0 0 0 / 70%);         /* #000000b3 */
     --black-39              : rgb(0 0 0 / 39%);         /* #00000063 */
     --black-24              : rgb(0 0 0 / 24%);         /* #0000003d */
     --black-18              : rgb(0 0 0 / 18%);         /* #0000002e */
@@ -73,6 +75,7 @@
 
     /* Голубой/синий */
     --vivid-sky-blue-100    : rgb(25 143 237);          /* #198fedff */
+    --vivid-sky-blue-46     : rgb(25 143 237 / 46%);    /* #198fed75 */
     --slate-blue-gray-100   : rgb(90 118 132);          /* #5a7684ff */
     --light-sky-blue-100    : rgb(221 238 252);         /* #ddeefcff */
 }

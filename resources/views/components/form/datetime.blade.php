@@ -94,14 +94,51 @@ $timestamp = isset($value) ? strtotime($value) : null;
             <span class="delimiter">.</span>
             <span data-default="гггг" data-segment="year" tabindex="0">{{ is_null($timestamp) ? 'гггг' : date('Y', $timestamp) }}</span>
             <span class="delimiter">&nbsp;</span>
-            <span data-default="--" data-segment="hour" tabindex="0">{{ is_null($timestamp) ? 'чч' : date('H', $timestamp) }}</span>
+            <span data-default="--" data-segment="hour" tabindex="0">{{ is_null($timestamp) ? '--' : date('H', $timestamp) }}</span>
             <span class="delimiter">:</span>
-            <span data-default="--" data-segment="minute" tabindex="0">{{ is_null($timestamp) ? 'мм' : date('i', $timestamp) }}</span>
+            <span data-default="--" data-segment="minute" tabindex="0">{{ is_null($timestamp) ? '--' : date('i', $timestamp) }}</span>
             <span class="delimiter">:</span>
-            <span data-default="--" data-segment="second" tabindex="0">{{ is_null($timestamp) ? 'сс' : date('s', $timestamp) }}</span>
+            <span data-default="--" data-segment="second" tabindex="0">{{ is_null($timestamp) ? '--' : date('s', $timestamp) }}</span>
         </span>
     </span>
     <span class="label__calendar_icon" data-icon="calendar" tabindex="0"></span>
-    <span class="label__calendar"></span>
+    <span class="label__calendar">
+        <span class="calendar__date">
+            <span class="calendar__panel">
+                <span class="calendar__month">
+                    <span class="calendar__month_prev"></span>
+                    <span class="calendar__month_display">
+                        <span data-value="01" data-status="active">Январь</span>
+                        <span data-value="02">Февраль</span>
+                        <span data-value="03">Март</span>
+                        <span data-value="04">Апрель</span>
+                        <span data-value="05">Май</span>
+                        <span data-value="06">Июнь</span>
+                        <span data-value="07">Июль</span>
+                        <span data-value="08">Август</span>
+                        <span data-value="09">Сентябрь</span>
+                        <span data-value="10">Октябрь</span>
+                        <span data-value="11">Ноябрь</span>
+                        <span data-value="12">Декабрь</span>
+                    </span>
+                    <span class="calendar__month_next"></span>
+                </span>
+                <span class="calendar__year">
+                    <span class="calendar__year_prev"></span>
+                    <span class="calendar__year_display">2025</span>
+                    <span class="calendar__year_next"></span>
+                </span>
+            </span>
+            <span class="calendar__weekdays">
+                <span class="calendar__weekday">Пн</span>
+                <span class="calendar__weekday">Вт</span>
+                <span class="calendar__weekday">Ср</span>
+                <span class="calendar__weekday">Чт</span>
+                <span class="calendar__weekday">Пт</span>
+                <span class="calendar__weekday dayoff">Сб</span>
+                <span class="calendar__weekday dayoff">Вс</span>
+            </span>
+            <span class="calendar__days"></span>
+        </span>
+    </span>
 </label>
-{{-- Провер очка --}}

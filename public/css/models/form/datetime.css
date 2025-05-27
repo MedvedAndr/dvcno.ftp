@@ -93,11 +93,25 @@ label[data-label="datetime"][data-status~="not_empty"] .label__placeholder ~ .la
 
 label[data-label="datetime"] .label__calendar {
     display                 : none;
+    position                : absolute;
+    top                     : 100%;
+    right                   : 0%;
+    z-index                 : 1000000;
+    width                   : 300px;
+    /* height                  : 220px; */
+    background-color        : #161821;
+    border                  : 1px solid var(--white-24);
+    border-radius           : var(--input-border-radius);
+    padding                 : 8px;
 }
 
-label[data-label="datetime"][date-status~=""] .label__calendar {
-    display                 : block;
+label[data-label="datetime"][data-status~="open"] .label__calendar {
+    display                 : grid;
 }
+
+/* label[data-label="datetime"][date-status~=""] .label__calendar {
+    display                 : block;
+} */
 
 label[data-label="datetime"] .label__calendar_icon {
     --icon-size             : 16px;
@@ -148,4 +162,102 @@ label[data-label="datetime"] .label__calendar_icon:focus {
 /* скрываем дисплей, если есть placeholder и нет фокуса/значения */
 [data-label="datetime"]:not([data-status="focused"]):not([data-status="not_empty"]) .label__placeholder ~ .label__input .label__display {
   /* display: none; */
+}
+
+[data-label="datetime"] .calendar__date {
+    display                 : block;
+}
+
+[data-label="datetime"] .calendar__panel {
+    display                 : flex;
+    flex-direction          : row;
+    justify-content         : space-around;
+}
+
+[data-label="datetime"] .calendar__month {
+    display                 : flex;
+    flex-direction          : row;
+}
+
+[data-label="datetime"] .calendar__month_prev {
+    
+}
+
+[data-label="datetime"] .calendar__month_next {
+    
+}
+
+[data-label="datetime"] .calendar__month_display {
+    
+}
+
+[data-label="datetime"] .calendar__month_display > span {
+    display                 : none;
+}
+
+[data-label="datetime"] .calendar__month_display > span[data-status~="active"] {
+    display                 : block;
+}
+
+[data-label="datetime"] .calendar__year {
+    
+}
+
+[data-label="datetime"] .calendar__year_prev {
+    
+}
+
+[data-label="datetime"] .calendar__year_next {
+    
+}
+
+[data-label="datetime"] .calendar__year_display {
+    
+}
+
+[data-label="datetime"] .calendar__weekdays {
+    display                 : grid;
+    grid-template-columns   : repeat(7, 1fr);
+}
+
+[data-label="datetime"] .calendar__weekday {
+    text-align              : center;
+}
+
+[data-label="datetime"] .calendar__weekday.dayoff {
+    color                   : var(--crimson-100);
+}
+
+[data-label="datetime"] .calendar__days {
+    display                 : grid;
+    grid-template-columns   : repeat(7, 1fr);
+}
+
+[data-label="datetime"] .calendar__day {
+    display                 : flex;
+    justify-content         : center;
+    align-items             : center;
+    text-align              : center;
+    height                  : calc(1em * var(--line-height) + 4px);
+    color                   : var(--white-100);
+    border-radius           : 2px;
+    cursor                  : pointer;
+}
+
+[data-label="datetime"] .calendar__day:hover {
+    border                  : 1px solid var(--white-36);
+    background-color        : var(--vivid-sky-blue-46);
+}
+
+[data-label="datetime"] .calendar__day[data-status~="other_month"] {
+    color                   : var(--white-54);
+}
+
+[data-label="datetime"] .calendar__day[data-status~="current"] {
+    border                  : 1px solid var(--white-36);
+}
+
+[data-label="datetime"] .calendar__day[data-status~="selected"] {
+    background-color        : var(--vivid-sky-blue-100);
+    border                  : 2px solid var(--white-65);
 }
