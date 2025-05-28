@@ -47,7 +47,9 @@
     --pink-raspberry-36     : rgb(240 39 105 / 36%);    /* #f027695c */
     --pink-raspberry-14     : rgb(240 39 105 / 14%);    /* #f0276924 */
     --crimson-100           : rgb(220 20 60);           /* #dc143cff */
+    --crimson-54            : rgb(220 20 60 / 54%);     /* #dc143c8a */
     --crimson-36            : rgb(220 20 60 / 36%);     /* #dc143c5c */
+    --tea-rose-100          : rgb(229 142 160);         /* #e58ea0ff */
     --pink-lace-100         : rgb(253 223 233);         /* #fddfe9ff */
     --pink-lace-36          : rgb(253 223 233 / 36%);   /* #fddfe95c */
     --pink-cameo-100        : rgb(238 196 210);         /* #eec4d2ff */

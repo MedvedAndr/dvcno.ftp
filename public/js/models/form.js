@@ -1,6 +1,19 @@
 jQuery(document).on('DOMContentLoaded', function() {
     // Очищием события фокуса (предотвращает дублирование события)
-    jQuery(document).off('focusin focusout');
+    jQuery(document)
+        .off('focusin focusout')
+        .on('click', function(eventObject) {
+            const $this_target = jQuery(eventObject.target);
+            
+            // Закрытие календаря в datetime
+            if(
+                !$this_target.closest('.label__calendar').length &&
+                !$this_target.closest('.label__calendar_icon').length
+            ) {
+                const $datetime_labels = jQuery('label[data-label="datetime"][data-status~="open"]');
+                $datetime_labels.eraseData('status', 'open');
+            }
+        });
 
 
     // Общие события
@@ -64,6 +77,7 @@ jQuery(document).on('DOMContentLoaded', function() {
             if(
                 !$this_target.is('[data-segment]') &&
                 !$this_target.is('.label__calendar_icon') &&
+                !$this_target.is('.label__calendar_icon [data-icon]') &&
                 !$this_target.closest('.label__calendar').length
             ) {
                 $this_label.find('[data-segment]:first').focus();
@@ -72,7 +86,7 @@ jQuery(document).on('DOMContentLoaded', function() {
         // Клик на иконку календаря
         .on('click', 'label[data-label="datetime"] .label__calendar_icon', function(eventObject) {
             const $this_calendar_icon = jQuery(eventObject.currentTarget);
-            const $this_label = $this_calendar_icon.closest('[data-label="datetime"]');
+            const $this_label = $this_calendar_icon.closest('label[data-label="datetime"]');
             const $date_input = $this_label.find('input[type="hidden"]');
             const $this_calendar = $this_label.find('.label__calendar');
             let selected_date;
@@ -107,18 +121,30 @@ jQuery(document).on('DOMContentLoaded', function() {
             
             let $list = jQuery();
             for(i = 0; i < 42; i++) {
-                const $option = jQuery('<span class="calendar__day">'+ date.getDate() +'</span>');
+                const $option = jQuery('<span>'+ date.getDate() +'</span>');
+                $option.addClass('calendar__day');
+                
+                if(date.getDay() === 0 || date.getDay() === 6) {
+                    $option.addData('status', 'dayoff');
+                }
+                
                 if(calendar_date.month == date.getMonth()) {
                     if(calendar_date.day == date.getDate()) {
                         $option.addData('status', 'selected');
                     }
-                    // Подправить ошибку на текущую дату
-                    if(current_date.getDate() == date.getDate()) {
+                    
+                    if(compareDates(current_date, date)) {
                         $option.addData('status', 'current');
                     }
                 }
                 else {
                     $option.addData('status', 'other_month');
+                    if(calendar_date.month < date.getMonth()) {
+                        $option.addData('status', 'next_month');
+                    }
+                    else {
+                        $option.addData('status', 'prev_month');
+                    }
                 }
                 $list = $list.add($option);
                 
@@ -128,12 +154,400 @@ jQuery(document).on('DOMContentLoaded', function() {
             const $days = $this_calendar.find('.calendar__days');
             $days.empty().append($list);
 
+            jQuery('label[data-label="datetime"][data-status~="open"]')
+                .not($this_label)
+                .eraseData('status', 'open');
             $this_label.addData('status', 'open');
         })
-        // Активность внутри календаря
-        .on('click', 'label[data-label="datetime"] .label__calendar', function(eventObject) {
-            const $this_calendar = jQuery(eventObject.currentTarget);
-            const $action_target = jQuery(eventObject.target);
+        // .on('click', 'label[data-label="datetime"] .label__calendar', function(eventObject) {
+        //     const $this_calendar = jQuery(eventObject.currentTarget);
+        //     const $action_target = jQuery(eventObject.target);
+        //     // const $target_calendar = $action_target.closest('.label__calendar');
+        //     // console.log($target_calendar);
+        //     // if() {
+
+        //     // }
+        // })
+        .on('click', 'label[data-label="datetime"] .label__calendar .calendar__month_prev', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('label[data-label="datetime"]');
+            const $date_input = $this_label.find('input[type="hidden"]');
+            const $this_calendar = $this_label.find('.label__calendar');
+            const $all_segments = $this_label.find('[data-segment]');
+            const current_date = new Date();
+            const edit = [6, 0, 1, 2, 3, 4, 5];
+
+            const calendar_date = getGlobal('datetime');
+            if(calendar_date.month === 0) {
+                calendar_date.month = 11;
+                calendar_date.year = calendar_date.year - 1;
+            }
+            else {
+                calendar_date.month = calendar_date.month - 1;
+            }
+            setGlobal('datetime.month', calendar_date.month);
+            setGlobal('datetime.year', calendar_date.year);
+
+            const calendar_last_day = new Date(calendar_date.year, calendar_date.month + 1, 0).getDate();
+            if(calendar_date.day > calendar_last_day) {
+                calendar_date.day = calendar_last_day;
+                setGlobal('datetime.day', calendar_date.day);
+            }
+
+            const date = new Date(calendar_date.year, calendar_date.month, calendar_date.day, calendar_date.hour, calendar_date.minute, calendar_date.second);
+            date.setDate(1);
+            date.setDate(1 - edit[date.getDay()]);
+
+            // Проверка даты на корректность и установка даты
+            const $mounth_display = $this_calendar.find('.calendar__month_display').children();
+            $mounth_display.eraseData('status', 'active');
+            $mounth_display.eq(calendar_date.month).addData('status', 'active');
+
+            const $year_display = $this_calendar.find('.calendar__year_display');
+            $year_display.text(calendar_date.year);
+            
+            let $list = jQuery();
+            for(i = 0; i < 42; i++) {
+                const $option = jQuery('<span>'+ date.getDate() +'</span>');
+                $option.addClass('calendar__day');
+                
+                if(date.getDay() === 0 || date.getDay() === 6) {
+                    $option.addData('status', 'dayoff');
+                }
+                
+                if(calendar_date.month == date.getMonth()) {
+                    if(calendar_date.day == date.getDate()) {
+                        $option.addData('status', 'selected');
+                    }
+                    
+                    if(compareDates(current_date, date)) {
+                        $option.addData('status', 'current');
+                    }
+                }
+                else {
+                    $option.addData('status', 'other_month');
+                    if(calendar_date.month < date.getMonth()) {
+                        $option.addData('status', 'next_month');
+                    }
+                    else {
+                        $option.addData('status', 'prev_month');
+                    }
+                }
+                $list = $list.add($option);
+                
+                date.setDate(date.getDate() + 1);
+            }
+
+            const $days = $this_calendar.find('.calendar__days');
+            $days.empty().append($list);
+            
+            const data = {};
+            let insert_to_input = true;
+            $all_segments.each(function(i, segment) {
+                const $segment = jQuery(segment);
+                const segment_name = $segment.attr('data-segment');
+                let value = calendar_date[segment_name];
+
+                if(segment_name == 'month') {
+                    value += 1;
+                }
+
+                $segment.text(String(value).padStart(segment_name === 'year' ? 4 : 2, '0'));
+
+                if(/^\d+$/.test($segment.text())) {
+                    data[segment_name] = $segment.text();
+                }
+                else {
+                    data[segment_name] = null;
+                    insert_to_input = false;
+                }
+            });
+            
+            if(insert_to_input) {
+                $date_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+            }
+            else {
+                $date_input.val('');
+            }
+        })
+        .on('click', 'label[data-label="datetime"] .label__calendar .calendar__month_next', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('label[data-label="datetime"]');
+            const $date_input = $this_label.find('input[type="hidden"]');
+            const $this_calendar = $this_label.find('.label__calendar');
+            const $all_segments = $this_label.find('[data-segment]');
+            const current_date = new Date();
+            const edit = [6, 0, 1, 2, 3, 4, 5];
+
+            const calendar_date = getGlobal('datetime');
+            if(calendar_date.month === 11) {
+                calendar_date.month = 0;
+                calendar_date.year = calendar_date.year + 1;
+            }
+            else {
+                calendar_date.month = calendar_date.month + 1;
+            }
+            setGlobal('datetime.month', calendar_date.month);
+            setGlobal('datetime.year', calendar_date.year);
+
+            const calendar_last_day = new Date(calendar_date.year, calendar_date.month + 1, 0).getDate();
+            if(calendar_date.day > calendar_last_day) {
+                calendar_date.day = calendar_last_day;
+                setGlobal('datetime.day', calendar_date.day);
+            }
+            
+            const date = new Date(calendar_date.year, calendar_date.month, calendar_date.day, calendar_date.hour, calendar_date.minute, calendar_date.second);
+            date.setDate(1);
+            date.setDate(1 - edit[date.getDay()]);
+
+            const $mounth_display = $this_calendar.find('.calendar__month_display').children();
+            $mounth_display.eraseData('status', 'active');
+            $mounth_display.eq(calendar_date.month).addData('status', 'active');
+
+            const $year_display = $this_calendar.find('.calendar__year_display');
+            $year_display.text(calendar_date.year);
+            
+            let $list = jQuery();
+            for(i = 0; i < 42; i++) {
+                const $option = jQuery('<span>'+ date.getDate() +'</span>');
+                $option.addClass('calendar__day');
+                
+                if(date.getDay() === 0 || date.getDay() === 6) {
+                    $option.addData('status', 'dayoff');
+                }
+                
+                if(calendar_date.month == date.getMonth()) {
+                    if(calendar_date.day == date.getDate()) {
+                        $option.addData('status', 'selected');
+                    }
+                    
+                    if(compareDates(current_date, date)) {
+                        $option.addData('status', 'current');
+                    }
+                }
+                else {
+                    $option.addData('status', 'other_month');
+                    if(calendar_date.month < date.getMonth()) {
+                        $option.addData('status', 'next_month');
+                    }
+                    else {
+                        $option.addData('status', 'prev_month');
+                    }
+                }
+                $list = $list.add($option);
+                
+                date.setDate(date.getDate() + 1);
+            }
+
+            const $days = $this_calendar.find('.calendar__days');
+            $days.empty().append($list);
+            
+            const data = {};
+            let insert_to_input = true;
+            $all_segments.each(function(i, segment) {
+                const $segment = jQuery(segment);
+                const segment_name = $segment.attr('data-segment');
+                let value = calendar_date[segment_name];
+
+                if(segment_name == 'month') {
+                    value += 1;
+                }
+
+                $segment.text(String(value).padStart(segment_name === 'year' ? 4 : 2, '0'));
+
+                if(/^\d+$/.test($segment.text())) {
+                    data[segment_name] = $segment.text();
+                }
+                else {
+                    data[segment_name] = null;
+                    insert_to_input = false;
+                }
+            });
+            
+            if(insert_to_input) {
+                $date_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+            }
+            else {
+                $date_input.val('');
+            }
+        })
+        .on('click', 'label[data-label="datetime"] .label__calendar .calendar__year_prev', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('label[data-label="datetime"]');
+            const $date_input = $this_label.find('input[type="hidden"]');
+            const $this_calendar = $this_label.find('.label__calendar');
+            const $all_segments = $this_label.find('[data-segment]');
+            const current_date = new Date();
+            const edit = [6, 0, 1, 2, 3, 4, 5];
+
+            const calendar_date = getGlobal('datetime');
+            if(calendar_date.year === 1000) {
+                calendar_date.year = 9999;
+            }
+            else {
+                calendar_date.year = calendar_date.year - 1;
+            }
+            setGlobal('datetime.year', calendar_date.year);
+
+            const date = new Date(calendar_date.year, calendar_date.month, calendar_date.day, calendar_date.hour, calendar_date.minute, calendar_date.second);
+            date.setDate(1);
+            date.setDate(1 - edit[date.getDay()]);
+
+            const $year_display = $this_calendar.find('.calendar__year_display');
+            $year_display.text(calendar_date.year);
+            
+            let $list = jQuery();
+            for(i = 0; i < 42; i++) {
+                const $option = jQuery('<span>'+ date.getDate() +'</span>');
+                $option.addClass('calendar__day');
+                
+                if(date.getDay() === 0 || date.getDay() === 6) {
+                    $option.addData('status', 'dayoff');
+                }
+                
+                if(calendar_date.month == date.getMonth()) {
+                    if(calendar_date.day == date.getDate()) {
+                        $option.addData('status', 'selected');
+                    }
+                    
+                    if(compareDates(current_date, date)) {
+                        $option.addData('status', 'current');
+                    }
+                }
+                else {
+                    $option.addData('status', 'other_month');
+                    if(calendar_date.month < date.getMonth()) {
+                        $option.addData('status', 'next_month');
+                    }
+                    else {
+                        $option.addData('status', 'prev_month');
+                    }
+                }
+                $list = $list.add($option);
+                
+                date.setDate(date.getDate() + 1);
+            }
+
+            const $days = $this_calendar.find('.calendar__days');
+            $days.empty().append($list);
+            
+            const data = {};
+            let insert_to_input = true;
+            $all_segments.each(function(i, segment) {
+                const $segment = jQuery(segment);
+                const segment_name = $segment.attr('data-segment');
+                let value = calendar_date[segment_name];
+
+                if(segment_name == 'month') {
+                    value += 1;
+                }
+
+                $segment.text(String(value).padStart(segment_name === 'year' ? 4 : 2, '0'));
+
+                if(/^\d+$/.test($segment.text())) {
+                    data[segment_name] = $segment.text();
+                }
+                else {
+                    data[segment_name] = null;
+                    insert_to_input = false;
+                }
+            });
+            
+            if(insert_to_input) {
+                $date_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+            }
+            else {
+                $date_input.val('');
+            }
+        })
+        .on('click', 'label[data-label="datetime"] .label__calendar .calendar__year_next', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('label[data-label="datetime"]');
+            const $date_input = $this_label.find('input[type="hidden"]');
+            const $this_calendar = $this_label.find('.label__calendar');
+            const $all_segments = $this_label.find('[data-segment]');
+            const current_date = new Date();
+            const edit = [6, 0, 1, 2, 3, 4, 5];
+
+            const calendar_date = getGlobal('datetime');
+            if(calendar_date.year === 9999) {
+                calendar_date.year = 1000;
+            }
+            else {
+                calendar_date.year = calendar_date.year + 1;
+            }
+            setGlobal('datetime.year', calendar_date.year);
+
+            const date = new Date(calendar_date.year, calendar_date.month, calendar_date.day, calendar_date.hour, calendar_date.minute, calendar_date.second);
+            date.setDate(1);
+            date.setDate(1 - edit[date.getDay()]);
+
+            const $year_display = $this_calendar.find('.calendar__year_display');
+            $year_display.text(calendar_date.year);
+            
+            let $list = jQuery();
+            for(i = 0; i < 42; i++) {
+                const $option = jQuery('<span>'+ date.getDate() +'</span>');
+                $option.addClass('calendar__day');
+                
+                if(date.getDay() === 0 || date.getDay() === 6) {
+                    $option.addData('status', 'dayoff');
+                }
+                
+                if(calendar_date.month == date.getMonth()) {
+                    if(calendar_date.day == date.getDate()) {
+                        $option.addData('status', 'selected');
+                    }
+                    
+                    if(compareDates(current_date, date)) {
+                        $option.addData('status', 'current');
+                    }
+                }
+                else {
+                    $option.addData('status', 'other_month');
+                    if(calendar_date.month < date.getMonth()) {
+                        $option.addData('status', 'next_month');
+                    }
+                    else {
+                        $option.addData('status', 'prev_month');
+                    }
+                }
+                $list = $list.add($option);
+                
+                date.setDate(date.getDate() + 1);
+            }
+
+            const $days = $this_calendar.find('.calendar__days');
+            $days.empty().append($list);
+            
+            const data = {};
+            let insert_to_input = true;
+            $all_segments.each(function(i, segment) {
+                const $segment = jQuery(segment);
+                const segment_name = $segment.attr('data-segment');
+                let value = calendar_date[segment_name];
+
+                if(segment_name == 'month') {
+                    value += 1;
+                }
+
+                $segment.text(String(value).padStart(segment_name === 'year' ? 4 : 2, '0'));
+
+                if(/^\d+$/.test($segment.text())) {
+                    data[segment_name] = $segment.text();
+                }
+                else {
+                    data[segment_name] = null;
+                    insert_to_input = false;
+                }
+            });
+            
+            if(insert_to_input) {
+                $date_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+            }
+            else {
+                $date_input.val('');
+            }
         })
         // Фокус на сегменте даты
         .on('focusin', 'label[data-label="datetime"] [data-segment]', function(eventObject) {
@@ -774,6 +1188,12 @@ function createSegmentState() {
             counter = i;
         }
     };
+}
+
+function compareDates(d1, d2) {
+    return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
 }
 
 // ----------------------------------------------------------

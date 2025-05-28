@@ -101,12 +101,12 @@ $timestamp = isset($value) ? strtotime($value) : null;
             <span data-default="--" data-segment="second" tabindex="0">{{ is_null($timestamp) ? '--' : date('s', $timestamp) }}</span>
         </span>
     </span>
-    <span class="label__calendar_icon" data-icon="calendar" tabindex="0"></span>
+    <span class="label__calendar_icon" tabindex="0"><span data-icon="calendar"></span></span>
     <span class="label__calendar">
         <span class="calendar__date">
             <span class="calendar__panel">
                 <span class="calendar__month">
-                    <span class="calendar__month_prev"></span>
+                    <span class="calendar__month_prev"><span data-icon="chevron-left"></span></span>
                     <span class="calendar__month_display">
                         <span data-value="01" data-status="active">Январь</span>
                         <span data-value="02">Февраль</span>
@@ -121,12 +121,12 @@ $timestamp = isset($value) ? strtotime($value) : null;
                         <span data-value="11">Ноябрь</span>
                         <span data-value="12">Декабрь</span>
                     </span>
-                    <span class="calendar__month_next"></span>
+                    <span class="calendar__month_next"><span data-icon="chevron-right"></span></span>
                 </span>
                 <span class="calendar__year">
-                    <span class="calendar__year_prev"></span>
+                    <span class="calendar__year_prev"><span data-icon="chevron-left"></span></span>
                     <span class="calendar__year_display">2025</span>
-                    <span class="calendar__year_next"></span>
+                    <span class="calendar__year_next"><span data-icon="chevron-right"></span></span>
                 </span>
             </span>
             <span class="calendar__weekdays">
