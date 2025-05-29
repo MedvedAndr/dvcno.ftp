@@ -39,6 +39,12 @@ label[data-label="text"] .label__input input:focus {
     box-shadow              : 0 0 0 3.2px var(--white-36);
 }
 
+label[data-label="text"] .label__input input:read-only {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
 label[data-label="text"] .label__icon {
     width                   : var(--icon-width);
     display                 : flex;

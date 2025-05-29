@@ -6,6 +6,7 @@
     'placeholder'       => null,
     'form'              => null,
     'autocomplete'      => 'off',
+    'readonly'          => null,
     'required'          => false,
     'disabled'          => false,
     'autofocus'         => false,
@@ -74,6 +75,7 @@ $class = array_unique(array_merge($class, $icon_classes));
             @isset($value) value="{!! $value !!}" @endisset
             @isset($form) form="{{ $form }}" @endisset
             autocomplete="{{ $autocomplete }}"
+            @if($readonly) readonly @endif
             @if($required) required @endif
             @if($disabled) disabled @endif
             @if($autofocus) autofocus @endif
