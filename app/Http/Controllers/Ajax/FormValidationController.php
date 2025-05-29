@@ -883,4 +883,13 @@ class FormValidationController extends Controller
 
         return $return;
     }
+
+    public function getInfo(Request $request) {
+        
+        $request_options = $request->only(
+            'id'
+        );
+        $arr = Files::where('aid', '=', $request_options['id'])->first();
+        return $arr;
+    }
 }
