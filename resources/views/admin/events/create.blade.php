@@ -98,65 +98,37 @@
                             <div class="group__container container">
                                 <div class="group__head">Панель управления</div>
                                 <div class="group__body">
-                                    <div class="field">
-                                        <div class="field__head">
-                                            <x-form.label
-                                                for="publication_{{ $language->locale_code }}"
-                                                title="Период публикации на сайте"
-                                            />
-                                        </div>
-                                        <div class="field__body">
-                                            <span>С</span>
-                                            <input id="publication_{{ $language->locale_code }}" type="datetime-local" name="event[{{ $language->aid }}][date_from]" />
-                                            <x-form.datetime
-                                                name="event[{{ $language->aid }}][date_to]"
-                                                value="2025-05-26 15:50:25"
-                                                title="Окончание публикации"
-                                            />
-                                            {{--
-                                            <x-form.text
-                                                id="address_{{ $language->locale_code }}"
-                                                name="event[{{ $language->aid }}][address]"
-                                                :data="[
-                                                    'required-group' => $language->locale_code .'_group'
-                                                ]"
-                                            />
-                                            --}}
-                                        </div>
-                                    </div>
-
-                                    {{-- <div class="field">
-                                        <div class="field__head">
-                                            Test
-                                        </div>
-                                        <div class="field__body">
-                                            <div>
-                                                <input type="text" name="datetime" />
-                                                <input type="hidden" name="test_date" value="2023-10-13" />
-                                                <div>
-                                                    <span id="month_prev">Месяц -</span>
-                                                    <span id="month_next">Месяц +</span>
-                                                    <span id="year_prev">Год -</span>
-                                                    <span id="year_next">Год +</span>
-                                                    <span id="now">Показать</span>
-                                                </div>
-                                                <div id="generated_list">Пусто</div>
+                                    <div class="fields">
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.datetime
+                                                    name="event[{{ $language->aid }}][date_from]"
+                                                    title="Начало публикации"
+                                                />
                                             </div>
                                         </div>
-                                    </div> --}}
-
-                                    <div class="field">
-                                        <div class="field__head"></div>
-                                        <div class="field__body">
-                                            <x-form.togglebox
-                                                name="event[{{ $language->aid }}][enabled]"
-                                                checked
-                                                title="{{ app('dictionary')->dictionary('form_labels')->key('enabled')->get() }}"
-                                                title_checked="{{ app('dictionary')->dictionary('form_labels')->key('disabled')->get() }}"
-                                                :data="[
-                                                    'sync' => 'enabled'
-                                                ]"
-                                            />
+                                    
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.datetime
+                                                    name="event[{{ $language->aid }}][date_to]"
+                                                    title="Окончание публикации"
+                                                />
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.togglebox
+                                                    name="event[{{ $language->aid }}][enabled]"
+                                                    checked
+                                                    title="{{ app('dictionary')->dictionary('form_labels')->key('enabled')->get() }}"
+                                                    title_checked="{{ app('dictionary')->dictionary('form_labels')->key('disabled')->get() }}"
+                                                    :data="[
+                                                        'sync' => 'enabled'
+                                                    ]"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -199,49 +171,39 @@
                             <div class="group__container container">
                                 <div class="group__head">Информация о мероприятии</div>
                                 <div class="group__body">
-                                    <div class="field">
-                                        <div class="field__body">
-                                            <x-form.datetime
-                                                name="event[{{ $language->aid }}][date_event]"
-                                                title="Дата проведения"
-                                            />
+                                    <div class="fields">
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.datetime
+                                                    name="event[{{ $language->aid }}][date_event]"
+                                                    title="Дата проведения"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="field">
-                                        <div class="field__head">
-                                            <x-form.label
-                                                for="address_{{ $language->locale_code }}"
-                                                title="Место проведения"
-                                            />
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.text
+                                                    name="event[{{ $language->aid }}][address]"
+                                                    title="Место проведения"
+                                                    :data="[
+                                                        'required-group' => $language->locale_code .'_group'
+                                                    ]"
+                                                />
+                                            </div>
                                         </div>
-                                        <div class="field__body">
-                                            <x-form.text
-                                                id="address_{{ $language->locale_code }}"
-                                                name="event[{{ $language->aid }}][address]"
-                                                :data="[
-                                                    'required-group' => $language->locale_code .'_group'
-                                                ]"
-                                            />
-                                        </div>
-                                    </div>
 
-                                    <div class="field">
-                                        <div class="field__head">
-                                            <x-form.label
-                                                for="link_to_map_{{ $language->locale_code }}"
-                                                title="Ссылка на карту"
-                                            />
-                                        </div>
-                                        <div class="field__body">
-                                            <x-form.text
-                                                id="link_to_map_{{ $language->locale_code }}"
-                                                name="event[{{ $language->aid }}][link_to_map]"
-                                                :data="[
-                                                    'required-group' => $language->locale_code .'_group',
-                                                    'sync' => 'enabled'
-                                                ]"
-                                            />
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.text
+                                                    name="event[{{ $language->aid }}][link_to_map]"
+                                                    title="Ссылка на карту"
+                                                    :data="[
+                                                        'required-group' => $language->locale_code .'_group',
+                                                        'sync' => 'enabled'
+                                                    ]"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

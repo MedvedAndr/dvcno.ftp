@@ -2,6 +2,15 @@ jQuery(document).on('DOMContentLoaded', function() {
     setGlobal('flags.drag_and_drop', true);
 
     jQuery(document)
+        .on('click', function(eventObject) {
+            const thisTarget = jQuery(eventObject.target);
+            //console.log(thisTarget);
+            if (!thisTarget.closest('.popup__container').length) {
+                thisTarget.closest('.popup').eraseData("status", "open");                
+            } 
+        });
+
+    jQuery(document)
         // Переносим файл на 'body', чтобы инициализировать интерфейс выгрузки файла
         .on('dragover', 'body', {type: 'over'}, drag_and_drop)
         // Уводим файл из интерфейса выгрузки файла, чтобы закрыть его
@@ -10,6 +19,22 @@ jQuery(document).on('DOMContentLoaded', function() {
         .on('drop', '[data-drag-drop-back]', {type: 'drop'}, drag_and_drop)
         // Добавляем по кнопке
         .on('change', 'input[type="file"][name="drop_file"]', {type: 'add'}, drag_and_drop);
+        
+    jQuery(document)
+        .on('click', '[data-popup]', function(eventObject) {
+            const thisButton = $(eventObject.currentTarget);
+            $("#"+thisButton.attr("data-popup")).addData("status", "open");
+            //$(".popup").css('display', 'flex');
+            
+        })
+        .on('click', '.popup__close', function(eventObject) {
+            const thisButton = $(eventObject.currentTarget);
+            const thisPopup = thisButton.closest(".popup");
+            thisPopup.eraseData("status", "open");
+            //$(".popup").css('display', 'none');
+
+        });
+
 });
 
 function drag_and_drop(eventObject) {
