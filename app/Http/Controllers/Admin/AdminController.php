@@ -574,7 +574,7 @@ class AdminController extends Controller
             $view_data['breadcrumbs'][] = [
                 'title' => app('dictionary')->dictionary('headers')->key('dictionary_view')->get() .' "'. (isset($view_data['dictionary']['name'][app('locale')]) ? $view_data['dictionary']['name'][app('locale')] : reset($view_data['dictionary']['name'])) .'"',
             ];
-            $load_template = view('admin.dictionaries.view', $view_data);
+            $load_template = view('admin.dictionaries.edit', $view_data);
         }
         else {
             $view_data['breadcrumbs'][] = [
@@ -603,6 +603,11 @@ class AdminController extends Controller
 
         AssetsManager::setScript([
             'src' => asset('/js/models/drag_n_drop_file.js'),
+            'priority' => 500,
+        ]);
+
+        AssetsManager::setScript([
+            'src' => asset('/js/models/form.js'),
             'priority' => 500,
         ]);
 

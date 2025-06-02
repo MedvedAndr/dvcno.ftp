@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
         
         // Задаём глобальные параметры для стилей и скриптов
         AssetsManager::setGlobalOptions([
-            'version' => '0.4.5',
+            'version' => '0.4.6',
         ]);
 
         // Создаём наборы стилей и скриптов
