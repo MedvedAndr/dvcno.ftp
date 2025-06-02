@@ -452,7 +452,6 @@ jQuery(document).on('DOMContentLoaded', function() {
                     success : function(jquery_result) {
                         $slugify_input.val(jquery_result.data).trigger('change');
                         $slugify_label.find('.label__input .label__text').text(jquery_result.data);
-                        // $slugify_label.eraseData('status', 'hidden');
                     },
                     error   : function(report) {
                         console.log(report.status, report.statusText);
