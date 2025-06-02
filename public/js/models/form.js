@@ -84,6 +84,12 @@ jQuery(document).on('DOMContentLoaded', function() {
                 $this_label.find('[data-segment]:first').focus();
             }
         })
+        // .on('click', 'label[data-label="datetime"] .label__calendar_icon', {type: 'icon'}, calendarGenerator)
+        // .on('click', 'label[data-label="datetime"] .label__calendar .calendar__month_prev', {type: 'month_prev'}, calendarGenerator)
+        // .on('click', 'label[data-label="datetime"] .label__calendar .calendar__month_next', {type: 'month_next'}, calendarGenerator)
+        // .on('click', 'label[data-label="datetime"] .label__calendar .calendar__year_prev', {type: 'year_prev'}, calendarGenerator)
+        // .on('click', 'label[data-label="datetime"] .label__calendar .calendar__year_next', {type: 'year_next'}, calendarGenerator)
+        // .on('click', 'label[data-label="datetime"] .label__calendar .calendar__day', {type: 'day'}, calendarGenerator)
         // Клик на иконку календаря
         .on('click', 'label[data-label="datetime"] .label__calendar_icon', function(eventObject) {
             const $this_calendar_icon = jQuery(eventObject.currentTarget);
@@ -1283,5 +1289,360 @@ function compareDates(d1, d2) {
 }
 
 // ----------------------------------------------------------
+function calendarGenerator(eventObject) {
+    eventObject.stopPropagation();
+    
+    const event_data        = eventObject.data;
+    // const current_date      = new Date();
+    // const edit              = [6, 0, 1, 2, 3, 4, 5];
+    
+    const $this_oblect      = jQuery(eventObject.currentTarget);
+    const $this_label       = $this_oblect.closest('label[data-label="datetime"]');
+    const $this_input       = $this_label.find('input[type="hidden"]');
+    const $this_calendar    = $this_label.find('.label__calendar');
+    const $all_segments     = $this_label.find('[data-segment]');
 
+    if(event_data.type === 'icon') {
+        const input_date = $this_input.val() !== '' ? new Date($this_input.val()) : new Date();
+
+        setGlobal('datetime', {
+            'year'      : input_date.getFullYear(),
+            'month'     : input_date.getMonth(),
+            'day'       : input_date.getDate(),
+            'hour'      : input_date.getHours(),
+            'minute'    : input_date.getMinutes(),
+            'second'    : input_date.getSeconds()
+        });
+
+        jQuery('label[data-label="datetime"][data-status~="open"]')
+            .not($this_label)
+            .eraseData('status', 'open');
+        $this_label.addData('status', 'open');
+    }
+
+    const calendar_date = getGlobal('datetime');
+
+    if(event_data.type !== 'day') {
+        dateList($this_calendar, event_data.type);
+    }
+    else {
+        const $selected_day = $this_oblect.siblings('[data-status~="selected"]');
+        $selected_day.eraseData('status', 'selected');
+        $this_oblect.addData('status', 'selected');
+        calendar_date.day = Number($this_oblect.text());
+        setGlobal('datetime.day', calendar_date.day);
+
+        if($this_oblect.hasData('status', 'other_month')) {
+            dateList($this_calendar, event_data.type);
+        }
+    }
+
+    // Возможно нужно вынести в отдельную функцию
+    // const calendar_date     = getGlobal('datetime');
+
+
+
+
+
+    // month_prev
+    // if(calendar_date.month === 0) {
+    //     calendar_date.month = 11;
+    //     calendar_date.year = calendar_date.year - 1;
+    // }
+    // else {
+    //     calendar_date.month = calendar_date.month - 1;
+    // }
+    // setGlobal('datetime.month', calendar_date.month);
+    // setGlobal('datetime.year', calendar_date.year);
+    //
+    // const calendar_last_day = new Date(calendar_date.year, calendar_date.month + 1, 0).getDate();
+    // if(calendar_date.day > calendar_last_day) {
+    //     calendar_date.day = calendar_last_day;
+    //     setGlobal('datetime.day', calendar_date.day);
+    // }
+
+    // month_next
+    // if(calendar_date.month === 11) {
+    //     calendar_date.month = 0;
+    //     calendar_date.year = calendar_date.year + 1;
+    // }
+    // else {
+    //     calendar_date.month = calendar_date.month + 1;
+    // }
+    // setGlobal('datetime.month', calendar_date.month);
+    // setGlobal('datetime.year', calendar_date.year);
+    //
+    // const calendar_last_day = new Date(calendar_date.year, calendar_date.month + 1, 0).getDate();
+    // if(calendar_date.day > calendar_last_day) {
+    //     calendar_date.day = calendar_last_day;
+    //     setGlobal('datetime.day', calendar_date.day);
+    // }
+
+    // year_prev
+    // if(calendar_date.year === 1000) {
+    //     calendar_date.year = 9999;
+    // }
+    // else {
+    //     calendar_date.year = calendar_date.year - 1;
+    // }
+    // setGlobal('datetime.year', calendar_date.year);
+
+    // year_next
+    // if(calendar_date.year === 9999) {
+    //     calendar_date.year = 1000;
+    // }
+    // else {
+    //     calendar_date.year = calendar_date.year + 1;
+    // }
+    // setGlobal('datetime.year', calendar_date.year);
+
+    // day
+    // if($this_day.hasData('status', 'prev_month')) {
+    //     if(calendar_date.month === 0) {
+    //         calendar_date.month = 11;
+    //         calendar_date.year = calendar_date.year - 1;
+    //     }
+    //     else {
+    //         calendar_date.month = calendar_date.month - 1;
+    //     }
+    // }
+    // else if ($this_day.hasData('status', 'next_month')) {
+    //     if(calendar_date.month === 11) {
+    //         calendar_date.month = 0;
+    //         calendar_date.year = calendar_date.year + 1;
+    //     }
+    //     else {
+    //         calendar_date.month = calendar_date.month + 1;
+    //     }
+    // }
+    // setGlobal('datetime.month', calendar_date.month);
+    // setGlobal('datetime.year', calendar_date.year);
+
+
+
+
+
+
+    // const generate_date     = new Date(
+    //     calendar_date.year,
+    //     calendar_date.month,
+    //     calendar_date.day,
+    //     calendar_date.hour,
+    //     calendar_date.minute,
+    //     calendar_date.second
+    // );
+    // generate_date.setDate(1);
+    // generate_date.setDate(1 - edit[generate_date.getDay()]);
+
+    // const $mounth_display = $this_calendar.find('.calendar__month_display').children();
+    // $mounth_display.eraseData('status', 'active');
+    // $mounth_display.eq(calendar_date.month).addData('status', 'active');
+
+    // const $year_display = $this_calendar.find('.calendar__year_display');
+    // $year_display.text(calendar_date.year);
+
+    // let $list = jQuery();
+    // for(i = 0; i < 42; i++) {
+    //     const $option = jQuery('<span>'+ generate_date.getDate() +'</span>');
+    //     $option.addClass('calendar__day');
+        
+    //     if(generate_date.getDay() === 0 || generate_date.getDay() === 6) {
+    //         $option.addData('status', 'dayoff');
+    //     }
+        
+    //     if(calendar_date.month == generate_date.getMonth()) {
+    //         if(calendar_date.day == generate_date.getDate()) {
+    //             $option.addData('status', 'selected');
+    //         }
+            
+    //         if(compareDates(current_date, generate_date)) {
+    //             $option.addData('status', 'current');
+    //         }
+    //     }
+    //     else {
+    //         $option.addData('status', 'other_month');
+    //         // if(calendar_date.month < generate_date.getMonth()) {
+    //         if(String(calendar_date.year).padStart(4, '0') + String(calendar_date.month).padStart(2, '0') < String(generate_date.getFullYear()).padStart(4, '0') + String(generate_date.getMonth()).padStart(2, '0')) {
+    //             $option.addData('status', 'next_month');
+    //         }
+    //         else {
+    //             $option.addData('status', 'prev_month');
+    //         }
+    //     }
+    //     $list = $list.add($option);
+        
+    //     generate_date.setDate(generate_date.getDate() + 1);
+    // }
+    
+    // const $days = $this_calendar.find('.calendar__days');
+    // $days.empty().append($list);
+    // Возможно нужно вынести в отдельную функцию
+
+    if(event_data.type !== 'icon') {
+        const data = {};
+        let insert_to_input = true;
+        $all_segments.each(function(i, segment) {
+            const $segment = jQuery(segment);
+            const segment_name = $segment.attr('data-segment');
+            let value = calendar_date[segment_name];
+
+            if(segment_name == 'month') {
+                value += 1;
+            }
+
+            $segment.text(String(value).padStart(segment_name === 'year' ? 4 : 2, '0'));
+
+            if(/^\d+$/.test($segment.text())) {
+                data[segment_name] = $segment.text();
+            }
+            else {
+                data[segment_name] = null;
+                insert_to_input = false;
+            }
+        });
+        
+        if(insert_to_input) {
+            $this_input.val(data['year'] +'-'+ data['month'] +'-'+ data['day'] +' '+ data['hour'] +':'+ data['minute'] +':'+ data['second']);
+        }
+        else {
+            $this_input.val('');
+        }
+    }
+}
+
+function dateList($this_calendar, type) {
+    const $mounth_display = $this_calendar.find('.calendar__month_display').children();
+    const $year_display = $this_calendar.find('.calendar__year_display');
+
+    const current_date = new Date();
+    const calendar_date = getGlobal('datetime');
+    const calendar_last_day = new Date(calendar_date.year, calendar_date.month + 1, 0).getDate();
+    const edit = [6, 0, 1, 2, 3, 4, 5];
+
+    switch(type) {
+        case 'month_prev':
+            if(calendar_date.month === 0) {
+                calendar_date.month = 11;
+                calendar_date.year = calendar_date.year - 1;
+            }
+            else {
+                calendar_date.month = calendar_date.month - 1;
+            }
+            setGlobal('datetime.month', calendar_date.month);
+            setGlobal('datetime.year', calendar_date.year);
+            
+            if(calendar_date.day > calendar_last_day) {
+                calendar_date.day = calendar_last_day;
+                setGlobal('datetime.day', calendar_date.day);
+            }
+            break;
+        case 'month_next':
+            if(calendar_date.month === 11) {
+                calendar_date.month = 0;
+                calendar_date.year = calendar_date.year + 1;
+            }
+            else {
+                calendar_date.month = calendar_date.month + 1;
+            }
+            setGlobal('datetime.month', calendar_date.month);
+            setGlobal('datetime.year', calendar_date.year);
+            
+            if(calendar_date.day > calendar_last_day) {
+                calendar_date.day = calendar_last_day;
+                setGlobal('datetime.day', calendar_date.day);
+            }
+            break;
+        case 'year_prev':
+            if(calendar_date.year === 1000) {
+                calendar_date.year = 9999;
+            }
+            else {
+                calendar_date.year = calendar_date.year - 1;
+            }
+            setGlobal('datetime.year', calendar_date.year);
+            break;
+        case 'year_next':
+            if(calendar_date.year === 9999) {
+                calendar_date.year = 1000;
+            }
+            else {
+                calendar_date.year = calendar_date.year + 1;
+            }
+            setGlobal('datetime.year', calendar_date.year);
+            break;
+        case 'day':
+            if($this_day.hasData('status', 'prev_month')) {
+                if(calendar_date.month === 0) {
+                    calendar_date.month = 11;
+                    calendar_date.year = calendar_date.year - 1;
+                }
+                else {
+                    calendar_date.month = calendar_date.month - 1;
+                }
+            }
+            else if ($this_day.hasData('status', 'next_month')) {
+                if(calendar_date.month === 11) {
+                    calendar_date.month = 0;
+                    calendar_date.year = calendar_date.year + 1;
+                }
+                else {
+                    calendar_date.month = calendar_date.month + 1;
+                }
+            }
+            setGlobal('datetime.month', calendar_date.month);
+            setGlobal('datetime.year', calendar_date.year);
+            break;
+    }
+
+    const generate_date = new Date(
+        calendar_date.year,
+        calendar_date.month,
+        calendar_date.day,
+        calendar_date.hour,
+        calendar_date.minute,
+        calendar_date.second
+    );
+    generate_date.setDate(1);
+    generate_date.setDate(1 - edit[generate_date.getDay()]);
+
+    $mounth_display.eraseData('status', 'active');
+    $mounth_display.eq(calendar_date.month).addData('status', 'active');
+    $year_display.text(calendar_date.year);
+
+    let $list = jQuery();
+    for(i = 0; i < 42; i++) {
+        const $option = jQuery('<span>'+ generate_date.getDate() +'</span>');
+        $option.addClass('calendar__day');
+        
+        if(generate_date.getDay() === 0 || generate_date.getDay() === 6) {
+            $option.addData('status', 'dayoff');
+        }
+        
+        if(calendar_date.month == generate_date.getMonth()) {
+            if(calendar_date.day == generate_date.getDate()) {
+                $option.addData('status', 'selected');
+            }
+            
+            if(compareDates(current_date, generate_date)) {
+                $option.addData('status', 'current');
+            }
+        }
+        else {
+            $option.addData('status', 'other_month');
+            // if(calendar_date.month < generate_date.getMonth()) {
+            if(String(calendar_date.year).padStart(4, '0') + String(calendar_date.month).padStart(2, '0') < String(generate_date.getFullYear()).padStart(4, '0') + String(generate_date.getMonth()).padStart(2, '0')) {
+                $option.addData('status', 'next_month');
+            }
+            else {
+                $option.addData('status', 'prev_month');
+            }
+        }
+        $list = $list.add($option);
+        
+        generate_date.setDate(generate_date.getDate() + 1);
+    }
+
+    const $days = $this_calendar.find('.calendar__days');
+    $days.empty().append($list);
+}
 // ----------------------------------------------------------
