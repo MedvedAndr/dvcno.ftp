@@ -20,11 +20,11 @@
     </div>
 
     <div class="tabs__box" data-tabs-box="landuages">
-        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event">
-        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event" style="display: flex;"> --}}
+        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event"> --}}
+        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event" style="display: flex;">
             @foreach(app('languages') as $language)
-            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif>
-            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif style="display: block;"> --}}
+            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif> --}}
+            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif style="display: block;">
                 <div class="page__content __with_right_col">
                     <div class="group__box">
                         <div class="group__container container">
@@ -66,19 +66,19 @@
 
                                     <div class="field">
                                         <div class="field__body">
-                                            <x-form.ckeditor
+                                            {{-- <x-form.ckeditor
                                                 name="event[{{ $language->aid }}][content]"
                                                 title="Контент"
-                                            />{{--  --}}
+                                            /> --}}
                                         </div>
                                     </div>
 
                                     <div class="field">
                                         <div class="field__body">
-                                            <x-form.ckeditor
+                                            {{-- <x-form.ckeditor
                                                 name="event[{{ $language->aid }}][description]"
                                                 title="Краткое описание"
-                                            />{{--  --}}
+                                            /> --}}
                                         </div>
                                     </div>
                                 </div>

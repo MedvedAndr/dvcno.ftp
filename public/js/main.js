@@ -434,7 +434,6 @@ jQuery(document).on('DOMContentLoaded', function() {
             const $slugify_input = jQuery('[name="'+ slugify_input +'"]');
             const $slugify_label = $slugify_input.closest('label[data-label]');
 
-            console.log($this_input.val(), $slugify_input, db_table, db_col);
             if($this_input.val() !== '' && $slugify_input.val() === '' && db_table !== null && db_col !== null) {
                 jQuery.ajax({
                     url     : '/ajax/slugify',
@@ -453,7 +452,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     success : function(jquery_result) {
                         $slugify_input.val(jquery_result.data).trigger('change');
                         $slugify_label.find('.label__input .label__text').text(jquery_result.data);
-                        $slugify_label.eraseData('status', 'hidden');
+                        // $slugify_label.eraseData('status', 'hidden');
                     },
                     error   : function(report) {
                         console.log(report.status, report.statusText);

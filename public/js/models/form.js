@@ -61,6 +61,7 @@ jQuery(document).on('DOMContentLoaded', function() {
         .on('change', '[type="checkbox"][data-sync]', {type: 'checkbox'}, syncInput)
         // Связывание text
         .on('input change', '[type="text"][data-sync]', {type: 'text'}, syncInput)
+        .on('change', '[type="hidden"][data-sync]', {type: 'hidden'}, syncInput)
         // Связывание number
         .on('changed', '[type="number"][data-sync]', {type: 'number'}, syncInput)
         // Связывание select
@@ -883,7 +884,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     $this_label.eraseData('status', 'edited');
                     $edit_input = $this_label.find('.label__input .label__text input');
                     $this_text.empty().text($edit_input.val());
-                    $this_input.val($edit_input.val());
+                    $this_input.val($edit_input.val()).trigger('change');
                     break;
                 case 'cancel':
                     $this_label.eraseData('status', 'edited');
@@ -1225,15 +1226,30 @@ function syncInput(eventObject) {
                 $sync_numbers_label.eraseData('status', 'not_empty');
             }
             break;
+        case 'hidden':
+            const $this_hidden = jQuery(eventObject.currentTarget);
+            const $this_label = $this_hidden.closest('[data-label]');
+            const $sync_hiddens = jQuery('[type="hidden"][data-sync="'+ $this_hidden.attr('data-sync') +'"]').not($this_hidden);
+            const $sync_hiddens_label = $sync_hiddens.closest('[data-label]');
+            const $sync_hiddens_text = $sync_hiddens_label.find('.label__input .label__text');
+            
+            $sync_hiddens_text.text($this_hidden.val());
+            $sync_hiddens.val($this_hidden.val());
+            $sync_hiddens_label.eraseData('status', 'hidden');
+            $this_label.eraseData('status', 'hidden');
+            break;
         case 'text':
         default:
             const $this_text = jQuery(eventObject.currentTarget);
+            // const $this_label = $this_text.closest('[data-label]');
             const $sync_texts = jQuery('[type="text"][data-sync="'+ $this_text.attr('data-sync') +'"]').not($this_text);
             const $sync_texts_label = $sync_texts.closest('[data-label]');
             const $sync_text_boxes = jQuery('[data-sync="'+ $this_text.attr('data-sync') +'"]:is(div, span, p)');
 
             $sync_texts.val($this_text.val());
             $sync_text_boxes.text($this_text.val());
+            // $this_label.eraseData('status', 'hidden');
+            // $sync_texts_label.eraseData('status', 'hidden');
             if($this_text.val() !== '') {
                 $sync_texts_label.addData('status', 'not_empty');
             }
