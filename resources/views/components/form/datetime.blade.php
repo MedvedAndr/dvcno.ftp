@@ -73,7 +73,7 @@ $timestamp = isset($value) ? strtotime($value) : null;
     @endisset
     <span class="label__input">
         <input
-            @isset($id) id="{{ $id }}" @endisset    
+            @isset($id) id="{{ $id }}" @endisset
             type="hidden"
             @isset($name) name="{{ $name }}" @endisset
             @isset($value) value="{!! $value !!}" @endisset

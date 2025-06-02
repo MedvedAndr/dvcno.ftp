@@ -53,7 +53,7 @@
                                         name="dictionary[{{ $language->aid }}][required]"
                                         value="{{ isset($dictionary['name'][$language->locale_code]) || isset($dictionary['description'][$language->locale_code]) ? 'true' : 'false' }}"
                                         :data="[
-                                            'required-group' => $language->locale_code .'_group',
+                                            'required' => $language->locale_code .'_group',
                                         ]"
                                     />
                                     

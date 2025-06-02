@@ -176,7 +176,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                 return jQuery(item).val().trim() !== '';
             }).length > 0;
             
-            jQuery('[type="hidden"][data-required-group="' + group_id + '"]').val(has_value ? 'true' : 'false');
+            jQuery('[type="hidden"][data-required="' + group_id + '"]').val(has_value ? 'true' : 'false');
         })
         // Добавление компоненты
         .on('click', '[data-item-add]', function(eventObject) {
@@ -432,7 +432,9 @@ jQuery(document).on('DOMContentLoaded', function() {
             const $this_input = jQuery(eventObject.currentTarget);
             const [slugify_input, db_table = null, db_col = null] = $this_input.attr('data-slugifier').split('.');
             const $slugify_input = jQuery('[name="'+ slugify_input +'"]');
+            const $slugify_label = $slugify_input.closest('label[data-label]');
 
+            console.log($this_input.val(), $slugify_input, db_table, db_col);
             if($this_input.val() !== '' && $slugify_input.val() === '' && db_table !== null && db_col !== null) {
                 jQuery.ajax({
                     url     : '/ajax/slugify',
@@ -450,6 +452,8 @@ jQuery(document).on('DOMContentLoaded', function() {
                     },
                     success : function(jquery_result) {
                         $slugify_input.val(jquery_result.data).trigger('change');
+                        $slugify_label.find('.label__input .label__text').text(jquery_result.data);
+                        $slugify_label.eraseData('status', 'hidden');
                     },
                     error   : function(report) {
                         console.log(report.status, report.statusText);

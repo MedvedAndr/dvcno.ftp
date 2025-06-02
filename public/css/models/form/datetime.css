@@ -91,6 +91,48 @@ label[data-label="datetime"][data-status~="not_empty"] .label__placeholder ~ .la
     opacity                 : 0;
 }
 
+label[data-label="datetime"] .label__message {
+    position                : absolute;
+    top                     : 0%;
+    left                    : 0%;
+    width                   : 100%;
+    font-size               : 14px;
+    line-height             : 1;
+    opacity                 : 0;
+    transition-property     : opacity;
+    transition-duration     : var(--hover-animation);
+}
+
+label[data-label="datetime"][data-status~="success"] .label__message {
+    color                   : var(--green-lime-100);
+    opacity                 : 1;
+}
+
+label[data-label="datetime"][data-status~="notice"] .label__message {
+    color                   : var(--amber-100);
+    opacity                 : 1;
+}
+
+label[data-label="datetime"][data-status~="error"] .label__message {
+    color                   : var(--pink-raspberry-100);
+    opacity                 : 1;
+}
+
+label[data-label="datetime"][data-status~="success"] .label__message:not(:empty) ~ .label__title,
+label[data-label="datetime"][data-status~="notice"] .label__message:not(:empty) ~ .label__title,
+label[data-label="datetime"][data-status~="error"] .label__message:not(:empty) ~ .label__title {
+    opacity                 : 0;
+}
+
+label[data-label="datetime"][data-status~="success"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="datetime"][data-status~="success"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="datetime"][data-status~="notice"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="datetime"][data-status~="notice"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="datetime"][data-status~="error"][data-status~="focused"] .label__message:not(:empty) ~ .label__placeholder,
+label[data-label="datetime"][data-status~="error"][data-status~="not_empty"] .label__message:not(:empty) ~ .label__placeholder {
+    opacity                 : 0;
+}
+
 label[data-label="datetime"] .label__calendar {
     display                 : none;
     position                : absolute;

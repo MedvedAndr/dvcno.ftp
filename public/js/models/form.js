@@ -853,70 +853,6 @@ jQuery(document).on('DOMContentLoaded', function() {
                 $date_input.val('');
             }
         });
-    // jQuery(document)
-        //     .on('click', '#now, #year_prev, #year_next, #month_prev, #month_next', function(e) {
-        //         const $this_button = jQuery(e.currentTarget);
-        //         const edit = [6, 0, 1, 2, 3, 4, 5];
-
-        //         switch($this_button.attr('id')) {
-        //             case 'now':
-        //                 const date_input = jQuery('[name="event[rtus4qme0uf][date_to]"]');
-        //                 let curr;
-
-        //                 if(date_input.val() !== '') {
-        //                     curr = new Date(date_input.val());
-        //                 }
-        //                 else {
-        //                     curr = new Date();
-        //                 }
-
-        //                 setGlobal('test_date', {
-        //                     'year': curr.getFullYear(),
-        //                     'month': curr.getMonth(),
-        //                     'day': curr.getDate(),
-        //                     'hour': curr.getHours(),
-        //                     'minute': curr.getMinutes(),
-        //                     'second': curr.getSeconds()
-        //                 });
-        //                 break;
-        //             case 'year_prev':
-        //                 setGlobal('test_date.year', getGlobal('test_date.year') - 1);
-        //                 break;
-        //             case 'year_next':
-        //                 setGlobal('test_date.year', getGlobal('test_date.year') + 1);
-        //                 break;
-        //             case 'month_prev':
-        //                 setGlobal('test_date.month', getGlobal('test_date.month') - 1);
-        //                 break;
-        //             case 'month_next':
-        //                 setGlobal('test_date.month', getGlobal('test_date.month') + 1);
-        //                 break;
-        //         }
-        //         const calendar_data = getGlobal('test_date');
-                
-        //         const date = new Date(calendar_data.year, calendar_data.month, calendar_data.day, calendar_data.hour, calendar_data.minute, calendar_data.second);
-        //         date.setDate(1);
-        //         date.setDate(1 - edit[date.getDay()]);
-                
-        //         let $list = jQuery();
-        //         for(i = 0; i < 42; i++) {
-        //             const $option = jQuery('<span>'+ date.getDate() +'</span>');
-        //             if(calendar_data.month == date.getMonth()) {
-        //                 if(calendar_data.day == date.getDate()) {
-        //                     $option.addData('status', 'active');
-        //                 }
-        //             }
-        //             else {
-        //                 $option.addData('status', 'other_month');
-        //             }
-        //             $list = $list.add($option);
-                    
-        //             date.setDate(date.getDate() + 1);
-        //         }
-                
-        //         jQuery('#generated_list').empty().append($list);
-        //     });
-        // });
 
     // Компонента 'number'
     jQuery(document)
@@ -929,6 +865,32 @@ jQuery(document).on('DOMContentLoaded', function() {
             setGlobal('input_values.' + $this_input.attr('name'), Number($this_input.val()));
         })
         .on('change', 'label[data-label="number"] input[type="number"]', onChangeInputNumber);
+    
+    jQuery(document)
+        .on('click', 'label[data-label="edited_string"] .label__button', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('label[data-label]');
+            const $this_input = $this_label.find('.label__input input[type="hidden"]');
+            const $this_text = $this_label.find('.label__input .label__text');
+            let $edit_input;
+            
+            switch($this_button.attr('data-button')) {
+                case 'edit':
+                    $this_label.addData('status', 'edited');
+                    $this_text.empty().append('<input type="text" value="'+ $this_input.val() +'" />');
+                    break;
+                case 'save':
+                    $this_label.eraseData('status', 'edited');
+                    $edit_input = $this_label.find('.label__input .label__text input');
+                    $this_text.empty().text($edit_input.val());
+                    $this_input.val($edit_input.val());
+                    break;
+                case 'cancel':
+                    $this_label.eraseData('status', 'edited');
+                    $this_text.empty().text($this_input.val());
+                    break;
+            }
+        });
 });
 
 function primeValidation(eventObject) {

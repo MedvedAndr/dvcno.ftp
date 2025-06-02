@@ -20,11 +20,11 @@
     </div>
 
     <div class="tabs__box" data-tabs-box="landuages">
-        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event"> --}}
-        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event" style="display: flex;">
+        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event">
+        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event" style="display: flex;"> --}}
             @foreach(app('languages') as $language)
-            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif> --}}
-            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif style="display: block;">
+            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif>
+            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif style="display: block;"> --}}
                 <div class="page__content __with_right_col">
                     <div class="group__box">
                         <div class="group__container container">
@@ -35,7 +35,7 @@
                                         name="event[{{ $language->aid }}][required]"
                                         value="false"
                                         :data="[
-                                            'required-group' => $language->locale_code .'_group'
+                                            'required' => $language->locale_code .'_group'
                                         ]"
                                     />
 
@@ -50,43 +50,35 @@
                                                     'slugifier' => 'event['. $language->aid .'][slug].events.title',
                                                 ]"
                                             />
+                                            <x-form.edited_string
+                                                id="slug_{{ $language->locale_code }}"
+                                                name="event[{{ $language->aid }}][slug]"
+                                                before="Постоянная ссылка: /event/"
+                                                after="/"
+                                                :data="[
+                                                    'required-group' => $language->locale_code .'_group',
+                                                    'sync' => 'slug',
+                                                ]"
+                                                status="hidden"
+                                            />
                                         </div>
                                     </div>
 
                                     <div class="field">
                                         <div class="field__body">
-                                            <div class="line">
-                                                <span>Постоянная ссылка: /event/</span>
-                                                <x-form.text
-                                                    id="slug_{{ $language->locale_code }}"
-                                                    class="mini"
-                                                    name="event[{{ $language->aid }}][slug]"
-                                                    readonly
-                                                    :data="[
-                                                        'required-group' => $language->locale_code .'_group',
-                                                        'sync' => 'slug',
-                                                    ]"
-                                                />
-                                                <span>/</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="field">
-                                        <div class="field__body">
-                                            {{-- <x-form.ckeditor
+                                            <x-form.ckeditor
                                                 name="event[{{ $language->aid }}][content]"
                                                 title="Контент"
-                                            /> --}}
+                                            />{{--  --}}
                                         </div>
                                     </div>
 
                                     <div class="field">
                                         <div class="field__body">
-                                            {{-- <x-form.ckeditor
+                                            <x-form.ckeditor
                                                 name="event[{{ $language->aid }}][description]"
                                                 title="Краткое описание"
-                                            /> --}}
+                                            />{{--  --}}
                                         </div>
                                     </div>
                                 </div>
@@ -178,6 +170,7 @@
                                                 <x-form.datetime
                                                     name="event[{{ $language->aid }}][date_event]"
                                                     title="Дата проведения"
+                                                    message
                                                 />
                                             </div>
                                         </div>

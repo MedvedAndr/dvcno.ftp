@@ -18,10 +18,48 @@ label[data-label].mini {
     width                   : fit-content;
 }
 
+label[data-label][data-status~="hidden"] {
+    display                 : none;
+    opacity                 : 0;
+    visibility              : hidden;
+}
+
 label[data-label="hidden"] {
     display                 : none;
     opacity                 : 0;
     visibility              : hidden;
+}
+
+label[data-label="edited_string"] .label__input {
+    display                 : flex;
+    gap                     : 0px;
+}
+
+label[data-label="edited_string"] .buttons .label__not_edit,
+label[data-label="edited_string"] .buttons .label__edit {
+    display                 : flex;
+    gap                     : 0px;
+}
+
+label[data-label="edited_string"] .buttons .label__not_edit [data-icon],
+label[data-label="edited_string"] .buttons .label__edit [data-icon] {
+    --icon-size             : 20px;
+}
+
+label[data-label="edited_string"] .buttons .label__edit {
+    display                 : none;
+}
+
+label[data-label="edited_string"][data-status~="edited"] .buttons .label__edit {
+    display                 : flex;
+}
+
+label[data-label="edited_string"][data-status~="edited"] .buttons .label__not_edit {
+    display                 : none;
+}
+
+label[data-label="edited_string"] .buttons .label__not_edit {
+    display                 : flex;
 }
 
 .form__panel {

@@ -58,7 +58,7 @@
                                         name="menu[{{ $language->aid }}][required]"
                                         value="false"
                                         :data="[
-                                            'required-group' => $language->locale_code .'_group'
+                                            'required' => $language->locale_code .'_group'
                                         ]"
                                     />
 
