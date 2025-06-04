@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('size');
             $table->string('extension', 20);
             $table->string('mime_type');
+            $table->string('alt');
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
