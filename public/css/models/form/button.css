@@ -149,3 +149,8 @@ button:disabled .button__icon [data-icon],
 .button__line.error .button__icon [data-icon] {
     background-color        : var(--pink-raspberry-100);
 }
+
+button:active, 
+.button:active {
+    transform: translateY(2px);
+}

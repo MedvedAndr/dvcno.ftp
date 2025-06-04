@@ -155,6 +155,31 @@ class FormValidationController extends Controller
 
         return $return;
     }
+
+    private function file_edit(Request $request, array $return) {
+        $data = $request->only([
+            'name', 
+            'alt',
+            'file_aid'
+        ]);
+        
+        if ($return['meta']['__send_name'] == 'save') {
+            Files::where("aid", "=", $data['file_aid'])->update(['name' => $data['name'], 'alt' => $data['alt']]);
+            
+            $return['data'] = $data;
+            $return['meta']['__system_messages']['success']['file_save_success'] = "Успешно";
+        
+        } else {
+            Files::where("aid", "=", $data['file_aid'])->delete();
+            
+            $return['data'] = $data;
+            $return['meta']['__system_messages']['success']['file_save_success'] = "Файл удален";
+            $return['meta']['__redirect'] = '';
+            $return['meta']['__redirect_delay'] = 4000;
+        }
+
+        return $return;
+    }
     
     private function login(Request $request, array $return) {
         $data = $request->only([
@@ -370,6 +395,7 @@ class FormValidationController extends Controller
     }
 
     private function create_event(Request $request, array $return) {
+        // Получаем необходимые данные для обработки
         $data = $request->only([
             'event',
         ]);
@@ -438,6 +464,24 @@ class FormValidationController extends Controller
                     $return['error'] = 'Incorrect data';
                     $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Не корректный формат записи';
                 }
+
+                $data_events[] = [
+                    'aid'           => $event_aid,
+                    'language_id'   => $language_aid,
+                    'slug'          => $data_event['slug'],
+                    'title'         => $data_event['title'],
+                    'description'   => $data_event['description'] ?? '',
+                    'content'       => $data_event['content'] ?? '',
+                    'thumbnail'     => '',
+                    'address'       => $data_event['address'],
+                    'link_to_map'   => $data_event['link_to_map'],
+                    'enabled'       => (int) filter_var($data_event['enabled'], FILTER_VALIDATE_BOOLEAN),
+                    'date_event'    => $data_event['date_event'],
+                    'date_from'     => $data_event['date_from'],
+                    'date_to'       => $data_event['date_to'],
+                    'created_at'    => $current_date,
+                    'updated_at'    => $current_date,
+                ];
             }
             // Если мероприятие обязательно для заполнения и все поля пустые делаем запрос на изменение
             elseif($data_event['required'] === 'true' && (!$data_event['title'] && !$data_event['description'] && !$data_event['slug'])) {
@@ -449,7 +493,12 @@ class FormValidationController extends Controller
         if($event_empty_flag) {
             $return['status']   = 'success';
             $return['data']     = $data;
+            // $return['meta']['debug']     = $data_events;
             unset($return['error']);
+
+            if(!empty($data_events)) {
+                Events::insert($data_events);
+            }
         }
         else {
             $return['error'] = 'Incorrect data';
@@ -887,9 +936,9 @@ class FormValidationController extends Controller
     public function getInfo(Request $request) {
         
         $request_options = $request->only(
-            'id'
+            'aid'
         );
-        $arr = Files::where('aid', '=', $request_options['id'])->first();
+        $arr = Files::where('aid', '=', $request_options['aid'])->first();
         return $arr;
     }
 }

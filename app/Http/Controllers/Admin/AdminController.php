@@ -19,6 +19,8 @@ use App\Models\Menus;
 class AdminController extends Controller
 {
     public function index(Request $request) {
+        dump((new GenerateID())->table("pages")->get());
+        dump((new GenerateID())->table("sections")->get());
         // Получаем блок данных пользователя из текущей сессии и если его нет, то возвращаем false
         $user_session            = $request->session()->get('user');
         // Данные для отправки в шаблон
@@ -625,6 +627,18 @@ class AdminController extends Controller
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.file_manager.main', $view_data);
         $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function files_select() {
+
+        $view_data  = [];
+        $template   = [];
+
+        $view_data['files'] = Files::orderBy('created_at', 'desc')->get();
+
+        $template[] = view('admin.file_manager.select', $view_data);
 
         return implode('', $template);
     }

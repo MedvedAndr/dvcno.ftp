@@ -24,16 +24,166 @@ jQuery(document).on('DOMContentLoaded', function() {
         .on('click', '[data-popup]', function(eventObject) {
             const thisButton = $(eventObject.currentTarget);
             $("#"+thisButton.attr("data-popup")).addData("status", "open");
-            //$(".popup").css('display', 'flex');
+
+            //открытие окна редактирования картинки/файла
+            if (thisButton.attr("data-popup") == 'popup__edit_img') {
             
+                const fileBox = thisButton.closest('.file');
+
+                //добавление к popup атрибута aid 
+                $("#"+thisButton.attr("data-popup")).addData("aid", fileBox.attr('data-aid'));
+
+                //обнуление src картинки для устранения наличия старой при открытии новой 
+                jQuery(".group__edit_img").attr("src", "");
+
+                jQuery.ajax({
+                    url: '/ajax/getInfo',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        'aid' : fileBox.attr('data-aid')
+                    },
+                    dataType: 'json',
+                    success: function(result) {
+                        //console.log(result);
+                        jQuery(".group__edit_img").attr("src", result['path']);
+                        jQuery("#group__edit_ext").text(result['extension']);
+                        jQuery("#group__edit_name").val(result['name']);
+                        jQuery("#group__edit_alt").val(result['alt']);
+                        jQuery("#group__edit_size").text(result['size']);
+                        jQuery("[name=file_aid]").val(result['aid']);
+
+                        const dateLocal = new Date(result['created_at']);
+                        jQuery("#group__edit_updated").text(dateLocal.toLocaleDateString("ru"));
+                    },
+                    error: function(report) {
+                        console.log(report.status, report.statusText);
+                        console.log(report.responseJSON);
+                    }
+                }); 
+            
+            //открытие окна выбора картинки/файла
+            } else if (thisButton.attr("data-popup") == 'popup__select_img') {
+                        
+                jQuery.ajax({
+                    url: '/admin/file_manager_for_select',
+                    type: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                    },
+                    
+                    success: function(result) {
+                        //console.log("result = "+result);
+                        jQuery("#files").html(result);
+                    },
+                    error: function(report) {
+                        console.log(report.status, report.statusText);
+                        console.log(report.responseJSON);
+                    }
+                }); 
+            }
         })
+
+        //закрытие popup
         .on('click', '.popup__close', function(eventObject) {
             const thisButton = $(eventObject.currentTarget);
+
             const thisPopup = thisButton.closest(".popup");
             thisPopup.eraseData("status", "open");
-            //$(".popup").css('display', 'none');
+            thisPopup.eraseData("aid", jQuery(".popup").attr('data-aid'));
+        })
 
-        });
+        //обработка выбора в popup__select_img
+        .on('click', '[data-select]', function(eventObject) {
+            const thisButton = $(eventObject.currentTarget);
+
+            //получение aid 
+            const aid = thisButton.closest('.file').attr("data-aid");
+
+            //получение path  
+            const path = thisButton.closest('.file').find("img").attr('src');
+            
+            //вставка в selected_img
+            thisButton.closest('.filemanager').children('#selected_img').html("\
+                <div class='preview image'>\
+                    <img src='"+ path +"'>\
+                    <input type='hidden' name='aid' value='"+aid+"'>\
+                </div>\
+            ");
+
+            //закрытие popup
+            const thisPopup = thisButton.closest(".popup");
+            thisPopup.eraseData("status", "open");
+        })
+
+
+
+    /*
+    //сохранение данных окна редактирования
+    jQuery(document)
+        .on('click', '#group__edit_save', function(eventObject) {
+            
+        jQuery.ajax({
+            url: '/ajax/save',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                'aid' : jQuery("#group__edit").attr("data-aid"),
+                'name' : jQuery("#group__edit_name").val(),
+                'alt' : jQuery("#group__edit_alt").val()
+            },
+            dataType: 'json',
+            success: function(result) {
+                //console.log(result);
+            },
+            error: function(report) {
+                console.log(report.status, report.statusText);
+                console.log(report.responseJSON);
+            }
+        });                
+    })
+    */
+
+    /*
+    //удаление файла 
+    jQuery(document)
+        .on('click', '#group__edit_delete', function(eventObject) {
+            //console.log(jQuery("#group__edit").attr("data-aid"));
+
+            jQuery.ajax({
+                url: '/ajax/delete',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    'aid' : jQuery("#group__edit").attr("data-aid")
+                },
+                dataType: 'json',
+                success: function(result) {
+                    //jQuery(".popup").eraseData("status", "open");
+                    if (result['status'] == 'ok') {
+                        //удаление .file
+                        jQuery(".file[data-aid='"+ jQuery("#group__edit").attr("data-aid") +"']").remove();
+
+                        //закрытие popup-окна
+                        jQuery(".popup").eraseData("status", "open");
+                        jQuery(".popup").eraseData("aid", jQuery(".popup").attr('data-aid'));
+                    }
+                },
+                error: function(report) {
+                    console.log(report.status, report.statusText);
+                    console.log(report.responseJSON);
+                }
+            }); 
+        })
+        */
 
 });
 

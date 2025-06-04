@@ -18,6 +18,7 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/roles/edit/{aid}', 'editRole')->name('admin.roles.edit');
     
     Route::get('/file_manager', 'files')->name('admin.file.manager');
+    Route::get('/file_manager_for_select', 'files_select')->name('admin.file.manager_select');
 
     Route::get('/menus', 'menus')->name('admin.menus');
     Route::get('/menus/view/{aid}', 'viewMenu')->name('admin.menus.view');

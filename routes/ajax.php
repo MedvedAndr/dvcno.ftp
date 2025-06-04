@@ -11,6 +11,9 @@ Route::controller(FormValidationController::class)->group(function() {
     Route::post('/slugify', 'stringSlugify')->name('ajax.slugify');
     Route::post('/upload_files', 'uploadFiles')->name('ajax.upload_files');
     Route::post('/settings/get', 'getSettings')->name('ajax.settings.get');
+    Route::post('/getInfo', 'getInfo');
+    Route::post('/save', 'save');
+    Route::post('/delete', 'delete');
 });
 
 Route::controller(ComponentController::class)->group(function() {
