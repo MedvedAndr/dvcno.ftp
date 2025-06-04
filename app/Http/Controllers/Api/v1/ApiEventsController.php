@@ -8,8 +8,10 @@ use \Illuminate\Http\JsonResponse;
 
 use App\Services\Dictionary;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Languages;
 use App\Models\Menus;
+use App\Models\Events;
 
 class ApiEventsController extends Controller {
     public function getLanguages(Request $request): JsonResponse {
@@ -248,7 +250,383 @@ class ApiEventsController extends Controller {
         }
     }
 
+    public function getEvents(Request $request) {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
 
+            $dictionary = [
+                'week'          => [
+                    'Monday'    => ['понедельник', 'понедельника', 'понедельнику', 'понедельник', 'понедельником', 'понедельнике'],
+                    'Tuesday'   => ['вторник', 'вторника', 'вторнику', 'вторник', 'вторником', 'вторнике'],
+                    'Wednesday' => ['среда', 'среды', 'среде', 'среду', 'средой', 'среде'],
+                    'Thursday'  => ['четверг', 'четверга', 'четвергу', 'четверг', 'четвергом', 'четверге'],
+                    'Friday'    => ['пятница', 'пятницы', 'пятнице', 'пятницу', 'пятницей', 'пятнице'],
+                    'Saturday'  => ['суббота', 'субботы', 'субботе', 'субботу', 'субботой', 'субботе'],
+                    'Sunday'    => ['воскресенье', 'воскресенья', 'воскресенью', 'воскресенье', 'воскресеньем', 'воскресенье'],
+                ],
+                'week_short'    => [
+                    'Mon'   => ['пн', 'пнд'],
+                    'Tue'   => ['вт', 'втр'],
+                    'Wed'   => ['ср', 'срд'],
+                    'Thu'   => ['чт', 'чвт'],
+                    'Fri'   => ['пт', 'птн'],
+                    'Sat'   => ['сб', 'сбт'],
+                    'Sun'   => ['вс', 'вск'],
+                ],
+                'month'         => [
+                    'January'   => ['январь', 'января', 'январю', 'январь', 'январем', 'январе'],
+                    'February'  => ['февраль', 'февраля', 'февралю', 'февраль', 'февралем', 'феврале'],
+                    'March'     => ['март', 'марта', 'марту', 'март', 'мартом', 'марте'],
+                    'April'     => ['апрель', 'апреля', 'апрелю', 'апрель', 'апрелем', 'апреле'],
+                    'May'       => ['май', 'мая', 'маю', 'май', 'маем', 'мае'],
+                    'June'      => ['июнь', 'июня', 'июню', 'июнь', 'июнем', 'июне'],
+                    'July'      => ['июль', 'июля', 'июлю', 'июль', 'июлем', 'июле'],
+                    'August'    => ['август', 'августа', 'августу', 'август', 'августом', 'августе'],
+                    'September' => ['сентябрь', 'сентября', 'сентябрю', 'сентябрь', 'сентябрём', 'сентябре'],
+                    'October'   => ['октябрь', 'октября', 'октябрю', 'октябрь', 'октябрём', 'октябре'],
+                    'November'  => ['ноябрь', 'ноября', 'ноябрю', 'ноябрь', 'ноябрем', 'ноябре'],
+                    'December'  => ['декабрь', 'декабря', 'декабрю', 'декабрь', 'декабрем', 'декабре'],
+                ],
+                'month_short'   => [
+                    'Jan'   => ['янв'],
+                    'Feb'   => ['фев'],
+                    'Mar'   => ['мар'],
+                    'Apr'   => ['апр'],
+                    'May'   => ['май'],
+                    'Jun'   => ['июн'],
+                    'Jul'   => ['июл'],
+                    'Aug'   => ['авг'],
+                    'Sep'   => ['сен'],
+                    'Oct'   => ['окт'],
+                    'Nov'   => ['ноя'],
+                    'Dec'   => ['дек'],
+                ],
+            ];
+
+            $data = Events::query()
+                ->select(
+                    'e.id as event_id',
+                            'e.aid as event_aid',
+                           'e.slug as event_slug',
+                          'e.title as event_title',
+                    'e.description as event_description',
+                        'e.content as event_content',
+                      'e.thumbnail as event_thumbnail',
+                        'e.address as event_address',
+                    'e.link_to_map as event_link_to_map',
+                        'e.enabled as event_enabled',
+                     'e.date_event as event_date_event',
+                      'e.date_from as event_date_from',
+                        'e.date_to as event_date_to',
+                     'e.created_at as event_created_at',
+                     'e.updated_at as event_updated_at',
+                           
+                           'f.path as file_path',
+
+                    'l.locale_code as language_locale',
+                )
+                ->from('events as e')
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('e.language_id', '=', 'l.aid');
+                })
+                ->leftJoin('files as f', function($join) {
+                    $join
+                        ->on('e.thumbnail', '=', 'f.aid');
+                })
+                ->where('e.enabled', '=', 1);
+
+            $lang = $request->get('lang');
+
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $page_current = $request->get('page_current');
+            $items_per_page = $request->get('items_per_page');
+
+            if($page_current || $items_per_page) {
+                $response['meta']['pagination']['page_current'] = $page_current ? (int) $page_current : 1;
+                $response['meta']['pagination']['items_per_page'] = $items_per_page ? (int) $items_per_page : 25;
+
+                $subQuery = Events::query()
+                    ->select('e.aid')
+                    ->from('events as e')
+                    ->join('languages as l', 'e.language_id', '=', 'l.aid')
+                    ->when($lang, fn($query) => $query->where('l.locale_code', $lang))
+                    ->groupBy('e.aid')
+                    ->orderBy(DB::raw('MAX(e.date_event)'), 'desc');
+
+                $response['meta']['pagination']['total_items'] = (clone $subQuery)->pluck('aid')->count();
+
+                $subQuery
+                    ->offset(($response['meta']['pagination']['page_current'] - 1) * $response['meta']['pagination']['items_per_page'])
+                    ->limit($response['meta']['pagination']['items_per_page']);
+                
+                $data
+                    ->joinSub($subQuery, 'le', function($join) {
+                        $join->on('e.aid', '=', 'le.aid');
+                    });
+                
+                $response['meta']['pagination']['pages_count'] = ceil($response['meta']['pagination']['total_items'] / $response['meta']['pagination']['items_per_page']);
+            }
+
+            $orderby = $request->get('orderby');
+            $order = $request->get('order');
+            
+            if($orderby || $order) {
+                $fields = array_map('trim', explode(',', $orderby ?? 'event_date_event'));
+                $orders = array_map('trim', explode(',', $order ?? ''));
+    
+                foreach ($fields as $index => $field) {
+                    $direction = strtolower($orders[$index] ?? '');
+                    $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
+    
+                    $data
+                        ->orderBy($field, $direction);
+    
+                    $response['meta']['order'][] = [
+                        'orderby' => $field,
+                        'order'   => $direction,
+                    ];
+                }
+            }
+            else {
+                $data
+                    ->orderBy('event_date_event', 'desc');
+            }
+            
+            $data = $data->get();
+
+            $events = [];
+
+            foreach($data as $item) {
+                if(!isset($events[$item['event_aid']])) {
+                    $datetime = strtotime($item['event_date_event']);
+                    $events[$item['event_aid']] = [
+                        'id'            => [],
+                        'aid'           => $item['event_aid'],
+                        'slug'          => $item['event_slug'],
+                        'title'         => [],
+                        'description'   => [],
+                        'content'       => [],
+                        'thumbnail'     => $item['file_path'],
+                        'address'       => [],
+                        'link_to_map'   => $item['event_link_to_map'],
+                        'enabled'       => $item['event_enabled'],
+                        'date_event'    => [
+                            'day_d'     => date('d', $datetime),
+                            'day_D'     => $dictionary['week_short'][date('D', $datetime)],
+                            'month_F'   => $dictionary['month'][date('F', $datetime)],
+                            'year_Y'    => date('Y', $datetime),
+                            'time_H'    => date('H', $datetime),
+                            'time_i'    => date('i', $datetime),
+                        ],
+                        'date_from'     => $item['event_date_from'],
+                        'date_to'       => $item['event_date_to'],
+                        'created_at'    => $item['event_created_at'],
+                        'updated_at'    => $item['event_updated_at'],
+                    ];
+                }
+
+                $events[$item['event_aid']]['id'][$item['event_id']]                    = true;
+                $events[$item['event_aid']]['title'][$item['language_locale']]          = $item['event_title'];
+                $events[$item['event_aid']]['description'][$item['language_locale']]    = $item['event_description'];
+                $events[$item['event_aid']]['content'][$item['language_locale']]        = $item['event_content'];
+                $events[$item['event_aid']]['address'][$item['language_locale']]        = $item['event_address'];
+            }
+
+            $events = array_map(function($value) use ($lang) {
+                $value['id'] = array_keys($value['id']);
+                if($lang) {
+                    $value['id']            = $value['id'][0];
+                    $value['title']         = $value['title'][$lang];
+                    $value['description']   = $value['description'][$lang];
+                    $value['content']       = $value['content'][$lang];
+                    $value['address']       = $value['address'][$lang];
+                }
+                return $value;
+            }, $events);
+
+            $response['data'] = array_values($events);
+
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
+
+    public function getEventsByParameter(Request $request, $parameter) {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
+
+            $dictionary = [
+                'week'          => [
+                    'Monday'    => ['понедельник', 'понедельника', 'понедельнику', 'понедельник', 'понедельником', 'понедельнике'],
+                    'Tuesday'   => ['вторник', 'вторника', 'вторнику', 'вторник', 'вторником', 'вторнике'],
+                    'Wednesday' => ['среда', 'среды', 'среде', 'среду', 'средой', 'среде'],
+                    'Thursday'  => ['четверг', 'четверга', 'четвергу', 'четверг', 'четвергом', 'четверге'],
+                    'Friday'    => ['пятница', 'пятницы', 'пятнице', 'пятницу', 'пятницей', 'пятнице'],
+                    'Saturday'  => ['суббота', 'субботы', 'субботе', 'субботу', 'субботой', 'субботе'],
+                    'Sunday'    => ['воскресенье', 'воскресенья', 'воскресенью', 'воскресенье', 'воскресеньем', 'воскресенье'],
+                ],
+                'week_short'    => [
+                    'Mon'   => ['пн', 'пнд'],
+                    'Tue'   => ['вт', 'втр'],
+                    'Wed'   => ['ср', 'срд'],
+                    'Thu'   => ['чт', 'чвт'],
+                    'Fri'   => ['пт', 'птн'],
+                    'Sat'   => ['сб', 'сбт'],
+                    'Sun'   => ['вс', 'вск'],
+                ],
+                'month'         => [
+                    'January'   => ['январь', 'января', 'январю', 'январь', 'январем', 'январе'],
+                    'February'  => ['февраль', 'февраля', 'февралю', 'февраль', 'февралем', 'феврале'],
+                    'March'     => ['март', 'марта', 'марту', 'март', 'мартом', 'марте'],
+                    'April'     => ['апрель', 'апреля', 'апрелю', 'апрель', 'апрелем', 'апреле'],
+                    'May'       => ['май', 'мая', 'маю', 'май', 'маем', 'мае'],
+                    'June'      => ['июнь', 'июня', 'июню', 'июнь', 'июнем', 'июне'],
+                    'July'      => ['июль', 'июля', 'июлю', 'июль', 'июлем', 'июле'],
+                    'August'    => ['август', 'августа', 'августу', 'август', 'августом', 'августе'],
+                    'September' => ['сентябрь', 'сентября', 'сентябрю', 'сентябрь', 'сентябрём', 'сентябре'],
+                    'October'   => ['октябрь', 'октября', 'октябрю', 'октябрь', 'октябрём', 'октябре'],
+                    'November'  => ['ноябрь', 'ноября', 'ноябрю', 'ноябрь', 'ноябрем', 'ноябре'],
+                    'December'  => ['декабрь', 'декабря', 'декабрю', 'декабрь', 'декабрем', 'декабре'],
+                ],
+                'month_short'   => [
+                    'Jan'   => ['янв'],
+                    'Feb'   => ['фев'],
+                    'Mar'   => ['мар'],
+                    'Apr'   => ['апр'],
+                    'May'   => ['май'],
+                    'Jun'   => ['июн'],
+                    'Jul'   => ['июл'],
+                    'Aug'   => ['авг'],
+                    'Sep'   => ['сен'],
+                    'Oct'   => ['окт'],
+                    'Nov'   => ['ноя'],
+                    'Dec'   => ['дек'],
+                ],
+            ];
+
+            $data = Events::query()
+                ->select(
+                    'e.id as event_id',
+                            'e.aid as event_aid',
+                           'e.slug as event_slug',
+                          'e.title as event_title',
+                    'e.description as event_description',
+                        'e.content as event_content',
+                      'e.thumbnail as event_thumbnail',
+                        'e.address as event_address',
+                    'e.link_to_map as event_link_to_map',
+                        'e.enabled as event_enabled',
+                     'e.date_event as event_date_event',
+                      'e.date_from as event_date_from',
+                        'e.date_to as event_date_to',
+                     'e.created_at as event_created_at',
+                     'e.updated_at as event_updated_at',
+                           
+                           'f.path as file_path',
+
+                    'l.locale_code as language_locale',
+                )
+                ->from('events as e')
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('e.language_id', '=', 'l.aid');
+                })
+                ->join('files as f', function($join) {
+                    $join
+                        ->on('e.thumbnail', '=', 'f.aid');
+                })
+                ->whereAny([
+                    'e.id',
+                    'e.aid',
+                    'e.slug',
+                ], '=', $parameter);
+
+            $lang = $request->get('lang');
+
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $data = $data->get();
+
+            $event = [];
+
+            foreach($data as $item) {
+                if(empty($event)) {
+                    $datetime = strtotime($item['event_date_event']);
+                    $event['id']            = [];
+                    $event['aid']           = $item['event_aid'];
+                    $event['slug']          = $item['event_slug'];
+                    $event['title']         = [];
+                    $event['description']   = [];
+                    $event['content']       = [];
+                    $event['thumbnail']     = $item['file_path'];
+                    $event['address']       = [];
+                    $event['link_to_map']   = $item['event_link_to_map'];
+                    $event['enabled']       = $item['event_enabled'];
+                    $event['date_event']    = [
+                        'day_d'     => date('d', $datetime),
+                        'day_D'     => $dictionary['week_short'][date('D', $datetime)],
+                        'month_F'   => $dictionary['month'][date('F', $datetime)],
+                        'year_Y'    => date('Y', $datetime),
+                        'time_H'    => date('H', $datetime),
+                        'time_i'    => date('i', $datetime)
+                    ];
+                    $event['date_from']     = $item['event_date_from'];
+                    $event['date_to']       = $item['event_date_to'];
+                    $event['created_at']    = $item['event_created_at'];
+                    $event['updated_at']    = $item['event_updated_at'];
+                }
+
+                $event['id'][$item['event_id']]                    = true;
+                $event['title'][$item['language_locale']]          = $item['event_title'];
+                $event['description'][$item['language_locale']]    = $item['event_description'];
+                $event['content'][$item['language_locale']]        = $item['event_content'];
+                $event['address'][$item['language_locale']]        = $item['event_address'];
+            }
+
+            $event['id'] = array_keys($event['id']);
+
+            if($lang) {
+                $event['id']            = $event['id'][0];
+                $event['title']         = $event['title'][$lang];
+                $event['description']   = $event['description'][$lang];
+                $event['content']       = $event['content'][$lang];
+                $event['address']       = $event['address'][$lang];
+            }
+            
+            $response['data'] = $event;
+
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
 
 
 

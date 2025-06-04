@@ -13,5 +13,8 @@ Route::prefix('v1')->group(function() {
         // Route::get('/dictionaries/{parameter}/{key}', 'getTerm');
 
         Route::get('/menus', 'getMenus');
+
+        Route::get('/events', 'getEvents');
+        Route::get('/events/{parameter}', 'getEventsByParameter');
     });
 });
