@@ -345,12 +345,72 @@ class AdminController extends Controller
         $view_data['title'] = 'Мероприятия';
         $view_data['breadcrumbs'] = [
             [
+                'title' => 'Мероприятия',
+                'href' => 'admin.events'
+            ],
+            [
                 'title' => 'Создание мероприятия',
             ],
         ];
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.events.create', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function news() {
+        // AssetsManager::useBundle('tabs');
+        // AssetsManager::useBundle('form');
+        // AssetsManager::useBundle('ckeditor');
+        // AssetsManager::setStyle([
+        //     'href'      => asset('/css/models/fields.css'),
+        //     'priority'  => 500,
+        // ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['title'] = 'Новости';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Новости',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.news.main', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function createNews() {
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+        AssetsManager::setStyle([
+            'href'      => asset('/css/models/fields.css'),
+            'priority'  => 500,
+        ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['title'] = 'Новости';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Новости',
+                'href' => 'admin.news'
+            ],
+            [
+                'title' => 'Создание новости',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.news.create', $view_data);
         $template[] = view('admin.footer', $view_data);
 
         return implode('', $template);

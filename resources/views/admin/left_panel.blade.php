@@ -66,6 +66,22 @@ $menus = [
                     ],
                 ],
             ],
+            [
+                'title'     => 'Новости',
+                'icon'      => 'cast',
+                'submenu'   => [
+                    [
+                        'title'     => 'Все новости',
+                        'route'     => 'admin.news',
+                        'icon'      => 'list',
+                    ],
+                    [
+                        'title'     => 'Создать новость',
+                        'route'     => 'admin.news.create',
+                        'icon'      => 'plus',
+                    ],
+                ],
+            ],
         ],
         'visible'   => true,
     ],
