@@ -17,6 +17,7 @@ use App\Models\Files;
 use App\Models\Menus;
 use App\Models\MenuItems;
 use App\Models\Events;
+use App\Models\News;
 use App\Models\Settings;
 use App\Models\Dictionaries;
 use App\Models\DictionaryItems;
@@ -484,7 +485,11 @@ class FormValidationController extends Controller
                 ];
             }
             // Если мероприятие обязательно для заполнения и все поля пустые делаем запрос на изменение
-            elseif($data_event['required'] === 'true' && (!$data_event['title'] && !$data_event['description'] && !$data_event['slug'])) {
+            elseif($data_event['required'] === 'true' && (
+                !$data_event['title'] &&
+                !$data_event['description'] &&
+                !$data_event['slug']
+            )) {
                 $data['event'][$language_aid]['required'] = 'false';
                 $return['meta']['__set_data']['event['. $language_aid .'][required]'] = 'false';
             }
@@ -498,6 +503,108 @@ class FormValidationController extends Controller
 
             if(!empty($data_events)) {
                 Events::insert($data_events);
+            }
+        }
+        else {
+            $return['error'] = 'Incorrect data';
+            $return['meta']['__system_messages']['error']['empty_data'] = 'Нужно заполнить хотя бы 1 язык.';
+        }
+
+        return $return;
+    }
+
+    private function create_news(Request $request, array $return) {
+        // Получаем необходимые данные для обработки
+        $data = $request->only([
+            'news',
+        ]);
+
+        // Флаг для отслеживания заполненности языков
+        $news_empty_flag = false;
+
+        // Переменные для парсинга
+        $data_news          = [];
+
+        // Генерируем 'aid' мероприятия
+        $news_aid = (new GenerateID())->table('news')->get();
+
+        // Текущее дата/время
+        $current_date = date('Y-m-d H:i:s');
+
+        // Парсинг мераприятия
+        foreach($data['news'] as $language_aid => $data_news_once) {
+            // Если мероприятие обязательно для заполнения и поля не пустые начинаем парсинг
+            if($data_news_once['required'] === 'true' && (
+                $data_news_once['content'] || 
+                $data_news_once['date_from'] || 
+                $data_news_once['date_to'] || 
+                $data_news_once['description'] || 
+                $data_news_once['slug'] || 
+                $data_news_once['title']
+            )) {
+                $news_empty_flag = true;
+
+                // Если поле 'title' пустое, то формируем ошибку
+                if(!$data_news_once['title']) {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['news['. $language_aid .'][title]'] = 'Поле обязательно для заполнения';
+                }
+
+                // Если поле 'slug' пустое, то формируем ошибку
+                if(!$data_news_once['slug']) {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Поле обязательно для заполнения';
+                }
+
+                // Проверка ссылки на корректность
+                if(preg_match('/^[a-zA-Z0-9_-]+$/', $data_news_once['slug'])) {
+                    // Проверяем наличие ссылки в БД
+                    if(Events::where('slug', '=', $data_news_once['slug'])->exists()) {
+                        $return['error'] = 'Incorrect data';
+                        $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Мероприятие с такой ссылкой уже есть в системе';
+                    }
+                }
+                else {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Не корректный формат записи';
+                }
+
+                $data_events[] = [
+                    'aid'           => $news_aid,
+                    'language_id'   => $language_aid,
+                    'slug'          => $data_news_once['slug'],
+                    'title'         => $data_news_once['title'],
+                    'description'   => $data_news_once['description'] ?? '',
+                    'content'       => $data_news_once['content'] ?? '',
+                    'thumbnail'     => '',
+                    'enabled'       => (int) filter_var($data_news_once['enabled'], FILTER_VALIDATE_BOOLEAN),
+                    'date_from'     => $data_news_once['date_from'],
+                    'date_to'       => $data_news_once['date_to'],
+                    'created_at'    => $current_date,
+                    'updated_at'    => $current_date,
+                ];
+            }
+            // Если мероприятие обязательно для заполнения и все поля пустые делаем запрос на изменение
+            elseif($data_news_once['required'] === 'true' && (
+                !$data_news_once['content'] &&
+                !$data_news_once['date_from'] &&
+                !$data_news_once['date_to'] &&
+                !$data_news_once['description'] &&
+                !$data_news_once['slug'] &&
+                !$data_news_once['title']
+            )) {
+                $data['news'][$language_aid]['required'] = 'false';
+                $return['meta']['__set_data']['news['. $language_aid .'][required]'] = 'false';
+            }
+        }
+
+        if($news_empty_flag) {
+            $return['status']   = 'success';
+            $return['data']     = $data;
+            unset($return['error']);
+
+            if(!empty($data_events)) {
+                News::insert($data_events);
             }
         }
         else {

@@ -50,7 +50,7 @@
                                             />
                                             <x-form.edited_string
                                                 id="slug_{{ $language->locale_code }}"
-                                                name="mews[{{ $language->aid }}][slug]"
+                                                name="news[{{ $language->aid }}][slug]"
                                                 before="Постоянная ссылка: /news/"
                                                 after="/"
                                                 :data="[
