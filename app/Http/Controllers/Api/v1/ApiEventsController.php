@@ -211,19 +211,25 @@ class ApiEventsController extends Controller {
                 }
             }
 
-            if($lang) {
-                $menus = array_map(function($value) use ($lang) {
+            $menus = array_map(function($value) use ($lang) {
+                $value['id'] = array_keys($value['id']);
+                if($lang) {
                     $value['id'] = $value['id'][0];
                     $value['title'] = $value['title'][$lang];
                     $value['description'] = $value['description'][$lang];
-                    return $value;
-                }, $menus);
-                $menu_items = array_map(function($value) use ($lang) {
+                }
+                return $value;
+            }, $menus);
+            $menu_items = array_map(function($value) use ($lang) {
+                $value['id'] = array_keys($value['id']);
+                if($lang) {
+                    $value['id'] = $value['id'][0];
                     $value['title'] = $value['title'][$lang];
-                    return $value;
-                }, $menu_items);
-            }
+                }
 
+                return $value;
+            }, $menu_items);
+            
             $max_depth = $request->get('depth');
 
             if($max_depth) {
@@ -250,7 +256,177 @@ class ApiEventsController extends Controller {
         }
     }
 
-    public function getEvents(Request $request) {
+    public function getMenusByParameter(Request $request, $parameter): JsonResponse {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
+
+            $data = Menus::query()
+                ->select(
+                      'm.id as menu_id',
+                              'm.aid as menu_aid',
+                            'm.title as menu_title',
+                      'm.description as menu_description',
+                            'm.alias as menu_alias',
+                          'm.enabled as menu_enabled',
+                       'm.created_at as menu_created_at',
+                       'm.updated_at as menu_updated_at',
+                    
+                              'mi.id as menu_item_id',
+                             'mi.aid as menu_item_aid',
+                         'mi.menu_id as menu_item_menu_id',
+                       'mi.parent_id as menu_item_parent_id',
+                       'mi.item_type as menu_item_item_type',
+                         'mi.item_id as menu_item_item_id',
+                           'mi.title as menu_item_title',
+                             'mi.url as menu_item_url',
+                            'mi.icon as menu_item_icon',
+                    'mi.access_roles as menu_item_access_roles',
+                           'mi.order as menu_item_order',
+                         'mi.enabled as menu_item_enabled',
+                      'mi.created_at as menu_item_created_at',
+                      'mi.updated_at as menu_item_updated_at',
+
+                      'l.locale_code as language_locale',
+                )
+                ->from('menus as m')
+                ->leftJoin('menu_items as mi', function($join) {
+                    $join
+                        ->on('m.aid', '=', 'mi.menu_id')
+                        ->on('m.language_id', '=', 'mi.language_id');
+                })
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('m.language_id', '=', 'l.aid');
+                })
+                ->whereAny([
+                    'm.id',
+                    'm.aid',
+                    'm.alias'
+                ], '=', $parameter);
+            
+            $lang = $request->get('lang');
+            
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $orderby = $request->get('orderby');
+            $order = $request->get('order');
+            
+            if($orderby || $order) {
+                $fields = array_map('trim', explode(',', $orderby ?? 'menu_item_order'));
+                $orders = array_map('trim', explode(',', $order ?? ''));
+    
+                foreach ($fields as $index => $field) {
+                    $direction = strtolower($orders[$index] ?? '');
+                    $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
+    
+                    $data
+                        ->orderBy($field, $direction);
+    
+                    $response['meta']['order'][] = [
+                        'orderby' => $field,
+                        'order'   => $direction,
+                    ];
+                }
+            }
+            else {
+                $data
+                    ->orderBy('menu_item_order', 'asc');
+            }
+
+            $data = $data->get();
+
+            $menu      = [];
+            $menu_items = [];
+
+            foreach($data as $item) {
+                if(empty($menu)) {
+                    $menu['id']             = [];
+                    $menu['aid']            = $item['menu_aid'];
+                    $menu['title']          = [];
+                    $menu['description']    = [];
+                    $menu['alias']          = $item['menu_alias'];
+                    $menu['enabled']        = $item['menu_enabled'];
+                    $menu['created_at']     = $item['menu_created_at'];
+                    $menu['updated_at']     = $item['menu_updated_at'];
+                }
+
+                $menu['id'][$item['menu_id']]                   = true;
+                $menu['title'][$item['language_locale']]        = $item['menu_title'];
+                $menu['description'][$item['language_locale']]  = $item['menu_description'];
+
+                if($item['menu_item_aid']) {
+                    if(!isset($menu_items[$item['menu_item_aid']])) {
+                        $menu_items[$item['menu_item_aid']] = [
+                            'id'            => [],
+                            'aid'           => $item['menu_item_aid'],
+                            'menu_id'       => $item['menu_item_menu_id'],
+                            'parent_id'     => $item['menu_item_parent_id'],
+                            'title'         => [],
+                            'link'          => $item['menu_item_url'],
+                            'icon'          => $item['menu_item_icon'],
+                            'access_roles'  => $item['menu_item_access_roles'],
+                            'order'         => $item['menu_item_order'],
+                            'enabled'       => $item['menu_item_enabled'],
+                            'created_at'    => $item['menu_item_created_at'],
+                            'updated_at'    => $item['menu_item_updated_at'],
+                        ];
+                    }
+                    
+                    $menu_items[$item['menu_item_aid']]['id'][$item['menu_item_id']] = true;
+                    $menu_items[$item['menu_item_aid']]['title'][$item['language_locale']] = $item['menu_item_title'];
+                }
+            }
+
+            $menu['id'] = array_keys($menu['id']);
+            if($lang) {
+                $menu['id'] = $menu['id'][0];
+                $menu['title'] = $menu['title'][$lang];
+                $menu['description'] = $menu['description'][$lang];
+            }
+
+            $menu_items = array_map(function($value) use ($lang) {
+                $value['id'] = array_keys($value['id']);
+                if($lang) {
+                    $value['id'] = $value['id'][0];
+                    $value['title'] = $value['title'][$lang];
+                }
+
+                return $value;
+            }, $menu_items);
+
+            $max_depth = $request->get('depth');
+
+            if($max_depth) {
+                $response['meta']['filter']['depth'] = $max_depth;
+            }
+
+            $items = $this->prepareChildren($menu_items, $menu['aid'], $max_depth);
+            
+            if(!empty($items)) {
+                $menu['items'] = $items;
+            }
+
+            $response['data'] = $menu;
+
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
+
+    public function getEvents(Request $request): JsonResponse {
         try {
             $response = [
                 'status' => 'success',
