@@ -13,6 +13,7 @@ use App\Models\Languages;
 use App\Models\Menus;
 use App\Models\Events;
 use App\Models\News;
+use App\Models\Files;
 
 class ApiEventsController extends Controller {
     public function getLanguages(Request $request): JsonResponse {
@@ -818,6 +819,7 @@ class ApiEventsController extends Controller {
                             'n.aid as news_aid',
                            'n.slug as news_slug',
                           'n.title as news_title',
+                       'n.subtitle as news_subtitle',
                     'n.description as news_description',
                         'n.content as news_content',
                       'n.thumbnail as news_thumbnail',
@@ -827,18 +829,12 @@ class ApiEventsController extends Controller {
                      'n.created_at as news_created_at',
                      'n.updated_at as news_updated_at',
 
-                           'f.path as file_path',
-
                     'l.locale_code as language_locale',
                 )
                 ->from('news as n')
                 ->join('languages as l', function($join) {
                     $join
                         ->on('n.language_id', '=', 'l.aid');
-                })
-                ->leftJoin('files as f', function($join) {
-                    $join
-                        ->on('n.thumbnail', '=', 'f.aid');
                 });
             
             $lang = $request->get('lang');
@@ -909,14 +905,22 @@ class ApiEventsController extends Controller {
 
             foreach($data as $item) {
                 if(!isset($news[$item['news_aid']])) {
+                    $images_aid = json_decode($item['news_thumbnail'], true);
+                    $images = Files::query()
+                        ->whereIn('aid', $images_aid)
+                        ->pluck('path', 'aid');
+                    
                     $news[$item['news_aid']] = [
                         'id'            => [],
                         'aid'           => $item['news_aid'],
                         'slug'          => $item['news_slug'],
                         'title'         => [],
+                        'subtitle'      => [],
                         'description'   => [],
                         'content'       => [],
-                        'thumbnail'     => $item['file_path'],
+                        'images'        => array_map(function($aid) use ($images) {
+                            return ['slide' => $images[$aid] ?? null];
+                        }, $images_aid),
                         'enabled'       => $item['news_enabled'],
                         'date_from'     => $item['news_date_from'],
                         'date_to'       => $item['news_date_to'],
@@ -924,9 +928,10 @@ class ApiEventsController extends Controller {
                         'updated_at'    => $item['news_updated_at'],
                     ];
                 }
-
+                
                 $news[$item['news_aid']]['id'][$item['news_id']]                    = true;
                 $news[$item['news_aid']]['title'][$item['language_locale']]         = $item['news_title'];
+                $news[$item['news_aid']]['subtitle'][$item['language_locale']]      = $item['news_subtitle'];
                 $news[$item['news_aid']]['description'][$item['language_locale']]   = $item['news_description'];
                 $news[$item['news_aid']]['content'][$item['language_locale']]       = $item['news_content'];
             }
@@ -936,6 +941,7 @@ class ApiEventsController extends Controller {
                 if($lang) {
                     $value['id']            = $value['id'][0];
                     $value['title']         = $value['title'][$lang];
+                    $value['subtitle']      = $value['subtitle'][$lang];
                     $value['description']   = $value['description'][$lang];
                     $value['content']       = $value['content'][$lang];
                 }
@@ -968,6 +974,7 @@ class ApiEventsController extends Controller {
                             'n.aid as news_aid',
                            'n.slug as news_slug',
                           'n.title as news_title',
+                       'n.subtitle as news_subtitle',
                     'n.description as news_description',
                         'n.content as news_content',
                       'n.thumbnail as news_thumbnail',
@@ -977,18 +984,12 @@ class ApiEventsController extends Controller {
                      'n.created_at as news_created_at',
                      'n.updated_at as news_updated_at',
 
-                           'f.path as file_path',
-
                     'l.locale_code as language_locale',
                 )
                 ->from('news as n')
                 ->join('languages as l', function($join) {
                     $join
                         ->on('n.language_id', '=', 'l.aid');
-                })
-                ->leftJoin('files as f', function($join) {
-                    $join
-                        ->on('n.thumbnail', '=', 'f.aid');
                 })
                 ->whereAny([
                     'n.id',
@@ -1011,13 +1012,21 @@ class ApiEventsController extends Controller {
 
             foreach($data as $item) {
                 if(empty($news_once)) {
+                    $images_aid = json_decode($item['news_thumbnail'], true);
+                    $images = Files::query()
+                        ->whereIn('aid', $images_aid)
+                        ->pluck('path', 'aid');
+                    
                     $news_once['id']            = [];
                     $news_once['aid']           = $item['news_aid'];
                     $news_once['slug']          = $item['news_slug'];
                     $news_once['title']         = [];
+                    $news_once['subtitle']      = [];
                     $news_once['description']   = [];
                     $news_once['content']       = [];
-                    $news_once['thumbnail']     = $item['file_path'];
+                    $news_once['images']        = array_map(function($aid) use ($images) {
+                        return ['slide' => $images[$aid] ?? null];
+                    }, $images_aid);
                     $news_once['enabled']       = $item['news_enabled'];
                     $news_once['date_from']     = $item['news_date_from'];
                     $news_once['date_to']       = $item['news_date_to'];
@@ -1027,6 +1036,7 @@ class ApiEventsController extends Controller {
                 
                 $news_once['id'][$item['news_id']]                  = true;
                 $news_once['title'][$item['language_locale']]       = $item['news_title'];
+                $news_once['subtitle'][$item['language_locale']]    = $item['news_subtitle'];
                 $news_once['description'][$item['language_locale']] = $item['news_description'];
                 $news_once['content'][$item['language_locale']]     = $item['news_content'];
             }
@@ -1035,6 +1045,7 @@ class ApiEventsController extends Controller {
             if($lang) {
                 $news_once['id']            = $news_once['id'][0];
                 $news_once['title']         = $news_once['title'][$lang];
+                $news_once['subtitle']      = $news_once['subtitle'][$lang];
                 $news_once['description']   = $news_once['description'][$lang];
                 $news_once['content']       = $news_once['content'][$lang];
             }
