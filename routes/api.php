@@ -17,5 +17,8 @@ Route::prefix('v1')->group(function() {
 
         Route::get('/events', 'getEvents');
         Route::get('/events/{parameter}', 'getEventsByParameter');
+
+        Route::get('/news', 'getNews');
+        Route::get('/news/{parameter}', 'getNewsByParameter');
     });
 });

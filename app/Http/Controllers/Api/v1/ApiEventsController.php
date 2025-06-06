@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Languages;
 use App\Models\Menus;
 use App\Models\Events;
+use App\Models\News;
 
 class ApiEventsController extends Controller {
     public function getLanguages(Request $request): JsonResponse {
@@ -512,8 +513,8 @@ class ApiEventsController extends Controller {
                 ->leftJoin('files as f', function($join) {
                     $join
                         ->on('e.thumbnail', '=', 'f.aid');
-                })
-                ->where('e.enabled', '=', 1);
+                });
+                // ->where('e.enabled', '=', 1);
 
             $lang = $request->get('lang');
 
@@ -794,6 +795,252 @@ class ApiEventsController extends Controller {
             
             $response['data'] = $event;
 
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
+
+    public function getNews(Request $request): JsonResponse {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
+
+            $data = News::query()
+                ->select(
+                    'n.id as news_id',
+                            'n.aid as news_aid',
+                           'n.slug as news_slug',
+                          'n.title as news_title',
+                    'n.description as news_description',
+                        'n.content as news_content',
+                      'n.thumbnail as news_thumbnail',
+                        'n.enabled as news_enabled',
+                      'n.date_from as news_date_from',
+                        'n.date_to as news_date_to',
+                     'n.created_at as news_created_at',
+                     'n.updated_at as news_updated_at',
+
+                           'f.path as file_path',
+
+                    'l.locale_code as language_locale',
+                )
+                ->from('news as n')
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('n.language_id', '=', 'l.aid');
+                })
+                ->leftJoin('files as f', function($join) {
+                    $join
+                        ->on('n.thumbnail', '=', 'f.aid');
+                });
+            
+            $lang = $request->get('lang');
+
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $page_current = $request->get('page_current');
+            $items_per_page = $request->get('items_per_page');
+
+            if($page_current || $items_per_page) {
+                $response['meta']['pagination']['page_current'] = $page_current ? (int) $page_current : 1;
+                $response['meta']['pagination']['items_per_page'] = $items_per_page ? (int) $items_per_page : 25;
+
+                $subQuery = News::query()
+                    ->select('n.aid')
+                    ->from('news as n')
+                    ->join('languages as l', 'n.language_id', '=', 'l.aid')
+                    ->when($lang, fn($query) => $query->where('l.locale_code', $lang))
+                    ->groupBy('n.aid')
+                    ->orderBy(DB::raw('MAX(n.created_at)'), 'desc');
+                
+                $response['meta']['pagination']['total_items'] = (clone $subQuery)->pluck('aid')->count();
+                $subQuery
+                    ->offset(($response['meta']['pagination']['page_current'] - 1) * $response['meta']['pagination']['items_per_page'])
+                    ->limit($response['meta']['pagination']['items_per_page']);
+                
+                $data
+                    ->joinSub($subQuery, 'le', function($join) {
+                        $join->on('n.aid', '=', 'le.aid');
+                    });
+                
+                $response['meta']['pagination']['pages_count'] = ceil($response['meta']['pagination']['total_items'] / $response['meta']['pagination']['items_per_page']);
+            }
+
+            $orderby = $request->get('orderby');
+            $order = $request->get('order');
+            
+            if($orderby || $order) {
+                $fields = array_map('trim', explode(',', $orderby ?? 'news_created_at'));
+                $orders = array_map('trim', explode(',', $order ?? ''));
+    
+                foreach ($fields as $index => $field) {
+                    $direction = strtolower($orders[$index] ?? '');
+                    $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
+    
+                    $data
+                        ->orderBy($field, $direction);
+    
+                    $response['meta']['order'][] = [
+                        'orderby' => $field,
+                        'order'   => $direction,
+                    ];
+                }
+            }
+            else {
+                $data
+                    ->orderBy('news_created_at', 'desc');
+            }
+
+            $data = $data->get();
+
+            $news = [];
+
+            foreach($data as $item) {
+                if(!isset($news[$item['news_aid']])) {
+                    $news[$item['news_aid']] = [
+                        'id'            => [],
+                        'aid'           => $item['news_aid'],
+                        'slug'          => $item['news_slug'],
+                        'title'         => [],
+                        'description'   => [],
+                        'content'       => [],
+                        'thumbnail'     => $item['file_path'],
+                        'enabled'       => $item['news_enabled'],
+                        'date_from'     => $item['news_date_from'],
+                        'date_to'       => $item['news_date_to'],
+                        'created_at'    => $item['news_created_at'],
+                        'updated_at'    => $item['news_updated_at'],
+                    ];
+                }
+
+                $news[$item['news_aid']]['id'][$item['news_id']]                    = true;
+                $news[$item['news_aid']]['title'][$item['language_locale']]         = $item['news_title'];
+                $news[$item['news_aid']]['description'][$item['language_locale']]   = $item['news_description'];
+                $news[$item['news_aid']]['content'][$item['language_locale']]       = $item['news_content'];
+            }
+
+            $news = array_map(function($value) use ($lang) {
+                $value['id'] = array_keys($value['id']);
+                if($lang) {
+                    $value['id']            = $value['id'][0];
+                    $value['title']         = $value['title'][$lang];
+                    $value['description']   = $value['description'][$lang];
+                    $value['content']       = $value['content'][$lang];
+                }
+
+                return $value;
+            }, $news);
+
+            $response['data'] = array_values($news);
+            
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
+
+    public function getNewsByParameter(Request $request, $parameter): JsonResponse {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
+
+            $data = News::query()
+                ->select(
+                    'n.id as news_id',
+                            'n.aid as news_aid',
+                           'n.slug as news_slug',
+                          'n.title as news_title',
+                    'n.description as news_description',
+                        'n.content as news_content',
+                      'n.thumbnail as news_thumbnail',
+                        'n.enabled as news_enabled',
+                      'n.date_from as news_date_from',
+                        'n.date_to as news_date_to',
+                     'n.created_at as news_created_at',
+                     'n.updated_at as news_updated_at',
+
+                           'f.path as file_path',
+
+                    'l.locale_code as language_locale',
+                )
+                ->from('news as n')
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('n.language_id', '=', 'l.aid');
+                })
+                ->leftJoin('files as f', function($join) {
+                    $join
+                        ->on('n.thumbnail', '=', 'f.aid');
+                })
+                ->whereAny([
+                    'n.id',
+                    'n.aid',
+                    'n.slug',
+                ], '=', $parameter);
+            
+            $lang = $request->get('lang');
+
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $data = $data->get();
+
+            $news_once = [];
+
+            foreach($data as $item) {
+                if(empty($news_once)) {
+                    $news_once['id']            = [];
+                    $news_once['aid']           = $item['news_aid'];
+                    $news_once['slug']          = $item['news_slug'];
+                    $news_once['title']         = [];
+                    $news_once['description']   = [];
+                    $news_once['content']       = [];
+                    $news_once['thumbnail']     = $item['file_path'];
+                    $news_once['enabled']       = $item['news_enabled'];
+                    $news_once['date_from']     = $item['news_date_from'];
+                    $news_once['date_to']       = $item['news_date_to'];
+                    $news_once['created_at']    = $item['news_created_at'];
+                    $news_once['updated_at']    = $item['news_updated_at'];
+                }
+                
+                $news_once['id'][$item['news_id']]                  = true;
+                $news_once['title'][$item['language_locale']]       = $item['news_title'];
+                $news_once['description'][$item['language_locale']] = $item['news_description'];
+                $news_once['content'][$item['language_locale']]     = $item['news_content'];
+            }
+
+            $news_once['id'] = array_keys($news_once['id']);
+            if($lang) {
+                $news_once['id']            = $news_once['id'][0];
+                $news_once['title']         = $news_once['title'][$lang];
+                $news_once['description']   = $news_once['description'][$lang];
+                $news_once['content']       = $news_once['content'][$lang];
+            }
+
+            $response['data'] = $news_once;
+            
             return response()->json($response);
         }
         catch(\Throwable $error) {
