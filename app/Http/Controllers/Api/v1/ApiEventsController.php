@@ -13,6 +13,7 @@ use App\Models\Languages;
 use App\Models\Menus;
 use App\Models\Events;
 use App\Models\News;
+use App\Models\Pages;
 use App\Models\Files;
 
 class ApiEventsController extends Controller {
@@ -815,21 +816,22 @@ class ApiEventsController extends Controller {
 
             $data = News::query()
                 ->select(
-                    'n.id as news_id',
-                            'n.aid as news_aid',
-                           'n.slug as news_slug',
-                          'n.title as news_title',
-                       'n.subtitle as news_subtitle',
-                    'n.description as news_description',
-                        'n.content as news_content',
-                      'n.thumbnail as news_thumbnail',
-                        'n.enabled as news_enabled',
-                      'n.date_from as news_date_from',
-                        'n.date_to as news_date_to',
-                     'n.created_at as news_created_at',
-                     'n.updated_at as news_updated_at',
+                     'n.id as news_id',
+                             'n.aid as news_aid',
+                            'n.slug as news_slug',
+                           'n.title as news_title',
+                        'n.subtitle as news_subtitle',
+                     'n.description as news_description',
+                         'n.content as news_content',
+                       'n.thumbnail as news_thumbnail',
+                    'n.time_to_read as news_time_to_read',
+                         'n.enabled as news_enabled',
+                       'n.date_from as news_date_from',
+                         'n.date_to as news_date_to',
+                      'n.created_at as news_created_at',
+                      'n.updated_at as news_updated_at',
 
-                    'l.locale_code as language_locale',
+                     'l.locale_code as language_locale',
                 )
                 ->from('news as n')
                 ->join('languages as l', function($join) {
@@ -921,6 +923,7 @@ class ApiEventsController extends Controller {
                         'images'        => array_map(function($aid) use ($images) {
                             return ['slide' => $images[$aid] ?? null];
                         }, $images_aid),
+                        'time_to_read'  => [],
                         'enabled'       => $item['news_enabled'],
                         'date_from'     => $item['news_date_from'],
                         'date_to'       => $item['news_date_to'],
@@ -934,6 +937,7 @@ class ApiEventsController extends Controller {
                 $news[$item['news_aid']]['subtitle'][$item['language_locale']]      = $item['news_subtitle'];
                 $news[$item['news_aid']]['description'][$item['language_locale']]   = $item['news_description'];
                 $news[$item['news_aid']]['content'][$item['language_locale']]       = $item['news_content'];
+                $news[$item['news_aid']]['time_to_read'][$item['language_locale']]  = $item['news_time_to_read'];
             }
 
             $news = array_map(function($value) use ($lang) {
@@ -944,6 +948,7 @@ class ApiEventsController extends Controller {
                     $value['subtitle']      = $value['subtitle'][$lang];
                     $value['description']   = $value['description'][$lang];
                     $value['content']       = $value['content'][$lang];
+                    $value['time_to_read']  = $value['time_to_read'][$lang];
                 }
 
                 return $value;
@@ -970,21 +975,22 @@ class ApiEventsController extends Controller {
 
             $data = News::query()
                 ->select(
-                    'n.id as news_id',
-                            'n.aid as news_aid',
-                           'n.slug as news_slug',
-                          'n.title as news_title',
-                       'n.subtitle as news_subtitle',
-                    'n.description as news_description',
-                        'n.content as news_content',
-                      'n.thumbnail as news_thumbnail',
-                        'n.enabled as news_enabled',
-                      'n.date_from as news_date_from',
-                        'n.date_to as news_date_to',
-                     'n.created_at as news_created_at',
-                     'n.updated_at as news_updated_at',
+                     'n.id as news_id',
+                             'n.aid as news_aid',
+                            'n.slug as news_slug',
+                           'n.title as news_title',
+                        'n.subtitle as news_subtitle',
+                     'n.description as news_description',
+                         'n.content as news_content',
+                       'n.thumbnail as news_thumbnail',
+                    'n.time_to_read as news_time_to_read',
+                         'n.enabled as news_enabled',
+                       'n.date_from as news_date_from',
+                         'n.date_to as news_date_to',
+                      'n.created_at as news_created_at',
+                      'n.updated_at as news_updated_at',
 
-                    'l.locale_code as language_locale',
+                     'l.locale_code as language_locale',
                 )
                 ->from('news as n')
                 ->join('languages as l', function($join) {
@@ -1027,6 +1033,7 @@ class ApiEventsController extends Controller {
                     $news_once['images']        = array_map(function($aid) use ($images) {
                         return ['slide' => $images[$aid] ?? null];
                     }, $images_aid);
+                    $news_once['time_to_page']  = [];
                     $news_once['enabled']       = $item['news_enabled'];
                     $news_once['date_from']     = $item['news_date_from'];
                     $news_once['date_to']       = $item['news_date_to'];
@@ -1034,11 +1041,12 @@ class ApiEventsController extends Controller {
                     $news_once['updated_at']    = $item['news_updated_at'];
                 }
                 
-                $news_once['id'][$item['news_id']]                  = true;
-                $news_once['title'][$item['language_locale']]       = $item['news_title'];
-                $news_once['subtitle'][$item['language_locale']]    = $item['news_subtitle'];
-                $news_once['description'][$item['language_locale']] = $item['news_description'];
-                $news_once['content'][$item['language_locale']]     = $item['news_content'];
+                $news_once['id'][$item['news_id']]                      = true;
+                $news_once['title'][$item['language_locale']]           = $item['news_title'];
+                $news_once['subtitle'][$item['language_locale']]        = $item['news_subtitle'];
+                $news_once['description'][$item['language_locale']]     = $item['news_description'];
+                $news_once['content'][$item['language_locale']]         = $item['news_content'];
+                $news_once['time_to_page'][$item['language_locale']]    = $item['news_time_to_page'];
             }
 
             $news_once['id'] = array_keys($news_once['id']);
@@ -1048,10 +1056,145 @@ class ApiEventsController extends Controller {
                 $news_once['subtitle']      = $news_once['subtitle'][$lang];
                 $news_once['description']   = $news_once['description'][$lang];
                 $news_once['content']       = $news_once['content'][$lang];
+                $news_once['time_to_page']  = $news_once['time_to_page'][$lang];
             }
 
             $response['data'] = $news_once;
             
+            return response()->json($response);
+        }
+        catch(\Throwable $error) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $error->getMessage(),
+            ]);
+        }
+    }
+
+    public function getPages(Request $request) {
+        return '';
+    }
+
+    public function getPagesByParameter(Request $request, $parameter) {
+        try {
+            $response = [
+                'status' => 'success',
+                'data' => [],
+            ];
+
+            $data = Pages::query()
+                ->select(
+                     'p.id as page_id',
+                             'p.aid as page_aid',
+                            'p.slug as page_slug',
+                           'p.title as page_title',
+                     'p.description as page_description',
+                         'p.enabled as page_enabled',
+                      'p.created_at as page_created_at',
+                      'p.updated_at as page_updated_at',
+
+                              's.id as section_id',
+                             's.aid as section_aid',
+                            's.type as section_type',
+                         's.content as section_content',
+                           's.group as section_group',
+                           's.order as section_order',
+                      's.created_at as section_created_at',
+                      's.updated_at as section_updated_at',
+
+                     'l.locale_code as language_locale',
+                )
+                ->from('pages as p')
+                ->join('sections as s', function($join) {
+                    $join
+                        ->on('p.aid', '=', 's.page_id')
+                        ->on('p.language_id', '=', 's.language_id');
+                })
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('p.language_id', '=', 'l.aid');
+                })
+                // ->whereAny([
+                //     'p.id',
+                //     'p.aid',
+                //     'p.slug',
+                // ], '=', $parameter)
+                ->where(function($query) use ($parameter) {
+                    $query
+                        ->where(DB::raw("CAST(p.id AS CHAR)"), '=', $parameter)
+                        ->orWhere('p.aid', '=', (string) $parameter)
+                        ->orWhere('p.slug', '=', (string) $parameter);
+                })
+                ->orderBy('section_order', 'asc');
+            
+            $lang = $request->get('lang');
+
+            if($lang) {
+                $data
+                    ->where('l.locale_code', '=', $lang);
+                
+                $response['meta']['filter']['language'] = $lang;
+            }
+
+            $data = $data->get();
+
+            $page = [];
+
+            foreach($data as $item) {
+                if(empty($page)) {
+                    $page['id']             = [];
+                    $page['aid']            = $item['page_aid'];
+                    $page['slug']           = $item['page_slug'];
+                    $page['title']          = [];
+                    $page['description']    = [];
+                    $page['enabled']        = $item['page_enabled'];
+                    $page['created_at']     = $item['page_created_at'];
+                    $page['updated_at']     = $item['page_updated_at'];
+                    $page['sections']       = [];
+                }
+
+                $page['id'][$item['page_id']] = true;
+                $page['title'][$item['language_locale']] = $item['page_title'];
+                $page['description'][$item['language_locale']] = $item['page_description'];
+
+                if(!isset($page['sections'][$item['section_group']][$item['section_aid']])) {
+                    $page['sections'][$item['section_group']][$item['section_aid']]['id']         = [];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['aid']        = $item['section_aid'];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['type']       = $item['section_type'];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['content']    = [];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['group']      = $item['section_group'];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['order']      = $item['section_order'];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['created_at'] = $item['section_created_at'];
+                    $page['sections'][$item['section_group']][$item['section_aid']]['updated_at'] = $item['section_updated_at'];
+                }
+
+                $page['sections'][$item['section_group']][$item['section_aid']]['id'][$item['section_id']] = true;
+                $page['sections'][$item['section_group']][$item['section_aid']]['content'][$item['language_locale']] = json_decode($item['section_content'], true);
+            }
+
+            $page['id'] = array_keys($page['id']);
+            if($lang) {
+                $page['id'] = $page['id'][0];
+                $page['title'] = $page['title'][$lang];
+                $page['description'] = $page['description'][$lang];
+            }
+
+            foreach($page['sections'] as $group_name => &$group) {
+                $group = array_values($group);
+                $group = array_map(function($section) use ($lang) {
+                    $section['id'] = array_keys($section['id']);
+                    if($lang) {
+                        $section['id'] = $section['id'][0];
+                        $section['content'] = $section['content'][$lang];
+                    }
+                    return $section;
+                }, $group);
+                // dump($group);
+            }
+
+            $response['data'] = $page;
+            // dump($page);
+
             return response()->json($response);
         }
         catch(\Throwable $error) {

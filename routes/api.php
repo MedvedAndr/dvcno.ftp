@@ -20,5 +20,8 @@ Route::prefix('v1')->group(function() {
 
         Route::get('/news', 'getNews');
         Route::get('/news/{parameter}', 'getNewsByParameter');
+
+        Route::get('/pages', 'getPages');
+        Route::get('/pages/{parameter}', 'getPagesByParameter');
     });
 });
