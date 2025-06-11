@@ -11,16 +11,17 @@ use App\Helpers\AssetsManager;
 use App\Services\Dictionary;
 use App\Services\GenerateID;
 
-use App\Models\Languages;
-use App\Models\Settings;
 use App\Models\Files;
 use App\Models\Menus;
+use App\Models\Pages;
+use App\Models\Settings;
+use App\Models\Languages;
 
 class AdminController extends Controller
 {
     public function index(Request $request) {
-        dump((new GenerateID())->table("pages")->get());
-        dump((new GenerateID())->table("sections")->get());
+        // dump((new GenerateID())->table("pages")->get());
+        // dump((new GenerateID())->table("sections")->get());
         // Получаем блок данных пользователя из текущей сессии и если его нет, то возвращаем false
         $user_session            = $request->session()->get('user');
         // Данные для отправки в шаблон
@@ -312,6 +313,84 @@ class AdminController extends Controller
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.menus.edit', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function pages() {
+        $view_data = [];
+        $template = [];
+
+        $view_data['title'] = 'Страницы';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Страницы',
+            ],
+        ];
+
+        $view_data['pages_list'] = [];
+        $pages_query = Pages::query()
+            ->select(
+                'p.id as page_id',
+                        'p.aid as page_aid',
+                       'p.slug as page_slug',
+                  'p.front_url as page_front_url',
+                      'p.title as page_title',
+                'p.description as page_description',
+                    'p.enabled as page_enabled',
+                 'p.created_at as page_created_at',
+                 'p.updated_at as page_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('pages as p')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('p.language_id', '=', 'l.aid');
+            })
+            ->orderBy('page_title', 'asc');
+
+        // Временное ограничение. Убрать после создания и наполнения страниц.
+        $pages_query->whereIn('p.aid', [
+            'b84zqssey43',
+            'o9085r023zi',
+            '0kdhz5qz8vz',
+            'rrr1s4wu3dc',
+        ]);
+
+        $pages = $pages_query->get();
+
+        foreach($pages as $page) {
+            if(!isset($view_data['pages_list'][$page->page_aid])) {
+                $view_data['pages_list'][$page->page_aid] = [
+                    'id'            => [],
+                    'aid'           => $page->page_aid,
+                    'slug'          => $page->page_slug,
+                    'front_url'     => $page->page_front_url,
+                    'title'         => [],
+                    'description'   => [],
+                    'enabled'       => $page->page_enabled,
+                    'created_at'    => strtotime($page->page_created_at),
+                    'updated_at'    => strtotime($page->page_updated_at),
+                ];
+            }
+            
+            $view_data['pages_list'][$page->page_aid]['id'][$page->page_id] = true;
+            $view_data['pages_list'][$page->page_aid]['title'][$page->locale_code] = $page->page_title;
+            $view_data['pages_list'][$page->page_aid]['description'][$page->locale_code] = $page->page_description;
+        }
+
+        $view_data['pages_list'] = array_values($view_data['pages_list']);
+
+        // $view_data['pages_list'] = array_map(function($value) {
+        //     $value[]
+
+        //     return $value;
+        // }, $view_data['pages_list']);
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.pages.main', $view_data);
         $template[] = view('admin.footer', $view_data);
 
         return implode('', $template);

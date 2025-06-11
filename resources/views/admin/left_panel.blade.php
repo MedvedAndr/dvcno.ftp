@@ -51,6 +51,17 @@ $menus = [
                 ],
             ],
             [
+                'title'     => 'Страницы',
+                'icon'      => 'file-text',
+                'submenu'   => [
+                    [
+                        'title'     => 'Все страницы',
+                        'route'     => 'admin.pages',
+                        'icon'      => 'list',
+                    ],
+                ],
+            ],
+            [
                 'title'     => 'Мероприятия',
                 'icon'      => 'calendar',
                 'submenu'   => [

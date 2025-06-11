@@ -25,6 +25,8 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/menus/create', 'createMenu')->name('admin.menus.create');
     Route::get('/menus/edit/{aid}', 'editMenu')->name('admin.menus.edit');
 
+    Route::get('/pages', 'pages')->name('admin.pages');
+
     Route::get('/events', 'events')->name('admin.events');
     //Route::get('/events/view/{aid}', 'viewEvent')->name('admin.events.view');
     Route::get('/events/create', 'createEvent')->name('admin.events.create');
