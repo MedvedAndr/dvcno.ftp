@@ -1170,11 +1170,6 @@ class ApiEventsController extends Controller {
 
                 $page['sections'][$item['section_group']][$item['section_aid']]['id'][$item['section_id']] = true;
                 $page['sections'][$item['section_group']][$item['section_aid']]['content'][$item['language_locale']] = json_decode($item['section_content'], true);
-
-                // switch($item['section_type']) {
-                //     case '':
-                //         break;
-                // }
             }
 
             $page['id'] = array_keys($page['id']);
@@ -1188,12 +1183,15 @@ class ApiEventsController extends Controller {
                 $group = array_values($group);
                 $group = array_map(function($section) use ($lang) {
                     $section['id'] = array_keys($section['id']);
-                    
-                    switch($section['type']) {
-                        case 'list_blocks':
-                            dump($section['content']);
-                            break;
-                    }
+
+                    array_walk_recursive($section['content'], function(&$value, $key) {
+                        if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                            $file = Files::where('aid', '=', $value)->first();
+                            if($file) {
+                                $value = $file->path;
+                            }
+                        }
+                    });
 
                     if($lang) {
                         $section['id'] = $section['id'][0];
@@ -1210,6 +1208,7 @@ class ApiEventsController extends Controller {
             return response()->json($response);
         }
         catch(\Throwable $error) {
+dump($error);
             return response()->json([
                 'status' => 'error',
                 'error' => $error->getMessage(),

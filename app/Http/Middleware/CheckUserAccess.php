@@ -63,7 +63,7 @@ class CheckUserAccess
                     $template   .= view('auth.login', $view_data);
                     $template   .= view('admin.footer', $view_data);
 
-                    return response($template);
+                    return response($template, 200);
             }
         }
 

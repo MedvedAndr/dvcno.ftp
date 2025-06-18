@@ -25,7 +25,7 @@ class RouteServiceProvider extends ServiceProvider
 
             // Маршруты для админ-панели
             Route::middleware('admin')
-                // ->prefix('admin')
+                ->prefix('admin')
                 ->group(base_path('routes/admin.php'));
             
             // Маршруты для AJAX-запросов

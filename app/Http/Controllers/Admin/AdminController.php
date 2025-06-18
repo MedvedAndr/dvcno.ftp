@@ -382,12 +382,12 @@ class AdminController extends Controller
         }
 
         $view_data['pages_list'] = array_values($view_data['pages_list']);
+        $view_data['section_aid']= (new GenerateID())->table("sections")->get();
+        // $view_data['pages_list'] = array_map(function($value) {
+        //     $value[]
 
-        $view_data['pages_list'] = array_map(function($value) {
-            $value['id'] = array_keys($value['id']);
-
-            return $value;
-        }, $view_data['pages_list']);
+        //     return $value;
+        // }, $view_data['pages_list']);
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.pages.main', $view_data);
