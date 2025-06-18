@@ -1170,6 +1170,11 @@ class ApiEventsController extends Controller {
 
                 $page['sections'][$item['section_group']][$item['section_aid']]['id'][$item['section_id']] = true;
                 $page['sections'][$item['section_group']][$item['section_aid']]['content'][$item['language_locale']] = json_decode($item['section_content'], true);
+
+                // switch($item['section_type']) {
+                //     case '':
+                //         break;
+                // }
             }
 
             $page['id'] = array_keys($page['id']);
@@ -1183,6 +1188,13 @@ class ApiEventsController extends Controller {
                 $group = array_values($group);
                 $group = array_map(function($section) use ($lang) {
                     $section['id'] = array_keys($section['id']);
+                    
+                    switch($section['type']) {
+                        case 'list_blocks':
+                            dump($section['content']);
+                            break;
+                    }
+
                     if($lang) {
                         $section['id'] = $section['id'][0];
                         $section['content'] = $section['content'][$lang];
