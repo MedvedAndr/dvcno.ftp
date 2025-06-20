@@ -319,6 +319,11 @@ class AdminController extends Controller
     }
 
     public function pages() {
+        AssetsManager::setStyle([
+            'href' => asset('/css/models/tables.css'),
+            'priority' => 500,
+        ]);
+        
         $view_data = [];
         $template = [];
 
@@ -349,14 +354,24 @@ class AdminController extends Controller
                 $join
                     ->on('p.language_id', '=', 'l.aid');
             })
+            ->orderByRaw("l.locale_code = ? DESC", [app('locale')])
             ->orderBy('page_title', 'asc');
 
         // Временное ограничение. Убрать после создания и наполнения страниц.
         $pages_query->whereIn('p.aid', [
             'b84zqssey43',
             'o9085r023zi',
+            '2vdbvv7eqgm',
+            'wbtyamo9bdy',
             '0kdhz5qz8vz',
             'rrr1s4wu3dc',
+            'qvd3gu08wpl',
+            'sh5nat4xfbz',
+            '3uh8y4290zz',
+            '73ot9p5xn22',
+            '051g3y2qk9z',
+            'wtc4uqkp923',
+            'j8jnbbg0ing',
         ]);
 
         $pages = $pages_query->get();
@@ -382,17 +397,150 @@ class AdminController extends Controller
         }
 
         $view_data['pages_list'] = array_values($view_data['pages_list']);
-        $view_data['section_aid']= (new GenerateID())->table("sections")->get();
-        // $view_data['pages_list'] = array_map(function($value) {
-        //     $value[]
 
-        //     return $value;
-        // }, $view_data['pages_list']);
+        $view_data['pages_list'] = array_map(function($value) {
+            $value['id'] = array_keys($value['id']);
+
+            return $value;
+        }, $view_data['pages_list']);
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.pages.main', $view_data);
         $template[] = view('admin.footer', $view_data);
+        
+        return implode('', $template);
+    }
 
+    public function editPage($aid) {
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('accordions');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['page'] = [];
+
+        $page_query = Pages::query()
+            ->select(
+                'p.id as page_id',
+                        'p.aid as page_aid',
+                       'p.slug as page_slug',
+                  'p.front_url as page_front_url',
+                      'p.title as page_title',
+                'p.description as page_description',
+                    'p.enabled as page_enabled',
+                 'p.created_at as page_created_at',
+                 'p.updated_at as page_updated_at',
+
+                         's.id as section_id',
+                        's.aid as section_aid',
+                       's.type as section_type',
+                    's.content as section_content',
+                      's.group as section_group',
+                      's.order as section_order',
+                 's.created_at as section_created_at',
+                 's.updated_at as section_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('pages as p')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('p.language_id', '=', 'l.aid');
+            })
+            ->join('sections as s', function($join) {
+                $join
+                    ->on('p.aid', '=', 's.page_id')
+                    ->on('p.language_id', '=', 's.language_id');
+            })
+            ->where('p.aid', '=', $aid)
+            ->orderBy('section_order', 'asc');
+
+        $pages = $page_query->get();
+
+        foreach($pages as $page) {
+            if(empty($view_data['page'])) {
+                $view_data['page']['id'] = [];
+                $view_data['page']['aid'] = $page['page_aid'];
+                $view_data['page']['slug'] = $page['page_slug'];
+                $view_data['page']['front_url'] = $page['page_front_url'];
+                $view_data['page']['title'] = [];
+                $view_data['page']['description'] = [];
+                $view_data['page']['enabled'] = $page['page_enabled'];
+                $view_data['page']['created_at'] = $page['page_created_at'];
+                $view_data['page']['updated_at'] = $page['page_updated_at'];
+                $view_data['page']['sections'] = [];
+            }
+
+            $view_data['page']['id'][$page['page_id']] = true;
+            $view_data['page']['title'][$page['locale_code']] = $page['page_title'];
+            $view_data['page']['description'][$page['locale_code']] = $page['page_description'];
+            
+            if(!isset($view_data['page']['sections'][$page['section_aid']])) {
+                $view_data['page']['sections'][$page['section_aid']] = [
+                    'id' => [],
+                    'aid' => $page['section_aid'],
+                    'type' => $page['section_type'],
+                    'content' => [],
+                    'group' => $page['section_group'],
+                    'order' => $page['section_order'],
+                    'created_at' => $page['section_created_at'],
+                    'updated_at' => $page['section_updated_at'],
+                ];
+            }
+
+            $view_data['page']['sections'][$page['section_aid']]['id'][$page['section_id']] = true;
+            $content = json_decode($page['section_content'], true);
+            $fileIds = array_unique(array_filter(array_merge(
+                array_column($content, 'document'),
+                array_column($content, 'image'),
+                array_column($content, 'big'),
+                array_column($content, 'medium'),
+                array_column($content, 'small')
+            )));
+
+            $files = Files::whereIn('aid', $fileIds)->get()->keyBy('aid');
+
+            // Затем обрабатываем контент
+            array_walk_recursive($content, function(&$value, $key) use ($files) {
+                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                    if(isset($files[$value])) {
+                        $value = $files[$value]->path;
+                    }
+                }
+            });
+
+            if($page['section_type'] === 'header' || $page['section_type'] === 'format_text') {
+                $content = $content[0];
+            }
+
+            $view_data['page']['sections'][$page['section_aid']]['content'][$page['locale_code']] = $content;
+        }
+
+        $view_data['page']['id'] = array_keys($view_data['page']['id']);
+        $view_data['page']['sections'] = array_values($view_data['page']['sections']);
+        $view_data['page']['sections'] = array_map(function($value) {
+            $value['id'] = array_keys($value['id']);
+            return $value;
+        }, $view_data['page']['sections']);
+
+        $view_data['title'] = 'Редакирование страницы';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Страницы',
+                'href'  => 'admin.pages'
+            ],
+            [
+                'title' => 'Редакирование страницы ""',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.pages.edit', $view_data);
+        $template[] = view('admin.footer', $view_data);
+        
         return implode('', $template);
     }
 

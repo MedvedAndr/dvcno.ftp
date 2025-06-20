@@ -1023,7 +1023,6 @@ class FormValidationController extends Controller
         if(!isset($return['meta']['__form_errors'])) {
             $return['status']           = 'success';
             $return['data']             = $data;
-            $return['debug']            = $data_settings;
             unset($return['error']);
 
             $update_settings = (new CaseBuilder())
@@ -1036,6 +1035,18 @@ class FormValidationController extends Controller
             
             $return['meta']['__system_messages']['success']['settings_is_save'] = 'Настройки сохранены';
         }
+
+        return $return;
+    }
+
+    private function edit_page(Request $request, array $return) {
+        $data = $request->only([
+            'sections',
+        ]);
+
+        $return['status'] = 'success';
+        $return['data'] = $data;
+        unset($return['error']);
 
         return $return;
     }

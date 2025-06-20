@@ -26,6 +26,7 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/menus/edit/{aid}', 'editMenu')->name('admin.menus.edit');
 
     Route::get('/pages', 'pages')->name('admin.pages');
+    Route::get('/pages/edit/{aid}', 'editPage')->name('admin.pages.edit');
 
     Route::get('/events', 'events')->name('admin.events');
     //Route::get('/events/view/{aid}', 'viewEvent')->name('admin.events.view');
