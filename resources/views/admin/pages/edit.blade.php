@@ -66,6 +66,7 @@
                                             locale="{{ $language->aid }}"
                                             :data="[
                                                 'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code],
                                                 'content' => $section['content'][$language->locale_code] ?? '',
                                             ]"
                                         />
@@ -76,6 +77,7 @@
                                             locale="{{ $language->aid }}"
                                             :data="[
                                                 'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code],
                                                 'content' => $section['content'][$language->locale_code] ?? '',
                                             ]"
                                         />
@@ -101,9 +103,10 @@
                                     @case('list_links')
                                         <x-sections.list-links
                                             index="{{ $index }}"
-                                            locale="{{ $language->aid }}"
+                                            :locale="$language"
                                             :data="[
                                                 'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code],
                                                 'content' => $section['content'][$language->locale_code] ?? [],
                                             ]"
                                         />
@@ -118,9 +121,10 @@
                                         --}}
                                         <x-sections.accordion
                                             index="{{ $index }}"
-                                            locale="{{ $language->aid }}"
+                                            :locale="$language"
                                             :data="[
                                                 'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code],
                                                 'content' => $section['content'][$language->locale_code],
                                             ]"
                                         />

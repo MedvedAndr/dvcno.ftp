@@ -107,7 +107,7 @@ class AppServiceProvider extends ServiceProvider
         ],
         [
             [
-                'src'       => 'https://code.jquery.com/jquery-3.7.1.min.js',
+                'src'       => 'http://code.jquery.com/jquery-3.7.1.min.js',
                 'priority'  => 0,
                 'version'   => '3.7.1',
             ],
@@ -179,7 +179,7 @@ class AppServiceProvider extends ServiceProvider
         ],
         [
             [
-                'src'       => 'https://code.jquery.com/jquery-3.7.1.min.js',
+                'src'       => 'http://code.jquery.com/jquery-3.7.1.min.js',
                 'priority'  => 0,
                 'version'   => '3.7.1',
             ],
@@ -207,7 +207,7 @@ class AppServiceProvider extends ServiceProvider
         ],
         [
             [
-                'src'           => 'https://code.jquery.com/jquery-3.7.1.min.js',
+                'src'           => 'http://code.jquery.com/jquery-3.7.1.min.js',
                 'priority'      => 0,
                 'version'       => '3.7.1',
             ],
@@ -230,7 +230,7 @@ class AppServiceProvider extends ServiceProvider
         ],
         [
             [
-                'src'       => 'https://code.jquery.com/jquery-3.7.1.min.js',
+                'src'       => 'http://code.jquery.com/jquery-3.7.1.min.js',
                 'priority'  => 0,
                 'version'   => '3.7.1',
             ],
@@ -254,7 +254,7 @@ class AppServiceProvider extends ServiceProvider
         ],
         [
             [
-                'src'       => 'https://code.jquery.com/jquery-3.7.1.min.js',
+                'src'       => 'http://code.jquery.com/jquery-3.7.1.min.js',
                 'priority'  => 0,
                 'version'   => '3.7.1',
             ],

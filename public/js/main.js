@@ -205,7 +205,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                         current_level = current_level[key];
                     });
                 });
-            
+            console.log(json_data);
             jQuery.ajax({
                 url     : '/ajax/item/get',
                 type    : 'POST',
@@ -221,22 +221,160 @@ jQuery(document).on('DOMContentLoaded', function() {
                     console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
-                        if(['add-term', 'add-permalink'].includes(jquery_result.meta.component)) {
+                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-accordion'].includes(jquery_result.meta.component)) {
                             Object.keys(jquery_result.data).forEach(function(locale) {
                                 $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"][data-items-lang="'+ locale +'"]');
                                 if($list.length) {
-                                    $list.append(jquery_result.data[locale]);
+                                    const $jquery_result = jQuery(jquery_result.data[locale]);
+                                    jQuery($jquery_result).find('[data-label="ckeditor"] textarea').each(function(i, item) {
+                                        const $this_input = jQuery(item);
+                                        const $this_label = $this_input.closest('[data-label]');
+
+                                        ClassicEditor
+                                            .create(item, {
+                                                plugins: Object.values(CKPlugins),
+                                                toolbar: [
+                                                    'undo', 'redo',
+                                                    '|',
+                                                    'fontFamily', 'fontSize',
+                                                    '|',
+                                                    'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                                                    '|',
+                                                    'fontColor', 'fontBackgroundColor',
+                                                    '|',
+                                                    'bulletedList', 'numberedList',
+                                                    '|',
+                                                    'outdent', 'indent',
+                                                    '|',
+                                                    'alignment',
+                                                    '|',
+                                                    'heading',
+                                                    '|',
+                                                    'insertTable', 'link'
+                                                ],
+                                                fontSize: {
+                                                    options: [
+                                                        '10px',
+                                                        '12px',
+                                                        '14px',
+                                                        '16px',
+                                                        '18px',
+                                                        '20px',
+                                                        '22px',
+                                                        '24px',
+                                                        '26px',
+                                                        '28px',
+                                                        '30px',
+                                                    ]
+                                                },
+                                                translations: CKTranslations,
+                                            })
+                                            .then(function(editor) {
+                                                setGlobal('editors.'+ $this_input.attr('name'), editor);
+
+                                                editor.editing.view.document.on('focus', function() {
+                                                    $this_label.addData('status', 'focused');
+                                                });
+
+                                                editor.editing.view.document.on('blur', function() {
+                                                    $this_label.eraseData('status', 'focused');
+                                                });
+
+                                                editor.model.document.on('change:data', () => {
+                                                    if(editor.getData().trim() !== '') {
+                                                        $this_label.addData('status', 'not_empty');
+                                                    }
+                                                    else {
+                                                        $this_label.eraseData('status', 'not_empty');
+                                                    }
+                                                });
+                                            })
+                                            .catch(function(error) {
+                                                console.error(error);
+                                            });
+                                    });
+                                    $list.append($jquery_result);
                                 }
                             });
                         }
                         else {
                             $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"]');
                             if($list.length) {
-                                $list.append(jquery_result.data);
+                                const $jquery_result = jQuery(jquery_result.data);
+                                jQuery($jquery_result).find('[data-label="ckeditor"] textarea').each(function(i, item) {
+                                    const $this_input = jQuery(item);
+                                    const $this_label = $this_input.closest('[data-label]');
+
+                                    ClassicEditor
+                                        .create(item, {
+                                            plugins: Object.values(CKPlugins),
+                                            toolbar: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'fontFamily', 'fontSize',
+                                                '|',
+                                                'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                                                '|',
+                                                'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bulletedList', 'numberedList',
+                                                '|',
+                                                'outdent', 'indent',
+                                                '|',
+                                                'alignment',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'insertTable', 'link'
+                                            ],
+                                            fontSize: {
+                                                options: [
+                                                    '10px',
+                                                    '12px',
+                                                    '14px',
+                                                    '16px',
+                                                    '18px',
+                                                    '20px',
+                                                    '22px',
+                                                    '24px',
+                                                    '26px',
+                                                    '28px',
+                                                    '30px',
+                                                ]
+                                            },
+                                            translations: CKTranslations,
+                                        })
+                                        .then(function(editor) {
+                                            setGlobal('editors.'+ $this_input.attr('name'), editor);
+
+                                            editor.editing.view.document.on('focus', function() {
+                                                $this_label.addData('status', 'focused');
+                                            });
+
+                                            editor.editing.view.document.on('blur', function() {
+                                                $this_label.eraseData('status', 'focused');
+                                            });
+
+                                            editor.model.document.on('change:data', () => {
+                                                if(editor.getData().trim() !== '') {
+                                                    $this_label.addData('status', 'not_empty');
+                                                }
+                                                else {
+                                                    $this_label.eraseData('status', 'not_empty');
+                                                }
+                                            });
+                                        })
+                                        .catch(function(error) {
+                                            console.error(error);
+                                        });
+                                });
+                                $list.append($jquery_result);
                             }
                         }
 
-                        $this_elements.val('');
+                        if(['add-permalink'].includes(jquery_result.meta.component)) {
+                            $this_elements.val('');
+                        }
 
                         jQuery(document).trigger('item-added', {
                             target      : $this_button,
@@ -278,7 +416,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     success : function(jquery_result) {
                         if(jquery_result.status === 'success') {
                             setGlobal($this_list.attr('data-items'), jquery_result.meta.index);
-                            if(['add-term', 'add-permalink'].includes(jquery_result.meta.component)) {
+                            if(['add-term', 'add-permalink', 'add-list-link'].includes(jquery_result.meta.component)) {
                                 Object.keys(jquery_result.data).forEach(function(locale) {
                                     $list = jQuery('[data-items="'+ $this_list.attr('data-items') +'"][data-items-lang="'+ locale +'"]');
                                     if($list.length) {

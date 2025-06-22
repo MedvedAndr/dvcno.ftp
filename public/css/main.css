@@ -344,13 +344,22 @@ header + main {
     /* margin-bottom: 12px; */
 }
 
-.items ~ .items_empty {
+* + .empty {
+    display: none;
+}
+
+*:empty + .empty {
+    display: block;
+    color: var(--white-54);
+}
+
+/* .items ~ .items_empty {
     display: none;
 }
 
 .items:empty ~ .items_empty {
     display: block;
-}
+} */
 
 .item {
     

@@ -74,7 +74,7 @@
 .accordion .accordion__head {
     display             : flex;
     flex-direction      : row;
-    justify-content     : space-between;
+    justify-content     : flex-start;
     align-items         : center;
     cursor              : pointer;
     padding             : 12px 20px 11px;
@@ -95,7 +95,7 @@
 }
 
 .accordion .accordion__head_title {
-    
+    flex                : 1;
 }
 
 .accordion .accordion__head_icon {

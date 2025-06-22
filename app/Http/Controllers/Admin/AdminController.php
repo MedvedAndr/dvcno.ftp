@@ -437,6 +437,7 @@ class AdminController extends Controller
                          's.id as section_id',
                         's.aid as section_aid',
                        's.type as section_type',
+                      's.title as section_title',
                     's.content as section_content',
                       's.group as section_group',
                       's.order as section_order',
@@ -483,6 +484,7 @@ class AdminController extends Controller
                     'id' => [],
                     'aid' => $page['section_aid'],
                     'type' => $page['section_type'],
+                    'title' => [],
                     'content' => [],
                     'group' => $page['section_group'],
                     'order' => $page['section_order'],
@@ -516,6 +518,7 @@ class AdminController extends Controller
                 $content = $content[0];
             }
 
+            $view_data['page']['sections'][$page['section_aid']]['title'][$page['locale_code']] = $page['section_title'];
             $view_data['page']['sections'][$page['section_aid']]['content'][$page['locale_code']] = $content;
         }
 

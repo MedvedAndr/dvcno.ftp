@@ -19,9 +19,10 @@ class ComponentController extends Controller {
                 'index'     => (int) $request->index,
                 'form_data' => $data,
             ],
+            'debug' => $data['elements'] ?? []
         ];
 
-        if(in_array($response['meta']['component'], ['add-term', 'add-permalink'])) {
+        if(in_array($response['meta']['component'], ['add-term', 'add-permalink', 'add-list-link', 'add-list-accordion'])) {
             foreach(app('languages') as $language) {
                 $form_data = $data['elements'][$language['locale_code']] ?? [];
                 $form_data['language_id'] = $language['aid'];
