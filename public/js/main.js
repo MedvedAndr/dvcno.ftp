@@ -221,22 +221,160 @@ jQuery(document).on('DOMContentLoaded', function() {
                     console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
-                        if(['add-term', 'add-permalink'].includes(jquery_result.meta.component)) {
+                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-accordion'].includes(jquery_result.meta.component)) {
                             Object.keys(jquery_result.data).forEach(function(locale) {
                                 $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"][data-items-lang="'+ locale +'"]');
                                 if($list.length) {
-                                    $list.append(jquery_result.data[locale]);
+                                    const $jquery_result = jQuery(jquery_result.data[locale]);
+                                    jQuery($jquery_result).find('[data-label="ckeditor"] textarea').each(function(i, item) {
+                                        const $this_input = jQuery(item);
+                                        const $this_label = $this_input.closest('[data-label]');
+
+                                        ClassicEditor
+                                            .create(item, {
+                                                plugins: Object.values(CKPlugins),
+                                                toolbar: [
+                                                    'undo', 'redo',
+                                                    '|',
+                                                    'fontFamily', 'fontSize',
+                                                    '|',
+                                                    'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                                                    '|',
+                                                    'fontColor', 'fontBackgroundColor',
+                                                    '|',
+                                                    'bulletedList', 'numberedList',
+                                                    '|',
+                                                    'outdent', 'indent',
+                                                    '|',
+                                                    'alignment',
+                                                    '|',
+                                                    'heading',
+                                                    '|',
+                                                    'insertTable', 'link'
+                                                ],
+                                                fontSize: {
+                                                    options: [
+                                                        '10px',
+                                                        '12px',
+                                                        '14px',
+                                                        '16px',
+                                                        '18px',
+                                                        '20px',
+                                                        '22px',
+                                                        '24px',
+                                                        '26px',
+                                                        '28px',
+                                                        '30px',
+                                                    ]
+                                                },
+                                                translations: CKTranslations,
+                                            })
+                                            .then(function(editor) {
+                                                setGlobal('editors.'+ $this_input.attr('name'), editor);
+
+                                                editor.editing.view.document.on('focus', function() {
+                                                    $this_label.addData('status', 'focused');
+                                                });
+
+                                                editor.editing.view.document.on('blur', function() {
+                                                    $this_label.eraseData('status', 'focused');
+                                                });
+
+                                                editor.model.document.on('change:data', () => {
+                                                    if(editor.getData().trim() !== '') {
+                                                        $this_label.addData('status', 'not_empty');
+                                                    }
+                                                    else {
+                                                        $this_label.eraseData('status', 'not_empty');
+                                                    }
+                                                });
+                                            })
+                                            .catch(function(error) {
+                                                console.error(error);
+                                            });
+                                    });
+                                    $list.append($jquery_result);
                                 }
                             });
                         }
                         else {
                             $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"]');
                             if($list.length) {
-                                $list.append(jquery_result.data);
+                                const $jquery_result = jQuery(jquery_result.data);
+                                jQuery($jquery_result).find('[data-label="ckeditor"] textarea').each(function(i, item) {
+                                    const $this_input = jQuery(item);
+                                    const $this_label = $this_input.closest('[data-label]');
+
+                                    ClassicEditor
+                                        .create(item, {
+                                            plugins: Object.values(CKPlugins),
+                                            toolbar: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'fontFamily', 'fontSize',
+                                                '|',
+                                                'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript',
+                                                '|',
+                                                'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bulletedList', 'numberedList',
+                                                '|',
+                                                'outdent', 'indent',
+                                                '|',
+                                                'alignment',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'insertTable', 'link'
+                                            ],
+                                            fontSize: {
+                                                options: [
+                                                    '10px',
+                                                    '12px',
+                                                    '14px',
+                                                    '16px',
+                                                    '18px',
+                                                    '20px',
+                                                    '22px',
+                                                    '24px',
+                                                    '26px',
+                                                    '28px',
+                                                    '30px',
+                                                ]
+                                            },
+                                            translations: CKTranslations,
+                                        })
+                                        .then(function(editor) {
+                                            setGlobal('editors.'+ $this_input.attr('name'), editor);
+
+                                            editor.editing.view.document.on('focus', function() {
+                                                $this_label.addData('status', 'focused');
+                                            });
+
+                                            editor.editing.view.document.on('blur', function() {
+                                                $this_label.eraseData('status', 'focused');
+                                            });
+
+                                            editor.model.document.on('change:data', () => {
+                                                if(editor.getData().trim() !== '') {
+                                                    $this_label.addData('status', 'not_empty');
+                                                }
+                                                else {
+                                                    $this_label.eraseData('status', 'not_empty');
+                                                }
+                                            });
+                                        })
+                                        .catch(function(error) {
+                                            console.error(error);
+                                        });
+                                });
+                                $list.append($jquery_result);
                             }
                         }
 
-                        $this_elements.val('');
+                        if(['add-permalink'].includes(jquery_result.meta.component)) {
+                            $this_elements.val('');
+                        }
 
                         jQuery(document).trigger('item-added', {
                             target      : $this_button,
@@ -278,7 +416,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     success : function(jquery_result) {
                         if(jquery_result.status === 'success') {
                             setGlobal($this_list.attr('data-items'), jquery_result.meta.index);
-                            if(['add-term', 'add-permalink'].includes(jquery_result.meta.component)) {
+                            if(['add-term', 'add-permalink', 'add-list-link'].includes(jquery_result.meta.component)) {
                                 Object.keys(jquery_result.data).forEach(function(locale) {
                                     $list = jQuery('[data-items="'+ $this_list.attr('data-items') +'"][data-items-lang="'+ locale +'"]');
                                     if($list.length) {
@@ -459,7 +597,116 @@ jQuery(document).on('DOMContentLoaded', function() {
                     }
                 });
             }
+        })
+        .on('click', '[data-file-manager]', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('.file__panel');
+            const $this_input = $this_label.find('.file__input');
+            const $this_display = $this_label.find('.file__body');
+            const $modal = jQuery('#file_manager');
+            const $modal_content = $modal.find('.modal__content');
+            const $body = jQuery('body');
+
+            const scrollbar_width = jQuery(window).outerWidth() - $body.outerWidth(true);
+            
+            $body.css({
+                'overflow': 'hidden',
+                '--scroll-width': String(scrollbar_width) +'px'
+            });
+
+            jQuery.ajax({
+                url     : '/ajax/files/get',
+                type    : 'POST',
+                headers : {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content'),
+                },
+                data    : {
+                    'extensions': $this_button.attr('data-extensions').split(' '),
+                    'type': $this_button.attr('data-type')
+                },
+                beforeSend: function() {
+                    const $download_box = jQuery('<div></div>')
+                        .addClass('download_files');
+                    const $download_spinner = jQuery('<div></div>')
+                        .addClass('download_spinner');
+                    const $download_icon = jQuery('<div></div>')
+                        .addData('icon', 'spinner-light')
+                        .attr('data-animation', 'spin_step12');
+                    
+                    $modal_content.empty().append($download_box.append($download_spinner.append($download_icon)));
+                },
+                success : function(jquery_result) {
+                    $modal_content.empty().append(jquery_result.data);
+                    $modal_content.find('input[name="for"]').val($this_input.attr('name'));
+                },
+                error   : function (report) {
+                    console.log(report.status, report.statusText);
+                    console.log(report.responseJSON);
+                }
+            });
+            
+            openModal({
+                'currentTarget': $modal,
+            });
+        })
+        .on('click', '.modal', closeModal)
+        .on('change', '.files input[name="file"]', function(eventObject) {
+            const $this_input = jQuery(eventObject.currentTarget);
+            const $this_filesbox = $this_input.closest('.files');
+            const $this_panel = $this_filesbox.find('.files__panel');
+            const $count_display = $this_panel.find('.files__count .quantity');
+            const $this_accept = $this_panel.find('.button.files__accept');
+            const $checked_inputs = jQuery('.files input[name="file"]:checked');
+
+            $count_display.text($checked_inputs.length);
+            if($checked_inputs.length > 0) {
+                $this_accept.eraseData('status', 'disabled');
+            }
+            else {
+                $this_accept.addData('status', 'disabled');
+            }
+        })
+        .on('click', '.files .files__accept', function(eventObject) {
+            const $this_accept = jQuery(eventObject.currentTarget);
+            const $this_files = $this_accept.closest('.files');
+            const $this_for = $this_files.find('input[name="for"]');
+            const $this_modal = $this_accept.closest('.modal');
+            const $checked_inputs = jQuery('.files input[name="file"]:checked');
+            
+            const $for = jQuery('[name="'+ $this_for.val() +'"]');
+            const $for_label = $for.closest('.file__panel');
+            const $for_display = $for_label.find('.file__body');
+            
+            let $infos = jQuery();
+            $checked_inputs.each(function(i, item) {
+                const $item = jQuery(item);
+                let info     =  '<div class="file_info">';
+                info        +=      '<span class="file__icon">';
+                if($item.attr('data-image') !== undefined) {
+                    info    +=          '<img src="'+ $item.attr('data-image') +'" />';
+                }
+                else {
+                    info    +=          '<span data-icon="file"></span>';
+                }
+                info        +=      '</span>';
+                info        +=      '<span class="file__name">'+ $item.attr('data-name') +'</span>';
+                info        +=  '</div>';
+                $infos = $infos.add(jQuery(info));
+
+                $for.val($item.val());
+            });
+            
+            $for_display.empty().append($infos);
+
+            closeModal({
+                target: $this_modal.get(0),
+                currentTarget: $this_modal.get(0)
+            });
         });
+
+    // jQuery('.modal').on('click', function(eventObject) {
+
+    // });
 });
 
 function setGlobal(path, value) {
@@ -567,6 +814,45 @@ function openPopUp(eventObject = {}) {
     //         }, 3500);
     //     }
     // });
+}
+
+function openModal(eventObject) {
+    const $this_modal = jQuery(eventObject.currentTarget);
+
+    $this_modal
+        .show(0, function() {
+            $this_modal
+                .off('transitionend')
+                .css({'display': 'flex'})
+                .addData('status', 'opening')
+                .on('transitionend', function() {
+                    $this_modal
+                        .eraseData('status', 'opening')
+                        .addData('status', 'active');
+                });
+        });
+}
+
+function closeModal(eventObject) {
+    const $this_close = jQuery(eventObject.target).closest('.modal__close');
+    const $this_modal = jQuery(eventObject.currentTarget);
+    const $body = jQuery('body');
+    
+    if(eventObject.target === eventObject.currentTarget || $this_close.length !== 0) {
+        $this_modal
+            .off('transitionend')
+            .eraseData('status', 'active')
+            .addData('status', 'closing')
+            .on('transitionend', function() {
+                $body.css({
+                    'overflow': 'auto',
+                    '--scroll-width': ''
+                });
+
+                $this_modal
+                    .eraseData('status', 'closing').hide();
+            });
+    }
 }
 
 function constructMenuOptions($menu_layouts) {

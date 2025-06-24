@@ -50,13 +50,14 @@ button.error:hover,
 
 button:disabled,
 button:disabled:hover,
-.button:disabled,
-.button:disabled:hover {
+.button[data-status="disabled"],
+.button[data-status="disabled"]:hover {
     color                   : var(--white-35);
     background-color        : var(--white-3);
     border                  : 1px solid var(--white-14);
     opacity                 : 0.65;
     cursor                  : default;
+    pointer-events          : none;
 }
 
 button .button__title,

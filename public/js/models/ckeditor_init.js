@@ -23,6 +23,31 @@ import {
 
 import ru from '/js/ckeditor5-43.2.0/ckeditor5/translations/ru.js';
 
+window.ClassicEditor = ClassicEditor;
+window.CKPlugins = {
+    Essentials,
+    Heading,
+    Paragraph,
+    Bold,
+    Italic,
+    Font,
+    Underline,
+    Strikethrough,
+    Superscript,
+    Subscript,
+    List,
+    Alignment,
+    Indent,
+    Link,
+    Table,
+    FontSize,
+    FontFamily,
+    FontColor,
+    FontBackgroundColor,
+};
+
+window.CKTranslations = ru;
+
 jQuery(window).on('DOMContentLoaded', function() {
     document.querySelectorAll('[data-label="ckeditor"] textarea').forEach(function(item) {
         const $this_input = jQuery(item);
@@ -30,27 +55,7 @@ jQuery(window).on('DOMContentLoaded', function() {
         
         ClassicEditor
             .create(item, {
-                plugins: [
-                    Essentials,
-                    Heading,
-                    Paragraph,
-                    Bold,
-                    Italic,
-                    Font,
-                    Underline,
-                    Strikethrough,
-                    Superscript,
-                    Subscript,
-                    List,
-                    Alignment,
-                    Indent,
-                    Link,
-                    Table,
-                    FontSize,
-                    FontFamily,
-                    FontColor,
-                    FontBackgroundColor,
-                ],
+                plugins: Object.values(CKPlugins),
                 toolbar: [
                     'undo', 'redo',
                     '|',
@@ -85,7 +90,7 @@ jQuery(window).on('DOMContentLoaded', function() {
                         '30px',
                     ]
                 },
-                translations: ru,
+                translations: CKTranslations,
             })
             .then(function(editor) {
                 setGlobal('editors.'+ $this_input.attr('name'), editor);

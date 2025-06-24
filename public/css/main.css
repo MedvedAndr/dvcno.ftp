@@ -101,7 +101,8 @@ a:focus {
 
 main {
     flex                    : 1;
-    padding                 : 30px 0px 30px;
+    padding-block           : 30px;
+    padding-right           : var(--scroll-width, 0px);
 }
 
 header + main {
@@ -344,13 +345,22 @@ header + main {
     /* margin-bottom: 12px; */
 }
 
-.items ~ .items_empty {
+* + .empty {
+    display: none;
+}
+
+*:empty + .empty {
+    display: block;
+    color: var(--white-54);
+}
+
+/* .items ~ .items_empty {
     display: none;
 }
 
 .items:empty ~ .items_empty {
     display: block;
-}
+} */
 
 .item {
     
@@ -577,6 +587,12 @@ header + main {
     position: relative;
 }
 
+.files.scroll {
+    --filemanager_cols: 12;
+    height: 100%;
+    justify-content: space-between;
+}
+
 .files .add__file {
     display: flex;
     flex-direction: column;
@@ -618,7 +634,12 @@ header + main {
 .files .files_list {
     display: grid;
     grid-template-columns: repeat(var(--filemanager_cols), 1fr);
-    gap: 8px;
+    gap: 10px;
+}
+
+.files.scroll .files_list {
+    overflow: auto;
+    padding: 4px;
 }
 
 .files .file {
@@ -627,9 +648,6 @@ header + main {
     justify-content: center;
     align-items: center;
     aspect-ratio: 1 / 1;
-    border: 1px solid #ffffff;
-    border-radius: 4px;
-    overflow: hidden;
 }
 
 /* .files .copy_link {
@@ -643,10 +661,22 @@ header + main {
     --icon-size: 18px;
 } */
 
-.files .file .preview {
+.files .file .preview,
+.files .file input[name="file"] ~ .preview {
+    position: relative;
     width: 100%;
     height: 100%;
-    position: relative;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.files .file input[name="file"]:checked ~ .preview {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    border: 4px solid #26a0da;
+    box-sizing: content-box;
 }
 
 .files .file .preview.image {
@@ -692,6 +722,14 @@ header + main {
 
 .files .file .download [data-icon] {
     --icon-size: 40px;
+}
+
+.files .files__panel {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 8px;
+    padding-block: 8px 0px;
 }
 
 .files .file .progress_bar {
@@ -805,4 +843,131 @@ header + main {
 #selected_img .image img {
     width: 100px;
     height: 100px;    
+}
+
+.file__panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 16px;
+}
+
+.file__panel .file__body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file__panel .file_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+}
+
+.file__panel .file__icon {
+    
+}
+
+.file__panel .file__icon img {
+    display: block;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.file__panel .file__icon [data-icon] {
+
+}
+
+.file__panel .file__name {
+    
+}
+
+
+.modal {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    z-index: 11000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    transition-property: background-color;
+    transition-duration: 0.3s;
+}
+
+.modal[data-status~="opening"] {
+    display: flex;
+    background-color: var(--black-39);
+}
+
+.modal[data-status~="active"] {
+    display: flex;
+    background-color: var(--black-39);
+}
+
+.modal .modal__container {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    background-color: var(--gray-charcoal-100);
+    border: 1px solid var(--white-18);
+    border-radius: 4px;
+    padding-block: 16px;
+    padding-inline: 16px;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+
+.modal[data-status~="opening"] .modal__container {
+    opacity: 1;
+}
+
+.modal[data-status~="active"] .modal__container {
+    opacity: 1;
+}
+
+.modal .modal__header {
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--white-14);
+    padding: 4px 0px 16px;
+}
+
+.modal .modal__content {
+    flex: 1;
+    height: inherit;
+}
+
+.modal .download_files {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.modal .download_spinner {
+    
+}
+
+.modal .download_spinner [data-icon] {
+    --icon-size: 100px;
+}
+
+.modal .modal__close.modal__top {
+    position: absolute;
+    top: 25px;
+    right: 18px;
+    cursor: pointer;
 }

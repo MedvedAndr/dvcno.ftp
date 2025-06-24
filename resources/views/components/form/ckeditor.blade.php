@@ -53,7 +53,7 @@ $status = array_unique($status);
             data-{{ $data_name }}="{{ $data_value }}"
             @endforeach
             @endif
-        >@isset($value) value="{!! $value !!}" @endisset</textarea>
+        >@isset($value){!! $value !!}@endisset</textarea>
     </span>
     @isset($message)
     <span class="label__message">{{ is_string($message) ? $message : '' }}</span>

@@ -199,7 +199,7 @@
                                 <div class="group__head">{{ app('dictionary')->dictionary('headers')->key('menu_structure')->get() }}</div>
                                 <div class="group__body">
                                     <div class="items" data-items="menu_layout" data-items-lang="{{ $language->locale_code }}"></div>
-                                    <div class="items_empty">Добавьте элементы меню из столбца слева.</div>
+                                    <div class="empty">Добавьте элементы меню из столбца слева.</div>
                                 </div>
                             </div>
                         </div>
