@@ -47,4 +47,6 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/dictionaries/view/{aid}', 'viewDictionary')->name('admin.dictionaries.view');
     Route::get('/dictionaries/create', 'createDictionary')->name('admin.dictionaries.create');
     Route::get('/dictionaries/edit/{aid}', 'editDictionary')->name('admin.dictionaries.edit');
+
+    Route::get('/generator', 'generator_id');
 });
