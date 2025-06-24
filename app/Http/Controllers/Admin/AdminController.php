@@ -372,6 +372,7 @@ class AdminController extends Controller
             '051g3y2qk9z',
             'wtc4uqkp923',
             'j8jnbbg0ing',
+            'xpwcdnwcm7x',
         ]);
 
         $pages = $pages_query->get();
@@ -495,21 +496,34 @@ class AdminController extends Controller
 
             $view_data['page']['sections'][$page['section_aid']]['id'][$page['section_id']] = true;
             $content = json_decode($page['section_content'], true);
-            $fileIds = array_unique(array_filter(array_merge(
-                array_column($content, 'document'),
-                array_column($content, 'image'),
-                array_column($content, 'big'),
-                array_column($content, 'medium'),
-                array_column($content, 'small')
-            )));
+//             $fileIds = array_unique(array_filter(array_merge(
+//                 array_column($content, 'document'),
+//                 array_column($content, 'image'),
+//                 array_column($content, 'big'),
+//                 array_column($content, 'medium'),
+//                 array_column($content, 'small')
+//             )));
+// dump($content);
+            $fileIds = [];
 
-            $files = Files::whereIn('aid', $fileIds)->get()->keyBy('aid');
+            array_walk_recursive($content, function($value, $key) use (&$fileIds) {
+                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                    $fileIds[$value] = true;
+                }
+            });
+
+            $files = Files::whereIn('aid', array_keys($fileIds))->get()->keyBy('aid');
 
             // Затем обрабатываем контент
             array_walk_recursive($content, function(&$value, $key) use ($files) {
                 if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
                     if(isset($files[$value])) {
-                        $value = $files[$value]->path;
+                        $value = [
+                            'aid' => $files[$value]->aid,
+                            'name' => $files[$value]->name,
+                            'extension' => $files[$value]->extension,
+                            'path' => $files[$value]->path
+                        ];
                     }
                 }
             });

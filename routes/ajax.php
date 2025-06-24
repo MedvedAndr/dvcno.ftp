@@ -9,11 +9,12 @@ use App\Http\Controllers\Ajax\CookieController;
 Route::controller(FormValidationController::class)->group(function() {
     Route::post('/form/validation', 'formValidation')->name('ajax.form.validation');
     Route::post('/slugify', 'stringSlugify')->name('ajax.slugify');
-    Route::post('/upload_files', 'uploadFiles')->name('ajax.upload_files');
-    Route::post('/settings/get', 'getSettings')->name('ajax.settings.get');
-    Route::post('/getInfo', 'getInfo');
-    Route::post('/save', 'save');
-    Route::post('/delete', 'delete');
+    Route::post('/files/get', 'getFiles')->name('ajax.files.get');
+    // Route::post('/upload_files', 'uploadFiles')->name('ajax.upload_files');
+    // Route::post('/settings/get', 'getSettings')->name('ajax.settings.get');
+    // Route::post('/getInfo', 'getInfo');
+    // Route::post('/save', 'save');
+    // Route::post('/delete', 'delete');
 });
 
 Route::controller(ComponentController::class)->group(function() {

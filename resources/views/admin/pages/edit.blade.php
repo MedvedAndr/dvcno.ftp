@@ -66,7 +66,7 @@
                                             locale="{{ $language->aid }}"
                                             :data="[
                                                 'aid' => $section['aid'],
-                                                'title' => $section['title'][$language->locale_code],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
                                                 'content' => $section['content'][$language->locale_code] ?? '',
                                             ]"
                                         />
@@ -77,7 +77,7 @@
                                             locale="{{ $language->aid }}"
                                             :data="[
                                                 'aid' => $section['aid'],
-                                                'title' => $section['title'][$language->locale_code],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
                                                 'content' => $section['content'][$language->locale_code] ?? '',
                                             ]"
                                         />
@@ -106,15 +106,24 @@
                                             :locale="$language"
                                             :data="[
                                                 'aid' => $section['aid'],
-                                                'title' => $section['title'][$language->locale_code],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
                                                 'content' => $section['content'][$language->locale_code] ?? [],
                                             ]"
                                         />
                                         @break
                                     {{-- @case('list_block')
                                         @break --}}
-                                    {{-- @case('list_docs')
-                                        @break --}}
+                                    @case('list_docs')
+                                        <x-sections.list-docs
+                                            index="{{ $index }}"
+                                            :locale="$language"
+                                            :data="[
+                                                'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? [],
+                                            ]"
+                                        />
+                                        @break
                                     @case('accordion')
                                         {{--
                                         @dump($section)
@@ -124,8 +133,8 @@
                                             :locale="$language"
                                             :data="[
                                                 'aid' => $section['aid'],
-                                                'title' => $section['title'][$language->locale_code],
-                                                'content' => $section['content'][$language->locale_code],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? [],
                                             ]"
                                         />
                                         @break
@@ -141,3 +150,5 @@
         </form>
     </div>
 </div>
+
+<x-file-manager />

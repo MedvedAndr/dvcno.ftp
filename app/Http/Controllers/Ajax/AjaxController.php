@@ -18,11 +18,9 @@ use Illuminate\Support\Facades\DB;
 class AjaxController 
 {
     public function sendMail(Request $query_data) {
-
-        //file_put_contents("./log.txt", config("mail.mailers.smtp.host"));
-        //file_put_contents("log.txt", "test", FILE_APPEND);
-        //file_put_contents("log.txt", env("MAIL_HOST"), FILE_APPEND);            
-        if (Mail::to(env("MAIL_FROM_ADDRESS"))->send(new sendMail($query_data))) {
+            
+        //file_put_contents("log.txt", print_r($query_data, true));
+        if (Mail::to("mmvova@yandex.ru")->send(new sendMail($query_data))) {
             return "success";
         } else {
             return "fail";
@@ -38,6 +36,9 @@ class AjaxController
                     'value',
                 ]),
             ];
+
+            
+            $value = "%".$response['meta']['value']."%";
             
             // $pages_query = DB::table('pages as p')
             //     ->select(
@@ -85,14 +86,19 @@ class AjaxController
 
 
 	    $finalQuery = $newsQuery
-                ->union($eventsQuery);
+                ->unionAll($eventsQuery);
 
             $data = $finalQuery
                 ->orderBy('title')
                 ->limit(10)
                 ->get();
 
-            return $response;
+            // $data = $finalQuery
+            //     ->orderBy('title')
+            //     ->limit(10);
+
+            return $data->toArray();
+            //return $data->toSql();
         }
         catch(\Throwable $error) {
             return response()->json([

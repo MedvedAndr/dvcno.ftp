@@ -1044,6 +1044,12 @@ class FormValidationController extends Controller
             'sections',
         ]);
 
+        $data_sections = [];
+
+        foreach($data['sections'] as $language_aid => $data_section) {
+
+        }
+
         $return['status'] = 'success';
         $return['data'] = $data;
         unset($return['error']);
@@ -1058,5 +1064,68 @@ class FormValidationController extends Controller
         );
         $arr = Files::where('aid', '=', $request_options['aid'])->first();
         return $arr;
+    }
+
+    public function getFiles(Request $request) {
+        $data = $request->only([
+            'extensions',
+            'type',
+        ]);
+
+        $query = Files::query()
+            ->whereIn('extension', $data['extensions'] ?? []);
+
+        $files = $query->get();
+
+        $html    =  '<div class="files scroll">';
+        $html   .=      '<input type="hidden" name="for" />';
+        $html   .=      '<div class="files_list">';
+        foreach($files as $file) {
+            $html   .=      '<label class="file">';
+            if($data['type'] === 'multiple') {
+                $type = 'checkbox';
+            }
+            else {
+                $type = 'radio';
+            }
+
+            if(explode('/', $file['mime_type'])[0] === 'image'){
+                $thumb = ' data-image="'. $file['path'] .'"';
+            }
+            else {
+                $thumb = '';
+            }
+
+            $html   .=          '<input type="'. $type .'" name="file" value="'. $file['aid'] .'" hidden'. $thumb .' data-name="'. $file['name'] .'.'. $file['extension'] .'" />';
+            if(explode('/', $file['mime_type'])[0] === 'image') {
+                $html   .=      '<div class="preview image">';
+                $html   .=          '<img src="'. $file['path'] .'" />';
+                $html   .=      '</div>';
+            }
+            else {
+                $html   .=      '<div class="preview document">';
+                $html   .=          '<div class="document__icon"><span data-icon="file"></span></div>';
+                $html   .=          '<div class="document__title">'. $file['name'] .'.'. $file['extension'] .'</div>';
+                $html   .=      '</div>';
+            }
+            $html   .=      '</label>';
+        }
+        $html   .=      '</div>';
+
+        $html   .=      '<div class="files__panel">';
+        if($data['type'] === 'multiple') {
+            $html   .=      '<div class="files__count">Выбрано <span class="quantity">0</span> файлов</div>';
+        }
+        $html   .=          '<div class="button files__accept" data-status="disabled">Применить</div>';
+        $html   .=          '<div class="button modal__close">Отмена</div>';
+        $html   .=      '</div>';
+        $html   .=  '</div>';
+
+        $return['status'] = 'success';
+        $return['data'] = $html;
+        $return['debug'] = $files;
+        unset($return['error']);
+
+        return $return;
     }
 }

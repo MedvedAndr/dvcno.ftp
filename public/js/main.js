@@ -205,7 +205,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                         current_level = current_level[key];
                     });
                 });
-            console.log(json_data);
+            
             jQuery.ajax({
                 url     : '/ajax/item/get',
                 type    : 'POST',
@@ -597,7 +597,116 @@ jQuery(document).on('DOMContentLoaded', function() {
                     }
                 });
             }
+        })
+        .on('click', '[data-file-manager]', function(eventObject) {
+            const $this_button = jQuery(eventObject.currentTarget);
+            const $this_label = $this_button.closest('.file__panel');
+            const $this_input = $this_label.find('.file__input');
+            const $this_display = $this_label.find('.file__body');
+            const $modal = jQuery('#file_manager');
+            const $modal_content = $modal.find('.modal__content');
+            const $body = jQuery('body');
+
+            const scrollbar_width = jQuery(window).outerWidth() - $body.outerWidth(true);
+            
+            $body.css({
+                'overflow': 'hidden',
+                '--scroll-width': String(scrollbar_width) +'px'
+            });
+
+            jQuery.ajax({
+                url     : '/ajax/files/get',
+                type    : 'POST',
+                headers : {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content'),
+                },
+                data    : {
+                    'extensions': $this_button.attr('data-extensions').split(' '),
+                    'type': $this_button.attr('data-type')
+                },
+                beforeSend: function() {
+                    const $download_box = jQuery('<div></div>')
+                        .addClass('download_files');
+                    const $download_spinner = jQuery('<div></div>')
+                        .addClass('download_spinner');
+                    const $download_icon = jQuery('<div></div>')
+                        .addData('icon', 'spinner-light')
+                        .attr('data-animation', 'spin_step12');
+                    
+                    $modal_content.empty().append($download_box.append($download_spinner.append($download_icon)));
+                },
+                success : function(jquery_result) {
+                    $modal_content.empty().append(jquery_result.data);
+                    $modal_content.find('input[name="for"]').val($this_input.attr('name'));
+                },
+                error   : function (report) {
+                    console.log(report.status, report.statusText);
+                    console.log(report.responseJSON);
+                }
+            });
+            
+            openModal({
+                'currentTarget': $modal,
+            });
+        })
+        .on('click', '.modal', closeModal)
+        .on('change', '.files input[name="file"]', function(eventObject) {
+            const $this_input = jQuery(eventObject.currentTarget);
+            const $this_filesbox = $this_input.closest('.files');
+            const $this_panel = $this_filesbox.find('.files__panel');
+            const $count_display = $this_panel.find('.files__count .quantity');
+            const $this_accept = $this_panel.find('.button.files__accept');
+            const $checked_inputs = jQuery('.files input[name="file"]:checked');
+
+            $count_display.text($checked_inputs.length);
+            if($checked_inputs.length > 0) {
+                $this_accept.eraseData('status', 'disabled');
+            }
+            else {
+                $this_accept.addData('status', 'disabled');
+            }
+        })
+        .on('click', '.files .files__accept', function(eventObject) {
+            const $this_accept = jQuery(eventObject.currentTarget);
+            const $this_files = $this_accept.closest('.files');
+            const $this_for = $this_files.find('input[name="for"]');
+            const $this_modal = $this_accept.closest('.modal');
+            const $checked_inputs = jQuery('.files input[name="file"]:checked');
+            
+            const $for = jQuery('[name="'+ $this_for.val() +'"]');
+            const $for_label = $for.closest('.file__panel');
+            const $for_display = $for_label.find('.file__body');
+            
+            let $infos = jQuery();
+            $checked_inputs.each(function(i, item) {
+                const $item = jQuery(item);
+                let info     =  '<div class="file_info">';
+                info        +=      '<span class="file__icon">';
+                if($item.attr('data-image') !== undefined) {
+                    info    +=          '<img src="'+ $item.attr('data-image') +'" />';
+                }
+                else {
+                    info    +=          '<span data-icon="file"></span>';
+                }
+                info        +=      '</span>';
+                info        +=      '<span class="file__name">'+ $item.attr('data-name') +'</span>';
+                info        +=  '</div>';
+                $infos = $infos.add(jQuery(info));
+
+                $for.val($item.val());
+            });
+            
+            $for_display.empty().append($infos);
+
+            closeModal({
+                target: $this_modal.get(0),
+                currentTarget: $this_modal.get(0)
+            });
         });
+
+    // jQuery('.modal').on('click', function(eventObject) {
+
+    // });
 });
 
 function setGlobal(path, value) {
@@ -705,6 +814,45 @@ function openPopUp(eventObject = {}) {
     //         }, 3500);
     //     }
     // });
+}
+
+function openModal(eventObject) {
+    const $this_modal = jQuery(eventObject.currentTarget);
+
+    $this_modal
+        .show(0, function() {
+            $this_modal
+                .off('transitionend')
+                .css({'display': 'flex'})
+                .addData('status', 'opening')
+                .on('transitionend', function() {
+                    $this_modal
+                        .eraseData('status', 'opening')
+                        .addData('status', 'active');
+                });
+        });
+}
+
+function closeModal(eventObject) {
+    const $this_close = jQuery(eventObject.target).closest('.modal__close');
+    const $this_modal = jQuery(eventObject.currentTarget);
+    const $body = jQuery('body');
+    
+    if(eventObject.target === eventObject.currentTarget || $this_close.length !== 0) {
+        $this_modal
+            .off('transitionend')
+            .eraseData('status', 'active')
+            .addData('status', 'closing')
+            .on('transitionend', function() {
+                $body.css({
+                    'overflow': 'auto',
+                    '--scroll-width': ''
+                });
+
+                $this_modal
+                    .eraseData('status', 'closing').hide();
+            });
+    }
 }
 
 function constructMenuOptions($menu_layouts) {

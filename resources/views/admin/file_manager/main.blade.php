@@ -1,7 +1,5 @@
 <div data-drag-drop-back="Переместите файл сюда"></div>
-@php
-//phpinfo();
-@endphp
+
 <div class="container">
     @if(isset($title) || isset($breadcrumbs))
     <div class="page__head">

@@ -6,6 +6,7 @@ header {
     height              : var(--header-height);
     background-color    : var(--black-24);
     border-bottom       : 1px solid var(--background-active);
+    padding-right       : var(--scroll-width, 0px);
     transition-property : background-color;
     transition-duration : var(--hover-animation, 0.3s);
 }
