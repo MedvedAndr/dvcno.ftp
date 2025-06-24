@@ -382,7 +382,7 @@ class AdminController extends Controller
         }
 
         $view_data['pages_list'] = array_values($view_data['pages_list']);
-
+        $view_data['section_aid']= (new GenerateID())->table("sections")->get();
         // $view_data['pages_list'] = array_map(function($value) {
         //     $value[]
 
@@ -844,5 +844,11 @@ class AdminController extends Controller
 
     public function editRole() {
 
+    }
+
+    public function generator_id() {
+        dump((new GenerateID())->table("sections")->get());
+
+        return '';
     }
 }

@@ -16,6 +16,7 @@
             <div class="group__container container">
                 <div class="group__head">Список страниц</div>
                 <div class="group__body">
+                    @dump($section_aid)
                     @if(!empty($pages_list))
                     @dump($pages_list)
                     @else

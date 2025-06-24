@@ -1183,6 +1183,16 @@ class ApiEventsController extends Controller {
                 $group = array_values($group);
                 $group = array_map(function($section) use ($lang) {
                     $section['id'] = array_keys($section['id']);
+
+                    array_walk_recursive($section['content'], function(&$value, $key) {
+                        if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                            $file = Files::where('aid', '=', $value)->first();
+                            if($file) {
+                                $value = $file->path;
+                            }
+                        }
+                    });
+
                     if($lang) {
                         $section['id'] = $section['id'][0];
                         $section['content'] = $section['content'][$lang];
@@ -1198,6 +1208,7 @@ class ApiEventsController extends Controller {
             return response()->json($response);
         }
         catch(\Throwable $error) {
+dump($error);
             return response()->json([
                 'status' => 'error',
                 'error' => $error->getMessage(),

@@ -18,8 +18,11 @@ use Illuminate\Support\Facades\DB;
 class AjaxController 
 {
     public function sendMail(Request $query_data) {
-            
-        if (Mail::to("undead_medved@mail.ru")->send(new sendMail($query_data))) {
+
+        //file_put_contents("./log.txt", config("mail.mailers.smtp.host"));
+        //file_put_contents("log.txt", "test", FILE_APPEND);
+        //file_put_contents("log.txt", env("MAIL_HOST"), FILE_APPEND);            
+        if (Mail::to(env("MAIL_FROM_ADDRESS"))->send(new sendMail($query_data))) {
             return "success";
         } else {
             return "fail";
@@ -35,7 +38,9 @@ class AjaxController
                     'value',
                 ]),
             ];
-            
+
+            $value = '%'. $response['meta']['value'] .'%';
+
             // $pages_query = DB::table('pages as p')
             //     ->select(
             //         'p.front_url as url',
@@ -54,29 +59,42 @@ class AjaxController
             //             ->orWhereJsonContains('s.content', $value);
             //     });
 
-            // $newsQuery = DB::table('news as n')  // Добавляем ассоциацию для таблицы news
-            //     ->select(
-            //         DB::raw("CONCAT('/news/', n.slug) as url"),  // Формируем URL из slug
-            //         'n.title as title',                          // Переименовываем title
-            //         'n.content as content',                      // Переименовываем content
-            //         'n.description as description'               // Переименовываем description
-            //     )
-            //     ->where(function($query) use ($value) {
-            //         $query->where('n.title', 'like', $value)
-            //             ->orWhere('n.description', 'like', $value)
-            //             ->orWhere('n.content', 'like', $value);
-            //     });
+            $newsQuery = DB::table('news as n')  // Добавляем ассоциацию для таблицы news
+                ->select(
+                    DB::raw("CONCAT('/news/', n.slug) as url"),  // Формируем URL из slug
+                    'n.title as title',                          // Переименовываем title
+                    'n.content as content',                      // Переименовываем content
+                    'n.description as description'               // Переименовываем description
+                )
+                ->where(function($query) use ($value) {
+                    $query->where('n.title', 'like', $value)
+                        ->orWhere('n.description', 'like', $value)
+                        ->orWhere('n.content', 'like', $value);
+                });
 
-            // $final_query = $pages_query
-            //     ->union($news_query)
-            //     ->union($events_query);
+            $eventsQuery = DB::table('events as e')  // Добавляем ассоциацию для таблицы news
+                ->select(
+                    DB::raw("CONCAT('/event/', e.slug) as url"),  // Формируем URL из slug
+                    'e.title as title',                          // Переименовываем title
+                    'e.content as content',                      // Переименовываем content
+                    'e.description as description'               // Переименовываем description
+                )
+                ->where(function($query) use ($value) {
+                    $query->where('e.title', 'like', $value)
+                        ->orWhere('e.description', 'like', $value)
+                        ->orWhere('e.content', 'like', $value);
+                });
 
-            // $data = $final_query
-            //     ->orderBy('title')
-            //     ->limit(10)
-            //     ->get();
 
-            return $response;
+	    $finalQuery = $newsQuery
+                ->union($eventsQuery);
+
+            $data = $finalQuery
+                ->orderBy('title')
+                ->limit(10)
+                ->get();
+
+            return $data->toArray();
         }
         catch(\Throwable $error) {
             return response()->json([
