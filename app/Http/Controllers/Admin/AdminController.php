@@ -234,7 +234,7 @@ class AdminController extends Controller
         AssetsManager::useBundle('tabs');
         AssetsManager::useBundle('accordions');
         AssetsManager::useBundle('form');
-
+        //
         AssetsManager::setStyle([
             'href'      => asset('/css/models/fields.css'),
             'priority'  => 500,

@@ -92,7 +92,7 @@ class AjaxController
                 ->orderBy('title')
                 ->limit(10)
                 ->get();
-
+// 
             // $data = $finalQuery
             //     ->orderBy('title')
             //     ->limit(10);
