@@ -1,2 +1,1 @@
-{{-- <div>{{ app('locale') }}</div> --}}
-{{--  --}}
+{{-- <div>{{ app('locale') }}</div> --}}{{-- fsdfsdfsdf --}}
