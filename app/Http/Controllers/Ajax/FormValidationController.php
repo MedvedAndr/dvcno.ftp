@@ -1073,7 +1073,8 @@ class FormValidationController extends Controller
         ]);
 
         $query = Files::query()
-            ->whereIn('extension', $data['extensions'] ?? []);
+            ->whereIn('extension', $data['extensions'] ?? [])
+            ->orderBy('created_at', 'desc');
 
         $files = $query->get();
 

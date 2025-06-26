@@ -221,7 +221,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
-                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-accordion'].includes(jquery_result.meta.component)) {
+                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-doc', 'add-list-accordion'].includes(jquery_result.meta.component)) {
                             Object.keys(jquery_result.data).forEach(function(locale) {
                                 $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"][data-items-lang="'+ locale +'"]');
                                 if($list.length) {
@@ -674,29 +674,38 @@ jQuery(document).on('DOMContentLoaded', function() {
             const $checked_inputs = jQuery('.files input[name="file"]:checked');
             
             const $for = jQuery('[name="'+ $this_for.val() +'"]');
-            const $for_label = $for.closest('.file__panel');
-            const $for_display = $for_label.find('.file__body');
+            const $for_panel = $for.closest('.file__panel');
+            const $for_updates = jQuery('.file__panel[data-file="'+ $for_panel.attr('data-file') +'"]');
             
-            let $infos = jQuery();
-            $checked_inputs.each(function(i, item) {
-                const $item = jQuery(item);
-                let info     =  '<div class="file_info">';
-                info        +=      '<span class="file__icon">';
-                if($item.attr('data-image') !== undefined) {
-                    info    +=          '<img src="'+ $item.attr('data-image') +'" />';
-                }
-                else {
-                    info    +=          '<span data-icon="file"></span>';
-                }
-                info        +=      '</span>';
-                info        +=      '<span class="file__name">'+ $item.attr('data-name') +'</span>';
-                info        +=  '</div>';
-                $infos = $infos.add(jQuery(info));
+            $for_updates.each(function(i, file_panel) {
+                const $file_panel = jQuery(file_panel);
 
-                $for.val($item.val());
+                const $for_display = $file_panel.find('.file__body');
+                const $for_button = $file_panel.find('[data-file-manager]');
+
+                let $infos = jQuery();
+
+                $checked_inputs.each(function(i, item) {
+                    const $item = jQuery(item);
+                    let info     =  '<div class="file_info">';
+                    info        +=      '<span class="file__icon">';
+                    if($item.attr('data-image') !== undefined) {
+                        info    +=          '<img src="'+ $item.attr('data-image') +'" />';
+                    }
+                    else {
+                        info    +=          '<span data-icon="file"></span>';
+                    }
+                    info        +=      '</span>';
+                    info        +=      '<span class="file__name">'+ $item.attr('data-name') +'</span>';
+                    info        +=  '</div>';
+                    $infos = $infos.add(jQuery(info));
+
+                    $for.val($item.val());
+                });
+
+                $for_display.empty().append($infos);
+                $for_button.text('Изменить');
             });
-            
-            $for_display.empty().append($infos);
 
             closeModal({
                 target: $this_modal.get(0),

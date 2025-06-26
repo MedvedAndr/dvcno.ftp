@@ -22,6 +22,22 @@
             value="{{ $data['aid'] }}"
         />
 
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][aid]"
+            value="{{ $data['aid'] }}"
+            :data="[
+                'item-data' => 'add-list-doc',
+            ]"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][item][title]"
+            value=""
+            :data="[
+                'item-data' => 'add-list-doc',
+            ]"
+        />
+
         <div class="flex__col">
             <x-form.text
                 name="sections[{{ $locale->aid }}][{{ $data['aid'] }}][title]"
@@ -30,6 +46,12 @@
                 :data="[
                     'sync' => 'title_'. $locale->aid .'_'. $data['aid']
                 ]"
+            />
+
+            <x-form.text
+                name="sections[{{ $locale->aid }}][{{ $data['aid'] }}][content][title]"
+                value="{{ $data['content']['title'] ?? '' }}"
+                title="Заголовок документов"
             />
 
             <div style="font-size: 14px;">Перечень документов</div>
@@ -52,6 +74,11 @@
                 @php $i++; @endphp
                 @endforeach
                 @endisset
+            </div>
+
+            <div class="button" data-item-add="add-list-doc" data-item-list="item_{{ $data['aid'] }}">
+                <span class="button__icon"><span data-icon="plus"></span></span>
+                <span class="button__title">Добавить локумент</span>
             </div>
         </div>
     </div>
