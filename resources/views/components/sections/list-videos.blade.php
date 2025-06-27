@@ -4,14 +4,14 @@
     'data' => []
 ])
 
-<div data-expander="acoordion_{{ $index }}">
+<div data-expander="list_docs_{{ $index }}">
     <div class="expander__head">
         <div class="expander__info">
             <div class="info__title">
                 <span data-sync="title_{{ $locale->aid }}_{{ $data['aid'] }}">{{ $data['title'] }}</span>
                 <span class="empty">[Название отсутствует]</span>
             </div>
-            <div class="info__type">Слайдер</div>
+            <div class="info__type">Список видео</div>
         </div>
         <div class="expander__icon"><span data-icon></span></div>
     </div>

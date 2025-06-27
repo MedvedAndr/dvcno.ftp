@@ -373,6 +373,7 @@ class AdminController extends Controller
             'wtc4uqkp923',
             'j8jnbbg0ing',
             'xpwcdnwcm7x',
+            'clnd8l9cp1l',
         ]);
 
         $pages = $pages_query->get();

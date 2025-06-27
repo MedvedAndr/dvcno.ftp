@@ -97,14 +97,23 @@
                                         @break
                                     {{-- @case('banner_docs')
                                         @break --}}
-                                    @case('slider')
-                                        @break
+                                    {{-- @case('slider')
+                                        <x-sections.slider
+                                            index="{{ $index }}"
+                                            :locale="$language"
+                                            :data="[
+                                                'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? [],
+                                            ]"
+                                        />
+                                        @break --}}
                                     {{-- @case('gallery')
                                         @break --}}
                                     {{-- @case('section')
                                         @break --}}
-                                    @case('list_links')
-                                        <x-sections.list-links
+                                    @case('list_blocks')
+                                        <x-sections.list-blocks
                                             index="{{ $index }}"
                                             :locale="$language"
                                             :data="[
@@ -114,8 +123,19 @@
                                             ]"
                                         />
                                         @break
-                                    @case('list_blocks')
-                                        <x-sections.list-blocks
+                                    @case('accordion')
+                                        <x-sections.accordion
+                                            index="{{ $index }}"
+                                            :locale="$language"
+                                            :data="[
+                                                'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? [],
+                                            ]"
+                                        />
+                                        @break
+                                    @case('list_links')
+                                        <x-sections.list-links
                                             index="{{ $index }}"
                                             :locale="$language"
                                             :data="[
@@ -136,8 +156,8 @@
                                             ]"
                                         />
                                         @break
-                                    @case('accordion')
-                                        <x-sections.accordion
+                                    @case('list_videos')
+                                        <x-sections.list-videos
                                             index="{{ $index }}"
                                             :locale="$language"
                                             :data="[
