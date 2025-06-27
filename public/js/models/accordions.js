@@ -1,12 +1,12 @@
 jQuery(document).on('DOMContentLoaded', function() {
     jQuery(document)
-        .on('click', '[data-expander] .expander__icon', toggleExpander)
+        .on('click', '[data-expander] .expander__head', toggleExpander)
         .on('click', '[data-accordion] .accordion__head', toggleAccordion);
 });
 
 function toggleExpander(eventObject) {
-    const $this_expander_icon   = jQuery(eventObject.currentTarget);
-    const $this_expander        = $this_expander_icon.closest('[data-expander]');
+    const $this_expander_head   = jQuery(eventObject.currentTarget);
+    const $this_expander        = $this_expander_head.closest('[data-expander]');
     const $this_expander_body   = $this_expander.find('.expander__body');
 
     const has_active            = $this_expander.hasData('status', 'active');
