@@ -576,7 +576,7 @@ class FormValidationController extends Controller
                     'title'         => $data_news_once['title'],
                     'description'   => $data_news_once['description'] ?? '',
                     'content'       => $data_news_once['content'] ?? '',
-                    'thumbnail'     => '',
+                    'thumbnail'     => null,
                     'enabled'       => (int) filter_var($data_news_once['enabled'], FILTER_VALIDATE_BOOLEAN),
                     'date_from'     => $data_news_once['date_from'],
                     'date_to'       => $data_news_once['date_to'],

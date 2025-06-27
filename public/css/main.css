@@ -971,3 +971,9 @@ header + main {
     right: 18px;
     cursor: pointer;
 }
+
+.section_images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}

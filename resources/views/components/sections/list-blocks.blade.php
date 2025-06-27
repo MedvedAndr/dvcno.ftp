@@ -4,14 +4,14 @@
     'data' => []
 ])
 
-<div data-expander="list_links_{{ $index }}">
+<div data-expander="acoordion_{{ $index }}">
     <div class="expander__head">
         <div class="expander__info">
             <div class="info__title">
                 <span data-sync="title_{{ $locale->aid }}_{{ $data['aid'] }}">{{ $data['title'] }}</span>
                 <span class="empty">[Название отсутствует]</span>
             </div>
-            <div class="info__type">Список ссылок</div>
+            <div class="info__type">Список блоков</div>
         </div>
         <div class="expander__icon"><span data-icon></span></div>
     </div>
@@ -26,7 +26,7 @@
             name="elements[{{ $locale->locale_code }}][aid]"
             value="{{ $data['aid'] }}"
             :data="[
-                'item-data' => 'add-list-link_'. $index,
+                'item-data' => 'add-list-block_'. $index,
             ]"
         />
 
@@ -34,7 +34,7 @@
             name="elements[{{ $locale->locale_code }}][item][title]"
             value=""
             :data="[
-                'item-data' => 'add-list-link_'. $index,
+                'item-data' => 'add-list-block_'. $index,
             ]"
         />
 
@@ -48,19 +48,22 @@
                 ]"
             />
 
-            <div style="font-size: 14px;">Перечень ссылок</div>
+            <div style="font-size: 14px;">Список блоков</div>
 
             <div data-items="item_{{ $data['aid'] }}" data-items-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
                 @php $i = 0; @endphp
                 @foreach($data['content'] as $item)
-                <x-items.add-list-link
+                <x-items.add-list-block
                     index="{{ $i }}"
                     locale="{{ $locale->aid }}"
                     :form_data="[
                         'aid' => $data['aid'],
                         'item' => [
-                            'title' => $item['title'],
-                            'link' => $item['link'],
+                            'link' => $item['link'] ?? '',
+                            'image' => $item['image'] ?? [],
+                            'title' => $item['title'] ?? '',
+                            'subtitle' => $item['subtitle'] ?? '',
+                            'content' => $item['content'] ?? '',
                         ]
                     ]"
                 />
@@ -68,9 +71,9 @@
                 @endforeach
             </div>
             
-            <div class="button" data-item-add="add-list-link" data-index="{{ $index }}" data-item-list="item_{{ $data['aid'] }}">
+            <div class="button" data-item-add="add-list-block" data-index="{{ $index }}" data-item-list="item_{{ $data['aid'] }}">
                 <span class="button__icon"><span data-icon="plus"></span></span>
-                <span class="button__title">Добавить ссылку</span>
+                <span class="button__title">Добавить блок</span>
             </div>
         </div>
     </div>

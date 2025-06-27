@@ -728,15 +728,21 @@ class ApiEventsController extends Controller {
                     $join
                         ->on('e.language_id', '=', 'l.aid');
                 })
-                ->join('files as f', function($join) {
+                ->leftJoin('files as f', function($join) {
                     $join
                         ->on('e.thumbnail', '=', 'f.aid');
                 })
-                ->whereAny([
-                    'e.id',
-                    'e.aid',
-                    'e.slug',
-                ], '=', $parameter);
+                ->where(function($query) use ($parameter) {
+                    $query
+                        ->where(DB::raw("CAST(e.id AS CHAR)"), '=', $parameter)
+                        ->orWhere('e.aid', '=', (string) $parameter)
+                        ->orWhere('e.slug', '=', (string) $parameter);
+                });
+                // ->whereAny([
+                //     'e.id',
+                //     'e.aid',
+                //     'e.slug',
+                // ], '=', $parameter);
 
             $lang = $request->get('lang');
 
@@ -907,10 +913,18 @@ class ApiEventsController extends Controller {
 
             foreach($data as $item) {
                 if(!isset($news[$item['news_aid']])) {
-                    $images_aid = json_decode($item['news_thumbnail'], true);
-                    $images = Files::query()
-                        ->whereIn('aid', $images_aid)
-                        ->pluck('path', 'aid');
+                    if(!is_null($item['news_thumbnail'])) {
+                        $images_aid = json_decode($item['news_thumbnail'], true);
+                        $images = Files::query()
+                            ->whereIn('aid', $images_aid)
+                            ->pluck('path', 'aid');
+                        $images_json = array_map(function($aid) use ($images) {
+                            return ['slide' => $images[$aid] ?? null];
+                        }, $images_aid);
+                    }
+                    else {
+                        $images_json = null;
+                    }
                     
                     $news[$item['news_aid']] = [
                         'id'            => [],
@@ -920,9 +934,7 @@ class ApiEventsController extends Controller {
                         'subtitle'      => [],
                         'description'   => [],
                         'content'       => [],
-                        'images'        => array_map(function($aid) use ($images) {
-                            return ['slide' => $images[$aid] ?? null];
-                        }, $images_aid),
+                        'images'        => $images_json,
                         'time_to_read'  => [],
                         'enabled'       => $item['news_enabled'],
                         'date_from'     => $item['news_date_from'],
@@ -1018,10 +1030,18 @@ class ApiEventsController extends Controller {
 
             foreach($data as $item) {
                 if(empty($news_once)) {
-                    $images_aid = json_decode($item['news_thumbnail'], true);
-                    $images = Files::query()
-                        ->whereIn('aid', $images_aid)
-                        ->pluck('path', 'aid');
+                    if(!is_null($item['news_thumbnail'])) {
+                        $images_aid = json_decode($item['news_thumbnail'], true);
+                        $images = Files::query()
+                            ->whereIn('aid', $images_aid)
+                            ->pluck('path', 'aid');
+                        $imsges_json = array_map(function($aid) use ($images) {
+                            return ['slide' => $images[$aid] ?? null];
+                        }, $images_aid);
+                    }
+                    else {
+                        $imsges_json = null;
+                    }
                     
                     $news_once['id']            = [];
                     $news_once['aid']           = $item['news_aid'];
@@ -1030,9 +1050,7 @@ class ApiEventsController extends Controller {
                     $news_once['subtitle']      = [];
                     $news_once['description']   = [];
                     $news_once['content']       = [];
-                    $news_once['images']        = array_map(function($aid) use ($images) {
-                        return ['slide' => $images[$aid] ?? null];
-                    }, $images_aid);
+                    $news_once['images']        = $imsges_json;
                     $news_once['time_to_page']  = [];
                     $news_once['enabled']       = $item['news_enabled'];
                     $news_once['date_from']     = $item['news_date_from'];

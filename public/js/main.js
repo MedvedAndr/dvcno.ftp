@@ -183,9 +183,9 @@ jQuery(document).on('DOMContentLoaded', function() {
             eventObject.preventDefault();
             
             const $this_button = jQuery(eventObject.currentTarget);
-            const $this_elements = jQuery('[data-item-data="'+ String($this_button.attr('data-item-add')) +'"]');
+            const $this_elements = jQuery('[data-item-data="'+ String($this_button.attr('data-item-add')) + ($this_button.attr('data-index') !== undefined ? '_'+ String($this_button.attr('data-index')) : '') +'"]');
             const json_data = {};
-            
+
             $this_elements
                 .each(function(i, item) {
                     const $data_item = jQuery(item);
@@ -221,7 +221,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
-                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-doc', 'add-list-accordion'].includes(jquery_result.meta.component)) {
+                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-block', 'add-list-doc', 'add-list-accordion'].includes(jquery_result.meta.component)) {
                             Object.keys(jquery_result.data).forEach(function(locale) {
                                 $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"][data-items-lang="'+ locale +'"]');
                                 if($list.length) {

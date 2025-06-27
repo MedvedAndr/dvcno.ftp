@@ -73,7 +73,7 @@ class AjaxController
 
             $eventsQuery = DB::table('events as e')  // Добавляем ассоциацию для таблицы news
                 ->select(
-                    DB::raw("CONCAT('/events/', e.slug) as url"),  // Формируем URL из slug
+                    DB::raw("CONCAT('/event/', e.slug) as url"),  // Формируем URL из slug
                     'e.title as title',                          // Переименовываем title
                     'e.content as content',                      // Переименовываем content
                     'e.description as description'               // Переименовываем description

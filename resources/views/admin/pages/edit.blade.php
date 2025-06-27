@@ -90,14 +90,15 @@
                                             locale="{{ $language->aid }}"
                                             :data="[
                                                 'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
                                                 'content' => $section['content'][$language->locale_code] ?? [],
                                             ]"
                                         />
                                         @break
                                     {{-- @case('banner_docs')
                                         @break --}}
-                                    {{-- @case('slider')
-                                        @break --}}
+                                    @case('slider')
+                                        @break
                                     {{-- @case('gallery')
                                         @break --}}
                                     {{-- @case('section')
@@ -113,8 +114,17 @@
                                             ]"
                                         />
                                         @break
-                                    {{-- @case('list_block')
-                                        @break --}}
+                                    @case('list_blocks')
+                                        <x-sections.list-blocks
+                                            index="{{ $index }}"
+                                            :locale="$language"
+                                            :data="[
+                                                'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? [],
+                                            ]"
+                                        />
+                                        @break
                                     @case('list_docs')
                                         <x-sections.list-docs
                                             index="{{ $index }}"
@@ -127,9 +137,6 @@
                                         />
                                         @break
                                     @case('accordion')
-                                        {{--
-                                        @dump($section)
-                                        --}}
                                         <x-sections.accordion
                                             index="{{ $index }}"
                                             :locale="$language"
@@ -139,6 +146,9 @@
                                                 'content' => $section['content'][$language->locale_code] ?? [],
                                             ]"
                                         />
+                                        @break
+                                    @default
+                                        <div class="alert" data-status="info">Секция {{ $section['type'] }} в разрабоотке</div>
                                         @break
                                 @endswitch
                                 @php $index++ @endphp

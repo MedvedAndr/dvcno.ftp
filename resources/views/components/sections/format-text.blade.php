@@ -7,7 +7,10 @@
 <div data-expander="format_text_{{ $index }}">
     <div class="expander__head">
         <div class="expander__info">
-            <div class="info__title"><span data-sync="title_{{ $locale }}_{{ $data['aid'] }}">{{ $data['title'] }}</span><span class="empty">[Название отсутствует]</span></div>
+            <div class="info__title">
+                <span data-sync="title_{{ $locale }}_{{ $data['aid'] }}">{{ $data['title'] }}</span>
+                <span class="empty">[Название отсутствует]</span>
+            </div>
             <div class="info__type">Форматируемый текст</div>
         </div>
         <div class="expander__icon"><span data-icon></span></div>
