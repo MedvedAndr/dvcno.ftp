@@ -78,7 +78,7 @@
 
             <div class="button" data-item-add="add-list-doc" data-item-list="item_{{ $data['aid'] }}">
                 <span class="button__icon"><span data-icon="plus"></span></span>
-                <span class="button__title">Добавить локумент</span>
+                <span class="button__title">Добавить документ</span>
             </div>
         </div>
     </div>

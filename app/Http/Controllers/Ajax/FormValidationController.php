@@ -550,7 +550,7 @@ class FormValidationController extends Controller
                     $return['meta']['__form_errors']['news['. $language_aid .'][title]'] = 'Поле обязательно для заполнения';
                 }
 
-                // Если поле 'slug' пустое, то формируем ошибку
+                // Если поле 'slug' пустое, то формируем ошибку 
                 if(!$data_news_once['slug']) {
                     $return['error'] = 'Incorrect data';
                     $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Поле обязательно для заполнения';
