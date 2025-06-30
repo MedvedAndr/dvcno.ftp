@@ -1,7 +1,8 @@
 jQuery(document).on('DOMContentLoaded', function() {
     setGlobal('flags.tab', true);
     jQuery(document)
-        .on('click', '[data-tab]', toggleTab);
+        .on('click', '[data-tab]', toggleTab)
+        .on('change', '[data-radio-tab]', toggleRadioTab);
 });
 
 function toggleTab(eventObject) {
@@ -48,4 +49,16 @@ function toggleTab(eventObject) {
             setGlobal('flags.tab', true);
         }
     }
+}
+
+function toggleRadioTab(eventObject) {
+    const $this_radio = jQuery(eventObject.currentTarget);
+    const $this_radios = $this_radio.closest('[data-radio-tabs]');
+
+    const $this_box = jQuery('[data-radio-tabs-box="'+ String($this_radios.attr('data-radio-tabs')) +'"]');
+    const $check_box = $this_box.find('[data-radio-tab-box="'+ String($this_radio.attr('data-radio-tab')) +'"]');
+    const $active_box = $this_box.find('[data-status~="active"]');
+    
+    $active_box.eraseData('status', 'active');
+    $check_box.addData('status', 'active');
 }

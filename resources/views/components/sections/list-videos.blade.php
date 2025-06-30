@@ -46,7 +46,12 @@
                         'aid' => $data['aid'],
                         'item' => [
                             'title' => $item['title'],
-                            'document' => $item['document'],
+                            'image' => $item['image'] ?? null,
+                            'type' => $item['type'] ?? 'video',
+                            'video_mp4' => $item['video_mp4'] ?? null,
+                            'video_webm' => $item['video_webm'] ?? null,
+                            'link' => $item['link'] ?? null,
+                            'iframe' => $item['iframe'] ?? null
                         ]
                     ]"
                 />
