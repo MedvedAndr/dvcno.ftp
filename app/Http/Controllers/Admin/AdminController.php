@@ -465,16 +465,16 @@ class AdminController extends Controller
 
         foreach($pages as $page) {
             if(empty($view_data['page'])) {
-                $view_data['page']['id'] = [];
-                $view_data['page']['aid'] = $page['page_aid'];
-                $view_data['page']['slug'] = $page['page_slug'];
-                $view_data['page']['front_url'] = $page['page_front_url'];
-                $view_data['page']['title'] = [];
-                $view_data['page']['description'] = [];
-                $view_data['page']['enabled'] = $page['page_enabled'];
-                $view_data['page']['created_at'] = $page['page_created_at'];
-                $view_data['page']['updated_at'] = $page['page_updated_at'];
-                $view_data['page']['sections'] = [];
+                $view_data['page']['id']            = [];
+                $view_data['page']['aid']           = $page['page_aid'];
+                $view_data['page']['slug']          = $page['page_slug'];
+                $view_data['page']['front_url']     = $page['page_front_url'];
+                $view_data['page']['title']         = [];
+                $view_data['page']['description']   = [];
+                $view_data['page']['enabled']       = $page['page_enabled'];
+                $view_data['page']['created_at']    = $page['page_created_at'];
+                $view_data['page']['updated_at']    = $page['page_updated_at'];
+                $view_data['page']['sections']      = [];
             }
 
             $view_data['page']['id'][$page['page_id']] = true;
@@ -483,15 +483,15 @@ class AdminController extends Controller
             
             if(!isset($view_data['page']['sections'][$page['section_aid']])) {
                 $view_data['page']['sections'][$page['section_aid']] = [
-                    'id' => [],
-                    'aid' => $page['section_aid'],
-                    'type' => $page['section_type'],
-                    'title' => [],
-                    'content' => [],
-                    'group' => $page['section_group'],
-                    'order' => $page['section_order'],
-                    'created_at' => $page['section_created_at'],
-                    'updated_at' => $page['section_updated_at'],
+                    'id'            => [],
+                    'aid'           => $page['section_aid'],
+                    'type'          => $page['section_type'],
+                    'title'         => [],
+                    'content'       => [],
+                    'group'         => $page['section_group'],
+                    'order'         => $page['section_order'],
+                    'created_at'    => $page['section_created_at'],
+                    'updated_at'    => $page['section_updated_at'],
                 ];
             }
 
@@ -508,7 +508,7 @@ class AdminController extends Controller
             $fileIds = [];
 
             array_walk_recursive($content, function($value, $key) use (&$fileIds) {
-                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                if(in_array($key, ['document', 'video_mp4', 'video_webm', 'image', 'big', 'medium', 'small'])) {
                     $fileIds[$value] = true;
                 }
             });
@@ -517,7 +517,7 @@ class AdminController extends Controller
 
             // Затем обрабатываем контент
             array_walk_recursive($content, function(&$value, $key) use ($files) {
-                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                if(in_array($key, ['document', 'video_mp4', 'video_webm', 'image', 'big', 'medium', 'small'])) {
                     if(isset($files[$value])) {
                         $value = [
                             'aid' => $files[$value]->aid,
@@ -525,6 +525,9 @@ class AdminController extends Controller
                             'extension' => $files[$value]->extension,
                             'path' => $files[$value]->path
                         ];
+                    }
+                    else {
+                        $value = null;
                     }
                 }
             });

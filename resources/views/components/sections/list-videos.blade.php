@@ -17,6 +17,51 @@
     </div>
 
     <div class="expander__body">
+        <x-form.hidden
+            name="sections[{{ $locale->aid }}][{{ $data['aid'] }}][aid]"
+            value="{{ $data['aid'] }}"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][aid]"
+            value="{{ $data['aid'] }}"
+            :data="[
+                'item-data' => 'add-list-video',
+            ]"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][item][title]"
+            value=""
+            :data="[
+                'item-data' => 'add-list-video',
+            ]"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][item][type]"
+            value="video"
+            :data="[
+                'item-data' => 'add-list-video',
+            ]"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][item][link]"
+            value=""
+            :data="[
+                'item-data' => 'add-list-video',
+            ]"
+        />
+
+        <x-form.hidden
+            name="elements[{{ $locale->locale_code }}][item][iframe]"
+            value=""
+            :data="[
+                'item-data' => 'add-list-video',
+            ]"
+        />
+
         <div class="flex__col">
             <x-form.text
                 name="sections[{{ $locale->aid }}][{{ $data['aid'] }}][title]"
