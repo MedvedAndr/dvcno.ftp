@@ -73,6 +73,17 @@
                                             ]"
                                         />
                                         @break
+                                    @case('sub_header')
+                                        <x-sections.sub-header
+                                            index="{{ $index }}"
+                                            locale="{{ $language->aid }}"
+                                            :data="[
+                                                'aid' => $section['aid'],
+                                                'title' => $section['title'][$language->locale_code] ?? '',
+                                                'content' => $section['content'][$language->locale_code] ?? '',
+                                            ]"
+                                        />
+                                        @break
                                     @case('format_text')
                                         <x-sections.format-text
                                             index="{{ $index }}"

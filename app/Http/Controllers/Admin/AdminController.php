@@ -358,23 +358,23 @@ class AdminController extends Controller
             ->orderBy('page_title', 'asc');
 
         // Временное ограничение. Убрать после создания и наполнения страниц.
-        $pages_query->whereIn('p.aid', [
-            'b84zqssey43',
-            'o9085r023zi',
-            '2vdbvv7eqgm',
-            'wbtyamo9bdy',
-            '0kdhz5qz8vz',
-            'rrr1s4wu3dc',
-            'qvd3gu08wpl',
-            'sh5nat4xfbz',
-            '3uh8y4290zz',
-            '73ot9p5xn22',
-            '051g3y2qk9z',
-            'wtc4uqkp923',
-            'j8jnbbg0ing',
-            'xpwcdnwcm7x',
-            'clnd8l9cp1l',
-        ]);
+        // $pages_query->whereIn('p.aid', [
+        //     'b84zqssey43',
+        //     'o9085r023zi',
+        //     '2vdbvv7eqgm',
+        //     'wbtyamo9bdy',
+        //     '0kdhz5qz8vz',
+        //     'rrr1s4wu3dc',
+        //     'qvd3gu08wpl',
+        //     'sh5nat4xfbz',
+        //     '3uh8y4290zz',
+        //     '73ot9p5xn22',
+        //     '051g3y2qk9z',
+        //     'wtc4uqkp923',
+        //     'j8jnbbg0ing',
+        //     'xpwcdnwcm7x',
+        //     'clnd8l9cp1l',
+        // ]);
 
         $pages = $pages_query->get();
 
@@ -532,7 +532,7 @@ class AdminController extends Controller
                 }
             });
 
-            if($page['section_type'] === 'header' || $page['section_type'] === 'format_text') {
+            if($page['section_type'] === 'header' || $page['section_type'] === 'sub_header' || $page['section_type'] === 'format_text') {
                 $content = $content[0];
             }
 
@@ -1013,5 +1013,13 @@ class AdminController extends Controller
 
     public function editRole() {
 
+    }
+
+    public function generator_id() {
+        $ids = [
+            'sections' => (new GenerateID())->table('sections')->get(),
+        ];
+
+        return $ids;
     }
 }
