@@ -36,7 +36,7 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/news', 'news')->name('admin.news');
     //Route::get('/news/view/{aid}', 'viewNews')->name('admin.news.view');
     Route::get('/news/create', 'createNews')->name('admin.news.create');
-    //Route::get('/news/edit/{aid}', 'editNews')->name('admin.news.edit');
+    Route::get('/news/edit/{aid}', 'editNews')->name('admin.news.edit');
 
     Route::get('/languages', 'languages')->name('admin.languages');
     Route::get('/languages/view/{aid}', 'viewLanguage')->name('admin.languages.view');
