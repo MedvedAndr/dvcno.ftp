@@ -519,7 +519,7 @@ class FormValidationController extends Controller
         $data = $request->only([
             'news',
         ]);
-
+        //dump($data);
         // Флаг для отслеживания заполненности языков
         $news_empty_flag = false;
 
@@ -541,20 +541,28 @@ class FormValidationController extends Controller
                 $data_news_once['date_to'] || 
                 $data_news_once['description'] || 
                 $data_news_once['slug'] || 
+                $data_news_once['subtitle'] || 
+                $data_news_once['time_to_read'] || 
                 $data_news_once['title']
             )) {
                 $news_empty_flag = true;
-
+                
                 // Если поле 'title' пустое, то формируем ошибку
                 if(!$data_news_once['title']) {
                     $return['error'] = 'Incorrect data';
                     $return['meta']['__form_errors']['news['. $language_aid .'][title]'] = 'Поле обязательно для заполнения';
                 }
 
-                // Если поле 'slug' пустое, то формируем ошибку 
+                // Если поле 'content' пустое, то формируем ошибку
+                if(!$data_news_once['content']) {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['news['. $language_aid .'][content]'] = 'Поле обязательно для заполнения';
+                }
+
+                // Если поле 'slug' пустое, то формируем ошибку
                 if(!$data_news_once['slug']) {
                     $return['error'] = 'Incorrect data';
-                    $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Поле обязательно для заполнения';
+                    $return['meta']['__form_errors']['news['. $language_aid .'][slug]'] = 'Поле обязательно для заполнения';
                 }
 
                 // Проверка ссылки на корректность
@@ -562,12 +570,12 @@ class FormValidationController extends Controller
                     // Проверяем наличие ссылки в БД
                     if(Events::where('slug', '=', $data_news_once['slug'])->exists()) {
                         $return['error'] = 'Incorrect data';
-                        $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Мероприятие с такой ссылкой уже есть в системе';
+                        $return['meta']['__form_errors']['news['. $language_aid .'][slug]'] = 'Новость с такой ссылкой уже есть в системе';
                     }
                 }
                 else {
                     $return['error'] = 'Incorrect data';
-                    $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Не корректный формат записи';
+                    $return['meta']['__form_errors']['news['. $language_aid .'][slug]'] = 'Не корректный формат записи';
                 }
 
                 $data_events[] = [
@@ -577,6 +585,8 @@ class FormValidationController extends Controller
                     'title'         => $data_news_once['title'],
                     'description'   => $data_news_once['description'] ?? '',
                     'content'       => $data_news_once['content'] ?? '',
+                    'subtitle'      => $data_news_once['subtitle'] ?? '',
+                    'time_to_read'  => $data_news_once['time_to_read'] ?? '',
                     'thumbnail'     => null,
                     'enabled'       => (int) filter_var($data_news_once['enabled'], FILTER_VALIDATE_BOOLEAN),
                     'date_from'     => $data_news_once['date_from'],
@@ -592,7 +602,9 @@ class FormValidationController extends Controller
                 !$data_news_once['date_to'] &&
                 !$data_news_once['description'] &&
                 !$data_news_once['slug'] &&
-                !$data_news_once['title']
+                !$data_news_once['title'] &&
+                !$data_news_once['subtitle'] &&
+                !$data_news_once['time_to_read']
             )) {
                 $data['news'][$language_aid]['required'] = 'false';
                 $return['meta']['__set_data']['news['. $language_aid .'][required]'] = 'false';
@@ -604,8 +616,18 @@ class FormValidationController extends Controller
             $return['data']     = $data;
             unset($return['error']);
 
-            if(!empty($data_events)) {
-                News::insert($data_events);
+            if (empty($return['meta']['__system_messages']['error']) && empty($return['meta']['__form_errors'])) {
+                if(!empty($data_events)) {
+                    News::insert($data_events);
+                    if(isset($return['meta']['__send_name'])) {
+                        if($return['meta']['__send_name'] === 'save') {
+                            $return['meta']['__redirect'] = route('admin.news.edit', ['aid' => $news_aid]);
+                        }
+                        else {
+                            $return['meta']['__redirect'] = route('admin.news');
+                        }
+                    }
+                }
             }
         }
         else {
