@@ -14,6 +14,7 @@ use App\Services\GenerateID;
 use App\Models\Files;
 use App\Models\Menus;
 use App\Models\Pages;
+use App\Models\News;
 use App\Models\Settings;
 use App\Models\Languages;
 
@@ -358,23 +359,23 @@ class AdminController extends Controller
             ->orderBy('page_title', 'asc');
 
         // Временное ограничение. Убрать после создания и наполнения страниц.
-        $pages_query->whereIn('p.aid', [
-            'b84zqssey43',
-            'o9085r023zi',
-            '2vdbvv7eqgm',
-            'wbtyamo9bdy',
-            '0kdhz5qz8vz',
-            'rrr1s4wu3dc',
-            'qvd3gu08wpl',
-            'sh5nat4xfbz',
-            '3uh8y4290zz',
-            '73ot9p5xn22',
-            '051g3y2qk9z',
-            'wtc4uqkp923',
-            'j8jnbbg0ing',
-            'xpwcdnwcm7x',
-            'clnd8l9cp1l',
-        ]);
+        // $pages_query->whereIn('p.aid', [
+        //     'b84zqssey43',
+        //     'o9085r023zi',
+        //     '2vdbvv7eqgm',
+        //     'wbtyamo9bdy',
+        //     '0kdhz5qz8vz',
+        //     'rrr1s4wu3dc',
+        //     'qvd3gu08wpl',
+        //     'sh5nat4xfbz',
+        //     '3uh8y4290zz',
+        //     '73ot9p5xn22',
+        //     '051g3y2qk9z',
+        //     'wtc4uqkp923',
+        //     'j8jnbbg0ing',
+        //     'xpwcdnwcm7x',
+        //     'clnd8l9cp1l',
+        // ]);
 
         $pages = $pages_query->get();
 
@@ -465,16 +466,16 @@ class AdminController extends Controller
 
         foreach($pages as $page) {
             if(empty($view_data['page'])) {
-                $view_data['page']['id'] = [];
-                $view_data['page']['aid'] = $page['page_aid'];
-                $view_data['page']['slug'] = $page['page_slug'];
-                $view_data['page']['front_url'] = $page['page_front_url'];
-                $view_data['page']['title'] = [];
-                $view_data['page']['description'] = [];
-                $view_data['page']['enabled'] = $page['page_enabled'];
-                $view_data['page']['created_at'] = $page['page_created_at'];
-                $view_data['page']['updated_at'] = $page['page_updated_at'];
-                $view_data['page']['sections'] = [];
+                $view_data['page']['id']            = [];
+                $view_data['page']['aid']           = $page['page_aid'];
+                $view_data['page']['slug']          = $page['page_slug'];
+                $view_data['page']['front_url']     = $page['page_front_url'];
+                $view_data['page']['title']         = [];
+                $view_data['page']['description']   = [];
+                $view_data['page']['enabled']       = $page['page_enabled'];
+                $view_data['page']['created_at']    = $page['page_created_at'];
+                $view_data['page']['updated_at']    = $page['page_updated_at'];
+                $view_data['page']['sections']      = [];
             }
 
             $view_data['page']['id'][$page['page_id']] = true;
@@ -483,15 +484,15 @@ class AdminController extends Controller
             
             if(!isset($view_data['page']['sections'][$page['section_aid']])) {
                 $view_data['page']['sections'][$page['section_aid']] = [
-                    'id' => [],
-                    'aid' => $page['section_aid'],
-                    'type' => $page['section_type'],
-                    'title' => [],
-                    'content' => [],
-                    'group' => $page['section_group'],
-                    'order' => $page['section_order'],
-                    'created_at' => $page['section_created_at'],
-                    'updated_at' => $page['section_updated_at'],
+                    'id'            => [],
+                    'aid'           => $page['section_aid'],
+                    'type'          => $page['section_type'],
+                    'title'         => [],
+                    'content'       => [],
+                    'group'         => $page['section_group'],
+                    'order'         => $page['section_order'],
+                    'created_at'    => $page['section_created_at'],
+                    'updated_at'    => $page['section_updated_at'],
                 ];
             }
 
@@ -508,7 +509,7 @@ class AdminController extends Controller
             $fileIds = [];
 
             array_walk_recursive($content, function($value, $key) use (&$fileIds) {
-                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                if(in_array($key, ['document', 'video_mp4', 'video_webm', 'image', 'big', 'medium', 'small'])) {
                     $fileIds[$value] = true;
                 }
             });
@@ -517,7 +518,7 @@ class AdminController extends Controller
 
             // Затем обрабатываем контент
             array_walk_recursive($content, function(&$value, $key) use ($files) {
-                if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                if(in_array($key, ['document', 'video_mp4', 'video_webm', 'image', 'big', 'medium', 'small'])) {
                     if(isset($files[$value])) {
                         $value = [
                             'aid' => $files[$value]->aid,
@@ -526,10 +527,13 @@ class AdminController extends Controller
                             'path' => $files[$value]->path
                         ];
                     }
+                    else {
+                        $value = null;
+                    }
                 }
             });
 
-            if($page['section_type'] === 'header' || $page['section_type'] === 'format_text') {
+            if($page['section_type'] === 'header' || $page['section_type'] === 'sub_header' || $page['section_type'] === 'format_text') {
                 $content = $content[0];
             }
 
@@ -544,14 +548,14 @@ class AdminController extends Controller
             return $value;
         }, $view_data['page']['sections']);
 
-        $view_data['title'] = 'Редакирование страницы';
+        $view_data['title'] = 'Редактирование страницы';
         $view_data['breadcrumbs'] = [
             [
                 'title' => 'Страницы',
                 'href'  => 'admin.pages'
             ],
             [
-                'title' => 'Редакирование страницы ""',
+                'title' => 'Редактирование страницы ""',
             ],
         ];
 
@@ -626,6 +630,84 @@ class AdminController extends Controller
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.news.main', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function editNews($aid) {
+        
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+        AssetsManager::setStyle([
+            'href'      => asset('/css/models/fields.css'),
+            'priority'  => 500,
+        ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['news'] = [];
+        $news_query = News::query()
+            ->select(
+                         'n.id as news_id',
+                        'n.aid as news_aid',
+                       'n.slug as news_slug',
+                      'n.title as news_title',
+                   'n.subtitle as news_subtitle',
+                'n.description as news_description',
+                    'n.content as news_content',
+                  'n.thumbnail as news_thumbnail',
+               'n.time_to_read as news_time_to_read',
+                    'n.enabled as news_enabled',
+                 'n.created_at as news_created_at',
+                 'n.updated_at as news_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('news as n')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('n.language_id', '=', 'l.aid');
+            })
+            ->where('n.aid', '=', $aid)
+            ->orderBy('news_created_at', 'desc');
+
+        $news = $news_query->get();
+
+        foreach($news as $new) {
+            if(empty($view_data['news'])) {
+                $view_data['news']['id']            = [];
+                $view_data['news']['aid']           = $new['news_aid'];
+                $view_data['news']['slug']          = $new['news_slug'];
+                $view_data['news']['content']       = [];
+                $view_data['news']['description']   = [];
+                $view_data['news']['subtitle']      = [];
+                $view_data['news']['time_to_read']  = [];
+                $view_data['news']['title']         = [];
+                $view_data['news']['enabled']       = $new['news_enabled'];
+                $view_data['news']['created_at']    = $new['news_created_at'];
+                $view_data['news']['updated_at']    = $new['news_updated_at'];
+            }
+
+            $view_data['news']['id'][$new['news_id']] = true;
+            $view_data['news']['title'][$new['locale_code']] = $new['news_title'];
+            $view_data['news']['content'][$new['locale_code']] = $new['news_content'];
+            $view_data['news']['description'][$new['locale_code']] = $new['news_description'];
+            $view_data['news']['subtitle'][$new['locale_code']] = $new['news_subtitle'];
+            $view_data['news']['time_to_read'][$new['locale_code']] = $new['news_time_to_read'];
+        }
+
+        $view_data['title'] = 'Новости';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Новости',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.news.edit', $view_data);
         $template[] = view('admin.footer', $view_data);
 
         return implode('', $template);
@@ -1010,5 +1092,13 @@ class AdminController extends Controller
 
     public function editRole() {
 
+    }
+
+    public function generator_id() {
+        $ids = [
+            'sections' => (new GenerateID())->table('sections')->get(),
+        ];
+
+        return $ids;
     }
 }
