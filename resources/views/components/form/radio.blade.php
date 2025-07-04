@@ -36,13 +36,13 @@ $status = array_unique($status);
 
 <label 
     @if(!empty($class)) class="{{ implode(' ', $class) }}" @endif
-    data-label="checkbox"
+    data-label="radio"
     @if(!empty($status)) data-status="{{ implode(' ', $status) }}" @endif
 >
     <span class="label__input">
         <input
             @isset($id) id="{{ $id }}" @endisset
-            type="checkbox"
+            type="radio"
             @isset($name) name="{{ $name }}" @endisset
             @isset($value) value="{{ $value }}" @endisset
             @if($checked) checked @endif
@@ -55,7 +55,7 @@ $status = array_unique($status);
             @endforeach
             @endif
         />
-        <span class="label__checkbox_icon" data-icon="check"></span>
+        <span class="label__radio_icon"></span>
     </span>
     
     @isset($title)

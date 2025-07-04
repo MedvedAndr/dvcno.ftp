@@ -163,3 +163,12 @@
     flex                : 1;
     margin              : 0px;
 }
+
+
+.radio_tab__box {
+    display             : none;
+}
+
+.radio_tab__box[data-status~="active"] {
+    display             : block;
+}

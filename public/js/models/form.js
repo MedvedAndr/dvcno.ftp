@@ -50,8 +50,14 @@ jQuery(document).on('DOMContentLoaded', function() {
         // Изменение
         .on(
             'change',
-            'label[data-label="togglebox"] input',
+            'label[data-label="checkbox"] input, label[data-label="togglebox"] input',
             {'status': 'checked'},
+            toggleStatus
+        )
+        .on(
+            'change',
+            'label[data-label="radio"] input',
+            {'status': 'radio_checked'},
             toggleStatus
         );
 
@@ -552,6 +558,13 @@ function toggleStatus(eventObject) {
             else {
                 $this_label.eraseData('status', 'checked');
             }
+            break;
+        case 'radio_checked':
+            const $radios = jQuery('input[name="'+ String($this_input.attr('name')) +'"]').not($this_input);
+            const $labels = $radios.closest('label[data-label]');
+
+            $labels.eraseData('status', 'checked');
+            $this_label.addData('status', 'checked');
             break;
     }
 }

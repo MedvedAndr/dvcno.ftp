@@ -1,0 +1,42 @@
+label[data-label="radio"] {
+    
+}
+
+label[data-label="radio"] .label__input {
+    width               : 16px;
+    height              : 16px;
+    background-color    : var(--white-100);
+    border              : 1px solid var(--gray-100);
+    border-radius       : 100%;
+    padding             : 3px;
+    cursor              : pointer;
+    transition-property : background-color;
+    transition-duration : 0.3s;
+}
+
+label[data-label="radio"][data-status~="checked"] .label__input {
+    background-color    : transparent;
+}
+
+label[data-label="radio"] .label__input input[type="radio"] {
+    
+}
+
+label[data-label="radio"] .label__input .label__radio_icon {
+    display             : block;
+    width               : 100%;
+    height              : 100%;
+    background-color    : var(--white-100);
+    border-radius       : 100%;
+    opacity             : 0;
+    transition-property : opacity;
+    transition-duration : 0.3s;
+}
+
+label[data-label="radio"][data-status~="checked"] .label__input .label__radio_icon {
+    opacity             : 1;
+}
+
+label[data-label="radio"] .label__title {
+    cursor              : pointer;
+}
