@@ -1203,7 +1203,7 @@ class ApiEventsController extends Controller {
                     $section['id'] = array_keys($section['id']);
 
                     array_walk_recursive($section['content'], function(&$value, $key) {
-                        if(in_array($key, ['document', 'image', 'big', 'medium', 'small'])) {
+                        if(in_array($key, ['document', 'video_mp4', 'video_webm', 'image', 'big', 'medium', 'small'])) {
                             $file = Files::where('aid', '=', $value)->first();
                             if($file) {
                                 $value = $file->path;

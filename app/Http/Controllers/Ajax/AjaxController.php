@@ -34,50 +34,67 @@ class AjaxController
                 'data' => [],
                 'meta' => $query_data->only([
                     'value',
+                    'lang'
                 ]),
             ];
 
             
-            $value = "%".$response['meta']['value']."%";
+            $value = "%". $response['meta']['value'] ."%";
             
-            // $pages_query = DB::table('pages as p')
-            //     ->select(
-            //         'p.front_url as url',
-            //         'p.title as title',
-            //         's.content as content',
-            //         DB::raw("'' as description")
-            //     )
-            //     ->join('sections as s', function($join) {
-            //         $join
-            //             ->on('p.aid', '=', 's.page_id')
-            //             ->on('p.language_id', '=', 's.language_id');
-            //     })
-            //     ->where(function($query) use ($value) {
-            //         $query
-            //             ->where('p.title', 'like', $value)
-            //             ->orWhereJsonContains('s.content', $value);
-            //     });
+            $pages_query = DB::table('pages as p')
+                ->select(
+                    'p.front_url as url',
+                    'p.title as title',
+                    's.content as content',
+                    DB::raw("'' as description")
+                )
+                ->join('sections as s', function($join) {
+                    $join
+                        ->on('p.aid', '=', 's.page_id')
+                        ->on('p.language_id', '=', 's.language_id');
+                })
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('p.language_id', '=', 'l.aid');
+                })
+                ->where('l.locale_code', '=', $response['meta']['lang'])
+                ->where(function($query) use ($value) {
+                    $query
+                        ->where('p.title', 'like', $value)
+                        // ->orWhereJsonContains('s.content', $value);
+                        ->orWhereRaw("REGEXP_REPLACE(REGEXP_REPLACE(s.content, '<[^>]*>', ' '), '[[:space:]]+', ' ') LIKE ?", [$value]);
+                });
 
-            $newsQuery = DB::table('news as n')  // Добавляем ассоциацию для таблицы news
+            $news_query = DB::table('news as n')  // Добавляем ассоциацию для таблицы news
                 ->select(
                     DB::raw("CONCAT('/news/', n.slug) as url"),  // Формируем URL из slug
                     'n.title as title',                          // Переименовываем title
                     'n.content as content',                      // Переименовываем content
                     'n.description as description'               // Переименовываем description
                 )
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('n.language_id', '=', 'l.aid');
+                })
+                ->where('l.locale_code', '=', $response['meta']['lang'])
                 ->where(function($query) use ($value) {
                     $query->where('n.title', 'like', $value)
                         ->orWhere('n.description', 'like', $value)
                         ->orWhere('n.content', 'like', $value);
                 });
 
-            $eventsQuery = DB::table('events as e')  // Добавляем ассоциацию для таблицы news
+            $events_query = DB::table('events as e')  // Добавляем ассоциацию для таблицы news
                 ->select(
                     DB::raw("CONCAT('/event/', e.slug) as url"),  // Формируем URL из slug
                     'e.title as title',                          // Переименовываем title
                     'e.content as content',                      // Переименовываем content
                     'e.description as description'               // Переименовываем description
                 )
+                ->join('languages as l', function($join) {
+                    $join
+                        ->on('e.language_id', '=', 'l.aid');
+                })
+                ->where('l.locale_code', '=', $response['meta']['lang'])
                 ->where(function($query) use ($value) {
                     $query->where('e.title', 'like', $value)
                         ->orWhere('e.description', 'like', $value)
@@ -85,19 +102,22 @@ class AjaxController
                 });
 
 
-	    $finalQuery = $newsQuery
-                ->unionAll($eventsQuery);
+	        $final_query = $pages_query
+                ->unionAll($news_query)
+                ->unionAll($events_query);
 
-            $data = $finalQuery
+            $data = $final_query
                 ->orderBy('title')
-                ->limit(10)
+                ->limit(50)
                 ->get();
-// 
+            
+            $response['data'] = $data->toArray();
+            // 
             // $data = $finalQuery
             //     ->orderBy('title')
             //     ->limit(10);
 
-            return $data->toArray();
+            return $response;
             //return $data->toSql();
         }
         catch(\Throwable $error) {

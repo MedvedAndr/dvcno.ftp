@@ -1,0 +1,37 @@
+label[data-label="checkbox"] {
+    
+}
+
+label[data-label="checkbox"] .label__input {
+    width               : 16px;
+    height              : 16px;
+    background-color    : var(--white-100);
+    border              : 1px solid var(--gray-100);
+    border-radius       : 3px;
+    cursor              : pointer;
+    transition-property : background-color;
+    transition-duration : 0.3s;
+}
+
+label[data-label="checkbox"][data-status~="checked"] .label__input {
+    background-color    : transparent;
+}
+
+label[data-label="checkbox"] .label__input input[type="checkbox"] {
+    
+}
+
+label[data-label="checkbox"] .label__input .label__checkbox_icon {
+    --icon-size         : 14px;
+    opacity             : 0;
+    transition-property : opacity;
+    transition-duration : 0.3s;
+}
+
+label[data-label="checkbox"][data-status~="checked"] .label__input .label__checkbox_icon {
+    opacity             : 1;
+}
+
+label[data-label="checkbox"] .label__title {
+    cursor              : pointer;
+}

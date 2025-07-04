@@ -51,7 +51,7 @@ jQuery(document).on('DOMContentLoaded', function() {
         const list_key = $this_item_list.attr('data-items');
         const $this_items = $this_item_list.find('[data-item]');
 
-        if($this_items.length === 0) {
+        if($this_items.length === 0 && !hasGlobal('items_index.'+ String(list_key))) {
             setGlobal('items_index.'+ String(list_key), 0);
             return;
         }
@@ -169,9 +169,9 @@ jQuery(document).on('DOMContentLoaded', function() {
             });
         })
         // Изменение специального input, который переключает статус обязательных полей (додумать функционал)
-        .on('input', '[data-required-group]:not([type="hidden"])', function(eventObject) {
+        .on('input change', '[data-required-group]:not([type="hidden"])', function(eventObject) {
             const group_id = jQuery(eventObject.currentTarget).attr('data-required-group');
-
+            // TODO: проверить работу функционала обязательной группы полей
             const has_value = jQuery('[data-required-group="' + group_id + '"]:not([type="hidden"]').filter(function(i, item) {
                 return jQuery(item).val().trim() !== '';
             }).length > 0;
@@ -221,7 +221,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
-                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-block', 'add-list-doc', 'add-list-accordion'].includes(jquery_result.meta.component)) {
+                        if(['add-term', 'add-permalink', 'add-list-link', 'add-list-block', 'add-list-doc', 'add-list-video', 'add-list-accordion'].includes(jquery_result.meta.component)) {
                             Object.keys(jquery_result.data).forEach(function(locale) {
                                 $list = jQuery('[data-items="'+ $this_button.attr('data-item-list') +'"][data-items-lang="'+ locale +'"]');
                                 if($list.length) {

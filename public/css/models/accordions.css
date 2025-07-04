@@ -12,6 +12,7 @@
     gap: 8px;
     background-color: var(--white-12);
     padding: 10px 16px 10px;
+    cursor: pointer;
 }
 
 [data-expander] .expander__info{
@@ -40,7 +41,7 @@
 }
 
 [data-expander] .expander__icon {
-    cursor: pointer;
+    
 }
 
 [data-expander] .expander__icon [data-icon] {

@@ -141,6 +141,10 @@ class AppServiceProvider extends ServiceProvider
                 'priority'  => 500,
             ],
             [
+                'href'      => asset('/css/models/form/checkbox.css'),
+                'priority'  => 500,
+            ],
+            [
                 'href'      => asset('/css/models/form/datetime.css'),
                 'priority'  => 500,
             ],
@@ -154,6 +158,10 @@ class AppServiceProvider extends ServiceProvider
             ],
             [
                 'href'      => asset('/css/models/form/password.css'),
+                'priority'  => 500,
+            ],
+            [
+                'href'      => asset('/css/models/form/radio.css'),
                 'priority'  => 500,
             ],
             [
