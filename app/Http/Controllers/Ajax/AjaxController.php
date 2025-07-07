@@ -38,11 +38,31 @@ class AjaxController
                 ]),
             ];
 
+            $types = [
+                'ru' => [
+                    'page' => 'Страница',
+                    'news' => 'Новость',
+                    'event' => 'Мероприятие',
+                ],
+                'en' => [
+                    'page' => 'Page',
+                    'news' => 'News',
+                    'event' => 'Event',
+                ],
+            ];
+
+            // Определение и установка языка
+            $response['meta']['lang'] = $response['meta']['lang'] ?? 'ru';
             
+            // Шаблон запрашиваемого значения
             $value = "%". $response['meta']['value'] ."%";
             
+            // Запрос для страниц
             $pages_query = DB::table('pages as p')
                 ->select(
+                    'p.aid as aid',
+                    DB::raw("'page' as type"),
+                    DB::raw("'". $types[$response['meta']['lang']]['page'] ."' as type_translate"),
                     'p.front_url as url',
                     'p.title as title',
                     's.content as content',
@@ -61,16 +81,19 @@ class AjaxController
                 ->where(function($query) use ($value) {
                     $query
                         ->where('p.title', 'like', $value)
-                        // ->orWhereJsonContains('s.content', $value);
                         ->orWhereRaw("REGEXP_REPLACE(REGEXP_REPLACE(s.content, '<[^>]*>', ' '), '[[:space:]]+', ' ') LIKE ?", [$value]);
                 });
 
-            $news_query = DB::table('news as n')  // Добавляем ассоциацию для таблицы news
+            // Запрос для новостей
+            $news_query = DB::table('news as n')
                 ->select(
-                    DB::raw("CONCAT('/news/', n.slug) as url"),  // Формируем URL из slug
-                    'n.title as title',                          // Переименовываем title
-                    'n.content as content',                      // Переименовываем content
-                    'n.description as description'               // Переименовываем description
+                    'n.aid as aid',
+                    DB::raw("'news' as type"),
+                    DB::raw("'". $types[$response['meta']['lang']]['news'] ."' as type_translate"),
+                    DB::raw("CONCAT('/news/', n.slug) as url"),
+                    'n.title as title',
+                    'n.content as content',
+                    'n.description as description'
                 )
                 ->join('languages as l', function($join) {
                     $join
@@ -83,12 +106,16 @@ class AjaxController
                         ->orWhere('n.content', 'like', $value);
                 });
 
-            $events_query = DB::table('events as e')  // Добавляем ассоциацию для таблицы news
+            // Запрос для мероприятий
+            $events_query = DB::table('events as e')
                 ->select(
-                    DB::raw("CONCAT('/event/', e.slug) as url"),  // Формируем URL из slug
-                    'e.title as title',                          // Переименовываем title
-                    'e.content as content',                      // Переименовываем content
-                    'e.description as description'               // Переименовываем description
+                    'e.aid as aid',
+                    DB::raw("'event' as type"),
+                    DB::raw("'". $types[$response['meta']['lang']]['event'] ."' as type_translate"),
+                    DB::raw("CONCAT('/event/', e.slug) as url"),
+                    'e.title as title',
+                    'e.content as content',
+                    'e.description as description'
                 )
                 ->join('languages as l', function($join) {
                     $join
@@ -102,23 +129,43 @@ class AjaxController
                 });
 
 
+            // Собираем запросы в UNION ALL
 	        $final_query = $pages_query
                 ->unionAll($news_query)
                 ->unionAll($events_query);
 
-            $data = $final_query
+            // Применяем фильтры и сортировку
+            $data = DB::query()
+                ->fromSub($final_query, 'u')
                 ->orderBy('title')
-                ->limit(50)
                 ->get();
-            
-            $response['data'] = $data->toArray();
-            // 
-            // $data = $finalQuery
-            //     ->orderBy('title')
-            //     ->limit(10);
 
+            // Парсим данные
+            $data_parse = [];
+
+            foreach($data as $item) {
+                if(!isset($data_parse[$item->aid])) {
+                    $data_parse[$item->aid] = [
+                        'aid'               => $item->aid,
+                        'type'              => $item->type,
+                        'type_translate'    => $item->type_translate,
+                        'url'               => $item->url,
+                        'title'             => $item->title,
+                        'content'           => [],
+                        'description'       => $item->description,
+                    ];
+                };
+
+                $data_parse[$item->aid]['content'][] = $item->content;
+            }
+
+            $data_parse = array_values($data_parse);
+            array_splice($data_parse, 50);
+
+            // Формируем ответ
+            $response['data'] = $data_parse;
+            
             return $response;
-            //return $data->toSql();
         }
         catch(\Throwable $error) {
             return response()->json([
