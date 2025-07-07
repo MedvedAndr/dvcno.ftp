@@ -20,8 +20,9 @@
     </div>
 
     <div class="tabs__box" data-tabs-box="landuages">
-        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_news">
+        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_news">
             @foreach(app('languages') as $language)
+            <x-form.hidden name="news[{{ $language->aid }}][aid]" value="{{$news['aid']}}"/>
             <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif>
                 <div class="page__content __with_right_col">
                     <div class="group__box">
@@ -29,9 +30,10 @@
                             <div class="group__head">Контент</div>
                             <div class="group__body">
                                 <div class="fields">
+                                    @dump($news)
                                     <x-form.hidden
                                         name="news[{{ $language->aid }}][required]"
-                                        value="false"
+                                        value="{{ isset($news['title'][$language->locale_code]) || isset($news['content'][$language->locale_code]) ? 'true' : 'false' }}"
                                         :data="[
                                             'required' => $language->locale_code .'_group'
                                         ]"
@@ -45,8 +47,8 @@
                                                 title="{{ app('dictionary')->dictionary('form_labels')->key('name')->get() }}"
                                                 :data="[
                                                     'required-group' => $language->locale_code .'_group',
-                                                    'slugifier' => 'news['. $language->aid .'][slug].news.title',
-                                                ]"
+                                                    'slugifier' => 'news['. $language->aid .'][slug].news.title']"
+                                                value="{{ $news['title'][$language->locale_code] ?? ''}}"
                                             />
                                             <x-form.edited_string
                                                 id="slug_{{ $language->locale_code }}"
@@ -67,7 +69,8 @@
                                             <x-form.ckeditor
                                                 name="news[{{ $language->aid }}][content]"
                                                 title="Контент"
-                                            />{{--  --}}
+                                                value="{{ $news['content'][$language->locale_code] ?? ''}}"
+                                            />
                                         </div>
                                     </div>
 
@@ -76,6 +79,7 @@
                                             <x-form.ckeditor
                                                 name="news[{{ $language->aid }}][description]"
                                                 title="Краткое описание"
+                                                value="{{ $news['description'][$language->locale_code] ?? ''}}"
                                             />{{--  --}}
                                         </div>
                                     </div>
@@ -85,6 +89,7 @@
                                             <x-form.text
                                                 name="news[{{ $language->aid }}][subtitle]"
                                                 title="Подзаголовок"
+                                                value="{{ $news['subtitle'][$language->locale_code] ?? ''}}"
                                             />{{--  --}}
                                         </div>
                                     </div>
@@ -94,6 +99,7 @@
                                             <x-form.text
                                                 name="news[{{ $language->aid }}][time_to_read]"
                                                 title="Время чтения"
+                                                value="{{ $news['time_to_read'][$language->locale_code] ?? ''}}"
                                             />{{--  --}}
                                         </div>
                                     </div>

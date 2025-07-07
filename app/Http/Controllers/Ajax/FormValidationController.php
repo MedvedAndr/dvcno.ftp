@@ -969,6 +969,24 @@ class FormValidationController extends Controller
         return $return;
     }
 
+    private function edit_news(Request $request, array $return) {
+        // Получаем необходимые данные для обработки
+        $data = $request->only([
+            'news'
+        ]);
+        // Переменные для парсинга
+        $data_news              = [];
+
+        $news_id = reset($data['news'])['aid'];
+
+        // Парсинг
+        foreach($data['news'] as $language_aid => $data_news) {
+
+        }
+
+        return $data;
+    }
+
     private function edit_settings(Request $request, array $return) {
         $data = $request->only([
             'settings',

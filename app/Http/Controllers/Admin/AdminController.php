@@ -14,6 +14,7 @@ use App\Services\GenerateID;
 use App\Models\Files;
 use App\Models\Menus;
 use App\Models\Pages;
+use App\Models\News;
 use App\Models\Settings;
 use App\Models\Languages;
 
@@ -547,14 +548,14 @@ class AdminController extends Controller
             return $value;
         }, $view_data['page']['sections']);
 
-        $view_data['title'] = 'Редакирование страницы';
+        $view_data['title'] = 'Редактирование страницы';
         $view_data['breadcrumbs'] = [
             [
                 'title' => 'Страницы',
                 'href'  => 'admin.pages'
             ],
             [
-                'title' => 'Редакирование страницы ""',
+                'title' => 'Редактирование страницы ""',
             ],
         ];
 
@@ -629,6 +630,84 @@ class AdminController extends Controller
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.news.main', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function editNews($aid) {
+        
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+        AssetsManager::setStyle([
+            'href'      => asset('/css/models/fields.css'),
+            'priority'  => 500,
+        ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['news'] = [];
+        $news_query = News::query()
+            ->select(
+                         'n.id as news_id',
+                        'n.aid as news_aid',
+                       'n.slug as news_slug',
+                      'n.title as news_title',
+                   'n.subtitle as news_subtitle',
+                'n.description as news_description',
+                    'n.content as news_content',
+                  'n.thumbnail as news_thumbnail',
+               'n.time_to_read as news_time_to_read',
+                    'n.enabled as news_enabled',
+                 'n.created_at as news_created_at',
+                 'n.updated_at as news_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('news as n')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('n.language_id', '=', 'l.aid');
+            })
+            ->where('n.aid', '=', $aid)
+            ->orderBy('news_created_at', 'desc');
+
+        $news = $news_query->get();
+
+        foreach($news as $new) {
+            if(empty($view_data['news'])) {
+                $view_data['news']['id']            = [];
+                $view_data['news']['aid']           = $new['news_aid'];
+                $view_data['news']['slug']          = $new['news_slug'];
+                $view_data['news']['content']       = [];
+                $view_data['news']['description']   = [];
+                $view_data['news']['subtitle']      = [];
+                $view_data['news']['time_to_read']  = [];
+                $view_data['news']['title']         = [];
+                $view_data['news']['enabled']       = $new['news_enabled'];
+                $view_data['news']['created_at']    = $new['news_created_at'];
+                $view_data['news']['updated_at']    = $new['news_updated_at'];
+            }
+
+            $view_data['news']['id'][$new['news_id']] = true;
+            $view_data['news']['title'][$new['locale_code']] = $new['news_title'];
+            $view_data['news']['content'][$new['locale_code']] = $new['news_content'];
+            $view_data['news']['description'][$new['locale_code']] = $new['news_description'];
+            $view_data['news']['subtitle'][$new['locale_code']] = $new['news_subtitle'];
+            $view_data['news']['time_to_read'][$new['locale_code']] = $new['news_time_to_read'];
+        }
+
+        $view_data['title'] = 'Новости';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Новости',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.news.edit', $view_data);
         $template[] = view('admin.footer', $view_data);
 
         return implode('', $template);
