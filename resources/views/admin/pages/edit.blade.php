@@ -98,7 +98,7 @@
                                     @case('banner')
                                         <x-sections.banner
                                             index="{{ $index }}"
-                                            locale="{{ $language->aid }}"
+                                            :locale="$language"
                                             :data="[
                                                 'aid' => $section['aid'],
                                                 'title' => $section['title'][$language->locale_code] ?? '',
@@ -106,8 +106,6 @@
                                             ]"
                                         />
                                         @break
-                                    {{-- @case('banner_docs')
-                                        @break --}}
                                     {{-- @case('slider')
                                         <x-sections.slider
                                             index="{{ $index }}"

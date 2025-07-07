@@ -185,7 +185,8 @@ jQuery(document).on('DOMContentLoaded', function() {
             const $this_button = jQuery(eventObject.currentTarget);
             const $this_elements = jQuery('[data-item-data="'+ String($this_button.attr('data-item-add')) + ($this_button.attr('data-index') !== undefined ? '_'+ String($this_button.attr('data-index')) : '') +'"]');
             const json_data = {};
-
+console.log($this_button, $this_elements);
+console.log(String($this_button.attr('data-item-add')), ($this_button.attr('data-index') !== undefined ? '_'+ String($this_button.attr('data-index')) : ''));
             $this_elements
                 .each(function(i, item) {
                     const $data_item = jQuery(item);
@@ -218,7 +219,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     'data'      : json_data,
                 },
                 success : function(jquery_result) {
-                    console.log(jquery_result);
+                    // console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-item-list')), jquery_result.meta.index);
                         if(['add-term', 'add-permalink', 'add-list-link', 'add-list-block', 'add-list-doc', 'add-list-video', 'add-list-accordion'].includes(jquery_result.meta.component)) {
