@@ -31,7 +31,7 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/events', 'events')->name('admin.events');
     //Route::get('/events/view/{aid}', 'viewEvent')->name('admin.events.view');
     Route::get('/events/create', 'createEvent')->name('admin.events.create');
-    //Route::get('/events/edit/{aid}', 'editEvent')->name('admin.events.edit');
+    Route::get('/events/edit/{aid}', 'editEvents')->name('admin.events.edit');
 
     Route::get('/news', 'news')->name('admin.news');
     //Route::get('/news/view/{aid}', 'viewNews')->name('admin.news.view');

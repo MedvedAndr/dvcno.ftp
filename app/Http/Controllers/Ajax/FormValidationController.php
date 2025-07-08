@@ -448,6 +448,12 @@ class FormValidationController extends Controller
                     $return['meta']['__form_errors']['event['. $language_aid .'][date_event]'] = 'Поле обязательно для заполнения';
                 }
 
+                // Если поле 'link_to_map' пустое, то формируем ошибку
+                if(!$data_event['link_to_map']) {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['event['. $language_aid .'][link_to_map]'] = 'Поле обязательно для заполнения';
+                }
+
                 // Если поле 'slug' пустое, то формируем ошибку
                 if(!$data_event['slug']) {
                     $return['error'] = 'Incorrect data';
@@ -474,7 +480,7 @@ class FormValidationController extends Controller
                     'title'         => $data_event['title'],
                     'description'   => $data_event['description'] ?? '',
                     'content'       => $data_event['content'] ?? '',
-                    'thumbnail'     => '',
+                    'thumbnail'     => null,
                     'address'       => $data_event['address'],
                     'link_to_map'   => $data_event['link_to_map'],
                     'enabled'       => (int) filter_var($data_event['enabled'], FILTER_VALIDATE_BOOLEAN),
@@ -488,8 +494,12 @@ class FormValidationController extends Controller
             // Если мероприятие обязательно для заполнения и все поля пустые делаем запрос на изменение
             elseif($data_event['required'] === 'true' && (
                 !$data_event['title'] &&
+                !$data_event['slug'] &&
                 !$data_event['description'] &&
-                !$data_event['slug']
+                !$data_event['content'] &&
+                !$data_event['address'] &&
+                !$data_event['link_to_map'] &&
+                !$data_event['date_event']
             )) {
                 $data['event'][$language_aid]['required'] = 'false';
                 $return['meta']['__set_data']['event['. $language_aid .'][required]'] = 'false';
@@ -502,8 +512,18 @@ class FormValidationController extends Controller
             // $return['meta']['debug']     = $data_events;
             unset($return['error']);
 
-            if(!empty($data_events)) {
-                Events::insert($data_events);
+            if (empty($return['meta']['__system_messages']['error']) && empty($return['meta']['__form_errors'])) {
+                if(!empty($data_events)) {
+                    Events::insert($data_events);
+                    if(isset($return['meta']['__send_name'])) {
+                        if($return['meta']['__send_name'] === 'save') {
+                            $return['meta']['__redirect'] = route('admin.events.edit', ['aid' => $event_aid]);
+                        }
+                        else {
+                            $return['meta']['__redirect'] = route('admin.events');
+                        }
+                    }
+                }
             }
         }
         else {
@@ -519,7 +539,7 @@ class FormValidationController extends Controller
         $data = $request->only([
             'news',
         ]);
-        //dump($data);
+        
         // Флаг для отслеживания заполненности языков
         $news_empty_flag = false;
 
@@ -970,21 +990,130 @@ class FormValidationController extends Controller
     }
 
     private function edit_news(Request $request, array $return) {
+
         // Получаем необходимые данные для обработки
         $data = $request->only([
             'news'
         ]);
+
+        // Текущее дата/время
+        $current_date = date('Y-m-d H:i:s');
+
         // Переменные для парсинга
         $data_news              = [];
 
-        $news_id = reset($data['news'])['aid'];
+        $news_aid = reset($data['news'])['aid'];
 
         // Парсинг
-        foreach($data['news'] as $language_aid => $data_news) {
-
+        foreach($data['news'] as $language_aid => $data_news_once) {
+            $data_news[] = [
+                'aid'           => $news_aid,
+                'language_id'   => $language_aid,
+                'slug'          => $data_news_once['slug'],
+                'title'         => $data_news_once['title'],
+                'description'   => $data_news_once['description'] ?? '',
+                'content'       => $data_news_once['content'] ?? '',
+                'subtitle'      => $data_news_once['subtitle'] ?? '',
+                'time_to_read'  => $data_news_once['time_to_read'] ?? '',
+                'thumbnail'     => null,
+                'enabled'       => (int) filter_var($data_news_once['enabled'], FILTER_VALIDATE_BOOLEAN),
+                'date_from'     => $data_news_once['date_from'],
+                'date_to'       => $data_news_once['date_to'],
+                'created_at'    => $current_date,
+                'updated_at'    => $current_date,
+            ];
         }
 
-        return $data;
+        if(!empty($data_news)) {
+
+            $return["status"] = "success";
+            $return["data"] = $data_news;
+            unset($return["error"]);
+
+            $update_news = (new CaseBuilder())
+                ->setData($data_news)
+                ->setFieldsToUpdate(['slug','title','description','content','subtitle','time_to_read','enabled','date_from','date_to'])
+                ->setWhenFields(['aid', 'language_id']);
+            
+            News::whereIn('aid', $update_news->buildWhere())
+                ->update($update_news->buildCase()); 
+
+            if(isset($return['meta']['__send_name'])) {
+                if($return['meta']['__send_name'] === 'save_and_return') {
+                    $return['meta']['__redirect'] = route('admin.news');
+                }
+                if($return['meta']['__send_name'] === 'save') {
+                    $return['meta']['__system_messages']['success']['success_update'] = 'Новость успешно сохранена.';
+                }
+            }
+        }
+
+        return $return;
+    }
+
+    private function edit_events(Request $request, array $return) {
+
+        // Получаем необходимые данные для обработки
+        $data = $request->only([
+            'event'
+        ]);
+        
+
+        // Текущее дата/время
+        $current_date = date('Y-m-d H:i:s');
+
+        // Переменные для парсинга
+        $data_events              = [];
+
+        $events_aid = reset($data['event'])['aid'];
+
+        // Парсинг
+        foreach($data['event'] as $language_aid => $data_events_once) {
+            $data_events[] = [
+                'aid'           => $events_aid,
+                'language_id'   => $language_aid,
+                'slug'          => $data_events_once['slug'],
+                'title'         => $data_events_once['title'],
+                'description'   => $data_events_once['description'] ?? '',
+                'content'       => $data_events_once['content'] ?? '',
+                'address'       => $data_events_once['address'] ?? '',
+                'link_to_map'   => $data_events_once['link_to_map'] ?? '',
+                'date_event'    => $data_events_once['date_event'] ?? '',
+                'thumbnail'     => null,
+                'enabled'       => (int) filter_var($data_events_once['enabled'], FILTER_VALIDATE_BOOLEAN),
+                'date_from'     => $data_events_once['date_from'],
+                'date_to'       => $data_events_once['date_to'],
+                'created_at'    => $current_date,
+                'updated_at'    => $current_date,
+            ];
+        }
+        
+        if(!empty($data_events)) {
+
+            $return["status"] = "success";
+            $return["data"] = $data_events;
+            unset($return["error"]);
+
+            $update_events = (new CaseBuilder())
+                ->setData($data_events)
+                ->setFieldsToUpdate(['slug','title','description','content','address','link_to_map','date_event','enabled','date_from','date_to'])
+                ->setWhenFields(['aid', 'language_id']);
+            
+            events::whereIn('aid', $update_events->buildWhere())
+                ->update($update_events->buildCase()); 
+
+
+            if(isset($return['meta']['__send_name'])) {
+                if($return['meta']['__send_name'] === 'save_and_return') {
+                    $return['meta']['__redirect'] = route('admin.events');
+                }
+                if($return['meta']['__send_name'] === 'save') {
+                    $return['meta']['__system_messages']['success']['success_update'] = 'Мероприятие успешно сохранено.';
+                }
+            }
+        }
+
+        return $return;
     }
 
     private function edit_settings(Request $request, array $return) {

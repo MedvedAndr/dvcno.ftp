@@ -20,20 +20,21 @@
     </div>
 
     <div class="tabs__box" data-tabs-box="landuages">
-        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_news">
+        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_events">
+        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="create_event" style="display: flex;"> --}}
             @foreach(app('languages') as $language)
-            <x-form.hidden name="news[{{ $language->aid }}][aid]" value="{{$news['aid']}}"/>
+            <x-form.hidden name="event[{{ $language->aid }}][aid]" value="{{$events['aid']}}"/>
             <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif>
+            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if($loop->first) data-status="active" @endif style="display: block;"> --}}
                 <div class="page__content __with_right_col">
                     <div class="group__box">
                         <div class="group__container container">
                             <div class="group__head">Контент</div>
                             <div class="group__body">
                                 <div class="fields">
-                                    @dump($news)
                                     <x-form.hidden
-                                        name="news[{{ $language->aid }}][required]"
-                                        value="{{ isset($news['title'][$language->locale_code]) || isset($news['content'][$language->locale_code]) ? 'true' : 'false' }}"
+                                        name="event[{{ $language->aid }}][required]"
+                                        value="false"
                                         :data="[
                                             'required' => $language->locale_code .'_group'
                                         ]"
@@ -43,23 +44,24 @@
                                         <div class="field__body">
                                             <x-form.text
                                                 id="name_{{ $language->locale_code }}"
-                                                name="news[{{ $language->aid }}][title]"
+                                                name="event[{{ $language->aid }}][title]"
                                                 title="{{ app('dictionary')->dictionary('form_labels')->key('name')->get() }}"
                                                 :data="[
                                                     'required-group' => $language->locale_code .'_group',
-                                                    'slugifier' => 'news['. $language->aid .'][slug].news.title']"
-                                                value="{{ $news['title'][$language->locale_code] ?? ''}}"
+                                                    'slugifier' => 'event['. $language->aid .'][slug].events.title',
+                                                ]"
+                                                value="{{ $events['title'][$language->locale_code] ?? ''}}"
                                             />
                                             <x-form.edited_string
                                                 id="slug_{{ $language->locale_code }}"
-                                                name="news[{{ $language->aid }}][slug]"
-                                                before="Постоянная ссылка: /news/"
+                                                name="event[{{ $language->aid }}][slug]"
+                                                before="Постоянная ссылка: /event/"
                                                 after="/"
                                                 :data="[
                                                     'required-group' => $language->locale_code .'_group',
                                                     'sync' => 'slug',
                                                 ]"
-                                                value="{{ $news['slug'] ?? ''}}"
+                                                value="{{ $events['slug'] ?? ''}}"
                                                 status="hidden"
                                             />
                                         </div>
@@ -68,39 +70,19 @@
                                     <div class="field">
                                         <div class="field__body">
                                             <x-form.ckeditor
-                                                name="news[{{ $language->aid }}][content]"
+                                                name="event[{{ $language->aid }}][content]"
                                                 title="Контент"
-                                                value="{{ $news['content'][$language->locale_code] ?? ''}}"
-                                            />
+                                                value="{{ $events['content'][$language->locale_code] ?? ''}}"
+                                            />{{--  --}}
                                         </div>
                                     </div>
 
                                     <div class="field">
                                         <div class="field__body">
                                             <x-form.ckeditor
-                                                name="news[{{ $language->aid }}][description]"
+                                                name="event[{{ $language->aid }}][description]"
                                                 title="Краткое описание"
-                                                value="{{ $news['description'][$language->locale_code] ?? ''}}"
-                                            />{{--  --}}
-                                        </div>
-                                    </div>
-
-                                    <div class="field">
-                                        <div class="field__body">
-                                            <x-form.text
-                                                name="news[{{ $language->aid }}][subtitle]"
-                                                title="Подзаголовок"
-                                                value="{{ $news['subtitle'][$language->locale_code] ?? ''}}"
-                                            />{{--  --}}
-                                        </div>
-                                    </div>
-
-                                    <div class="field">
-                                        <div class="field__body">
-                                            <x-form.text
-                                                name="news[{{ $language->aid }}][time_to_read]"
-                                                title="Время чтения"
-                                                value="{{ $news['time_to_read'][$language->locale_code] ?? ''}}"
+                                                value="{{ $events['description'][$language->locale_code] ?? ''}}"
                                             />{{--  --}}
                                         </div>
                                     </div>
@@ -118,9 +100,9 @@
                                         <div class="field">
                                             <div class="field__body">
                                                 <x-form.datetime
-                                                    name="news[{{ $language->aid }}][date_from]"
+                                                    name="event[{{ $language->aid }}][date_from]"
                                                     title="Начало публикации"
-                                                    value="{{ $news['date_from'] ?? ''}}"
+                                                    value="{{ $events['date_from'] ?? ''}}"
                                                 />
                                             </div>
                                         </div>
@@ -128,9 +110,9 @@
                                         <div class="field">
                                             <div class="field__body">
                                                 <x-form.datetime
-                                                    name="news[{{ $language->aid }}][date_to]"
+                                                    name="event[{{ $language->aid }}][date_to]"
                                                     title="Окончание публикации"
-                                                    value="{{ $news['date_to'] ?? ''}}"
+                                                    value="{{ $events['date_to'] ?? ''}}"
                                                 />
                                             </div>
                                         </div>
@@ -138,7 +120,7 @@
                                         <div class="field">
                                             <div class="field__body">
                                                 <x-form.togglebox
-                                                    name="news[{{ $language->aid }}][enabled]"
+                                                    name="event[{{ $language->aid }}][enabled]"
                                                     checked
                                                     title="{{ app('dictionary')->dictionary('form_labels')->key('enabled')->get() }}"
                                                     title_checked="{{ app('dictionary')->dictionary('form_labels')->key('disabled')->get() }}"
@@ -180,21 +162,52 @@
                             <div class="group__container container">
                                 <div class="group__head">Изображение</div>
                                 <div class="group__body">
-                                    <div class="file__panel" data-file="news_images">
-                                        {{-- TODO: переделать на выбор нескольких файлов (сейчас логика лько для одного файла) --}}    
-                                        <x-form.hidden
-                                            class="file__input"
-                                            name="news[{{ $language->aid }}][images]"
-                                            value=""
-                                        />
-                                        <div class="file__body">
-                                            <div class="file_info">
+                                    В разработке
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="group__box">
+                            <div class="group__container container">
+                                <div class="group__head">Информация о мероприятии</div>
+                                <div class="group__body">
+                                    <div class="fields">
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.datetime
+                                                    name="event[{{ $language->aid }}][date_event]"
+                                                    title="Дата проведения"
+                                                    value="{{ $events['date_event'] ?? ''}}"
+                                                />
                                             </div>
                                         </div>
-                                        
-                                        {{-- TODO: вынести кнопку в отдельную компоненту --}}
-                                        <div class="button" data-file-manager="" data-type="multiple" data-extensions="png jpg jpeg webp svg">Выбрать</div>
+
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.text
+                                                    name="event[{{ $language->aid }}][address]"
+                                                    title="Место проведения"
+                                                    :data="[
+                                                        'required-group' => $language->locale_code .'_group'
+                                                    ]"
+                                                    value="{{ $events['address'] ?? ''}}"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <div class="field__body">
+                                                <x-form.text
+                                                    name="event[{{ $language->aid }}][link_to_map]"
+                                                    title="Ссылка на карту"
+                                                    :data="[
+                                                        'required-group' => $language->locale_code .'_group',
+                                                        'sync' => 'enabled'
+                                                    ]"
+                                                    value="{{ $events['link_to_map'] ?? ''}}"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,4 +219,3 @@
         </form>
     </div>
 </div>
-<x-file-manager />
