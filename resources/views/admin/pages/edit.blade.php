@@ -31,8 +31,8 @@
     </div>
 
     <div class="tabs__box" data-tabs-box="landuages">
-        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_page"> --}}
-        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_page" style="display: flex;">
+        <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_page">
+        {{-- <form action="{{ route('ajax.form.validation') }}" method="POST" data-form="edit_page" style="display: flex;"> --}}
             @php $lang_flag = true; @endphp
             @foreach(app('languages') as $language)
             @php
@@ -43,8 +43,8 @@
             }
             @endphp
 
-            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if(!empty($lang_status)) data-status="{{ implode(' ', $lang_status) }}" @else style="display: none;" @endif> --}}
-            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if(!empty($lang_status)) data-status="{{ implode(' ', $lang_status) }}" @else style="display: block;" @endif>
+            <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if(!empty($lang_status)) data-status="{{ implode(' ', $lang_status) }}" @else style="display: none;" @endif>
+            {{-- <div class="tab__box" data-tab-box="{{ $language->locale_code }}" @if(!empty($lang_status)) data-status="{{ implode(' ', $lang_status) }}" @else style="display: block;" @endif> --}}
                 <div class="page__content">
                     <div class="group__box">
                         <div class="group__container container">
