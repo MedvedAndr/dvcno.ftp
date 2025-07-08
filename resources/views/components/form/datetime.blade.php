@@ -53,8 +53,8 @@ $status = array_unique($status);
 
 // Добавляем классы от иконок в class
 $class = array_unique(array_merge($class, $icon_classes));
-
-$timestamp = isset($value) ? strtotime($value) : null;
+//dump($value);
+$timestamp = (isset($value) && !is_null($value) && !empty($value)) ? strtotime($value) : null;
 @endphp
 
 <label
@@ -76,7 +76,7 @@ $timestamp = isset($value) ? strtotime($value) : null;
             @isset($id) id="{{ $id }}" @endisset
             type="hidden"
             @isset($name) name="{{ $name }}" @endisset
-            @isset($value) value="{!! $value !!}" @endisset
+            @if(isset($value) && !is_null($value)) value="{!! $value !!}" @endif 
             @isset($form) form="{{ $form }}" @endisset
             @if($required) required @endif
             @if($disabled) disabled @endif

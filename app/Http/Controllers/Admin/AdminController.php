@@ -15,6 +15,7 @@ use App\Models\Files;
 use App\Models\Menus;
 use App\Models\Pages;
 use App\Models\News;
+use App\Models\Events;
 use App\Models\Settings;
 use App\Models\Languages;
 
@@ -609,6 +610,88 @@ class AdminController extends Controller
         return implode('', $template);
     }
 
+    public function editEvents($aid) {
+        
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+        AssetsManager::setStyle([
+            'href'      => asset('/css/models/fields.css'),
+            'priority'  => 500,
+        ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['events'] = [];
+        $events_query = Events::query()
+            ->select(
+                         'n.id as events_id',
+                        'n.aid as events_aid',
+                       'n.slug as events_slug',
+                      'n.title as events_title',
+                'n.description as events_description',
+                    'n.content as events_content',
+                  'n.thumbnail as events_thumbnail',
+               'n.address as events_address',
+               'n.link_to_map as events_link_to_map',
+               'n.date_event as events_date_event',
+                    'n.enabled as events_enabled',
+                  'n.date_from as events_date_from',
+                    'n.date_to as events_date_to',
+                 'n.created_at as events_created_at',
+                 'n.updated_at as events_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('events as n')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('n.language_id', '=', 'l.aid');
+            })
+            ->where('n.aid', '=', $aid)
+            ->orderBy('events_created_at', 'desc');
+
+        $events = $events_query->get();
+
+        foreach($events as $event) {
+            if(empty($view_data['events'])) {
+                $view_data['events']['id']            = [];
+                $view_data['events']['aid']           = $event['events_aid'];
+                $view_data['events']['slug']          = $event['events_slug'];
+                $view_data['events']['content']       = [];
+                $view_data['events']['description']   = [];
+                $view_data['events']['address']  = $event['events_address'];
+                $view_data['events']['link_to_map']  = $event['events_link_to_map'];
+                $view_data['events']['date_event']  = $event['events_date_event'];
+                $view_data['events']['title']         = [];
+                $view_data['events']['enabled']       = $event['events_enabled'];
+                $view_data['events']['date_from']     = $event['events_date_from'];
+                $view_data['events']['date_to']       = $event['events_date_to'];
+                $view_data['events']['created_at']    = $event['events_created_at'];
+                $view_data['events']['updated_at']    = $event['events_updated_at'];
+            }
+
+            $view_data['events']['id'][$event['events_id']] = true;
+            $view_data['events']['title'][$event['locale_code']] = $event['events_title'];
+            $view_data['events']['content'][$event['locale_code']] = $event['events_content'];
+            $view_data['events']['description'][$event['locale_code']] = $event['events_description'];
+        }
+
+        $view_data['title'] = 'Мероприятия';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Мероприятия',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.events.edit', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
     public function news() {
         // AssetsManager::useBundle('tabs');
         // AssetsManager::useBundle('form');
@@ -661,6 +744,8 @@ class AdminController extends Controller
                   'n.thumbnail as news_thumbnail',
                'n.time_to_read as news_time_to_read',
                     'n.enabled as news_enabled',
+                  'n.date_from as news_date_from',
+                    'n.date_to as news_date_to',
                  'n.created_at as news_created_at',
                  'n.updated_at as news_updated_at',
 
@@ -687,6 +772,8 @@ class AdminController extends Controller
                 $view_data['news']['time_to_read']  = [];
                 $view_data['news']['title']         = [];
                 $view_data['news']['enabled']       = $new['news_enabled'];
+                $view_data['news']['date_from']     = $new['news_date_from'];
+                $view_data['news']['date_to']       = $new['news_date_to'];
                 $view_data['news']['created_at']    = $new['news_created_at'];
                 $view_data['news']['updated_at']    = $new['news_updated_at'];
             }

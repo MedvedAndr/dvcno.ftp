@@ -85,7 +85,12 @@ class CaseBuilder {
                     return $identifier ." = ". DB::getPdo()->quote($item[$identifier]);
                 }, $this->when));
 
-                $cases[] = "WHEN ". $conditions ." THEN '". $item[$field] ."'";
+                if (is_null($item[$field])) {
+                    $value = "NULL";
+                } else {
+                    $value = "'". $item[$field] ."'";
+                }
+                $cases[] = "WHEN ". $conditions ." THEN ". $value;
             }
 
             $caseStatements[$field] = DB::raw("CASE ". implode(' ', $cases) ." ELSE ". $field ." END");
