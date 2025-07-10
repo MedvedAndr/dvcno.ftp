@@ -30,7 +30,6 @@
                             <div class="group__head">Контент</div>
                             <div class="group__body">
                                 <div class="fields">
-                                    @dump($news)
                                     <x-form.hidden
                                         name="news[{{ $language->aid }}][required]"
                                         value="{{ isset($news['title'][$language->locale_code]) || isset($news['content'][$language->locale_code]) ? 'true' : 'false' }}"

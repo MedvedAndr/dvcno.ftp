@@ -16,6 +16,7 @@ use App\Models\Menus;
 use App\Models\Pages;
 use App\Models\News;
 use App\Models\Events;
+use App\Models\Departments;
 use App\Models\Settings;
 use App\Models\Languages;
 
@@ -359,25 +360,6 @@ class AdminController extends Controller
             ->orderByRaw("l.locale_code = ? DESC", [app('locale')])
             ->orderBy('page_title', 'asc');
 
-        // Временное ограничение. Убрать после создания и наполнения страниц.
-        // $pages_query->whereIn('p.aid', [
-        //     'b84zqssey43',
-        //     'o9085r023zi',
-        //     '2vdbvv7eqgm',
-        //     'wbtyamo9bdy',
-        //     '0kdhz5qz8vz',
-        //     'rrr1s4wu3dc',
-        //     'qvd3gu08wpl',
-        //     'sh5nat4xfbz',
-        //     '3uh8y4290zz',
-        //     '73ot9p5xn22',
-        //     '051g3y2qk9z',
-        //     'wtc4uqkp923',
-        //     'j8jnbbg0ing',
-        //     'xpwcdnwcm7x',
-        //     'clnd8l9cp1l',
-        // ]);
-
         $pages = $pages_query->get();
 
         foreach($pages as $page) {
@@ -568,9 +550,100 @@ class AdminController extends Controller
     }
 
     public function events() {
+        AssetsManager::setStyle([
+            'href' => asset('/css/models/tables.css'),
+            'priority' => 500,
+        ]);
+
         $view_data = [];
         $template = [];
 
+        $view_data['title'] = 'Мероприятия';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Мероприятия',
+            ],
+        ];
+
+        $view_data['events_list'] = [];
+        $events_query = Events::query()
+            ->select(
+                'e.id as event_id',
+                        'e.aid as event_aid',
+                       'e.slug as event_slug',
+                      'e.title as event_title',
+                'e.description as event_description',
+                    'e.content as event_content',
+                  'e.thumbnail as event_thumbnail',
+                    'e.address as event_address',
+                'e.link_to_map as event_link_to_map',
+                    'e.enabled as event_enabled',
+                 'e.date_event as event_date_event',
+                  'e.date_from as event_date_from',
+                    'e.date_to as event_date_to',
+                 'e.created_at as event_created_at',
+                 'e.updated_at as event_updated_at',
+
+                'l.locale_code as locale_code',
+            )
+            ->from('events as e')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('e.language_id', '=', 'l.aid');
+            })
+            ->orderByRaw("l.locale_code = ? DESC", [app('locale')])
+            ->orderBy('event_created_at', 'desc');
+
+        $events = $events_query->get();
+
+        $thumbnail_aids = [];
+
+        foreach($events as $event) {
+            // Проверяем, что значение thumbnail не пустое и не равно null
+            if (!empty($event->event_thumbnail)) {
+                $thumbnail_aids[$event->event_thumbnail] = true;
+            }
+        }
+
+        $thumbnails = Files::whereIn('aid', array_keys($thumbnail_aids))->get()->keyBy('aid');
+        
+        foreach($events as $event) {
+            if(!isset($view_data['events_list'][$event->event_aid])) {
+                $view_data['events_list'][$event->event_aid] = [
+                    'id'            => [],
+                    'aid'           => $event->event_aid,
+                    'slug'          => $event->event_slug,
+                    'title'         => [],
+                    'description'   => [],
+                    'content'       => [],
+                    'thumbnail'     => $event->event_thumbnail ? $thumbnails[$event->event_thumbnail]->toArray() : null,
+                    'address'       => [],
+                    'link_to_map'   => $event->link_to_map,
+                    'enabled'       => $event->event_enabled,
+                    'date_event'    => $event->event_date_event,
+                    'date_from'     => $event->event_date_from,
+                    'date_to'       => $event->event_date_to,
+                    'created_at'    => strtotime($event->event_created_at),
+                    'updated_at'    => strtotime($event->event_updated_at),
+                ];
+            }
+            
+            $view_data['events_list'][$event->event_aid]['id'][$event->event_id] = true;
+            $view_data['events_list'][$event->event_aid]['title'][$event->locale_code] = $event->event_title;
+            $view_data['events_list'][$event->event_aid]['description'][$event->locale_code] = $event->event_description;
+
+            $view_data['events_list'][$event->event_aid]['content'][$event->locale_code] = $event->event_content;
+            $view_data['events_list'][$event->event_aid]['address'][$event->locale_code] = $event->event_address;
+        }
+
+        $view_data['events_list'] = array_values($view_data['events_list']);
+
+        $view_data['events_list'] = array_map(function($value) {
+            $value['id'] = array_keys($value['id']);
+
+            return $value;
+        }, $view_data['events_list']);
+        
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.events.main', $view_data);
         $template[] = view('admin.footer', $view_data);
@@ -825,6 +898,62 @@ class AdminController extends Controller
 
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.news.create', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function departments() {
+        // AssetsManager::useBundle('tabs');
+        // AssetsManager::useBundle('form');
+        // AssetsManager::useBundle('ckeditor');
+        // AssetsManager::setStyle([
+        //     'href'      => asset('/css/models/fields.css'),
+        //     'priority'  => 500,
+        // ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['title'] = 'Подразделения';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Подразделения',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.departments.main', $view_data);
+        $template[] = view('admin.footer', $view_data);
+
+        return implode('', $template);
+    }
+
+    public function createDepartments() {
+        AssetsManager::useBundle('tabs');
+        AssetsManager::useBundle('form');
+        AssetsManager::useBundle('ckeditor');
+        AssetsManager::setStyle([
+            'href'      => asset('/css/models/fields.css'),
+            'priority'  => 500,
+        ]);
+
+        $view_data = [];
+        $template = [];
+
+        $view_data['title'] = 'Подразделения';
+        $view_data['breadcrumbs'] = [
+            [
+                'title' => 'Подразделения',
+                'href' => 'admin.departments'
+            ],
+            [
+                'title' => 'Создание подразделения',
+            ],
+        ];
+
+        $template[] = view('admin.header', $view_data);
+        $template[] = view('admin.departments.create', $view_data);
         $template[] = view('admin.footer', $view_data);
 
         return implode('', $template);

@@ -1019,8 +1019,8 @@ class FormValidationController extends Controller
                 'enabled'       => (int) filter_var($data_news_once['enabled'], FILTER_VALIDATE_BOOLEAN),
                 'date_from'     => $data_news_once['date_from'],
                 'date_to'       => $data_news_once['date_to'],
-                'created_at'    => $current_date,
-                'updated_at'    => $current_date,
+                'created_at'    => '"'. $current_date .'"',
+                'updated_at'    => '"'. $current_date .'"',
             ];
         }
 

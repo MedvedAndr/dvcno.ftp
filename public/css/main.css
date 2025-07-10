@@ -977,3 +977,14 @@ header + main {
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
+
+
+
+.thumbnail {
+    width: 100px;
+}
+
+.thumbnail img {
+    display: block;
+    width: 100%;
+}

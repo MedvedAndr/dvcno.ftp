@@ -10,4 +10,6 @@
         @endisset
     </div>
     @endif
+
+    <a href="{{ route('admin.news.edit', ['aid' => '3bvdkc3ubhj']) }}">Редактировать новость</a>
 </div>
