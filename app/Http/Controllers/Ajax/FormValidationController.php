@@ -453,6 +453,11 @@ class FormValidationController extends Controller
                     $return['error'] = 'Incorrect data';
                     $return['meta']['__form_errors']['event['. $language_aid .'][link_to_map]'] = 'Поле обязательно для заполнения';
                 }
+                elseif(!preg_match('/^(https?:\/\/((?!-)([a-zA-Z0-9-]+)(?<!-)\.)+(?!-)([a-zA-Z0-9-]+)(?<!-)(:\d+)?)?(\/([a-zA-Z0-9-_.]+(\/[a-zA-Z0-9-_.]+)*))?\/?(\?[a-zA-Z0-9-_.~]+=([a-zA-Z0-9-_.~:,+%]+)(&[a-zA-Z0-9-_.~]+=([a-zA-Z0-9-_.~:,+%]+))*)?(#[a-zA-Z0-9-_]+)?$/', $data_event['link_to_map']))
+                {
+                    $return['error'] = 'Incorrect data';
+                    $return['meta']['__form_errors']['event['. $language_aid .'][link_to_map]'] = 'Не корректный формат записи';
+                }
 
                 // Если поле 'slug' пустое, то формируем ошибку
                 if(!$data_event['slug']) {
@@ -460,7 +465,7 @@ class FormValidationController extends Controller
                     $return['meta']['__form_errors']['event['. $language_aid .'][slug]'] = 'Поле обязательно для заполнения';
                 }
 
-                // Проверка ссылки на корректность
+                // Проверка псевдонима на корректность
                 if(preg_match('/^[a-zA-Z0-9_-]+$/', $data_event['slug'])) {
                     // Проверяем наличие ссылки в БД
                     if(Events::where('slug', '=', $data_event['slug'])->exists()) {
