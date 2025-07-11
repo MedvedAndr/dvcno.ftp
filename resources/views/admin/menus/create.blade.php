@@ -175,7 +175,8 @@
                                             <x-form.text
                                                 name="elements[{{ $language->locale_code }}][menu_url]"
                                                 :data="[
-                                                    'item-data' => 'add-permalink',
+                                                    'field-context' => 'items.permalink',
+                                                    'cleanable' => '',
                                                     'sync' => 'permalink_url'
                                                 ]"
                                                 title="URL"
@@ -183,11 +184,12 @@
                                             <x-form.text
                                                 name="elements[{{ $language->locale_code }}][menu_name]"
                                                 :data="[
-                                                    'item-data' => 'add-permalink'
+                                                    'field-context' => 'items.permalink',
+                                                    'cleanable' => '',
                                                 ]"
                                                 title="Текст ссылки"
                                             />
-                                            <div class="button" data-item-add="add-permalink" data-item-list="menu_layout">Добавить</div>
+                                            <div class="button" data-action="add" data-component="items.permalink" data-target-container="menu_layout" data-multi-language="true">Добавить</div>
                                         </div>
                                     </div>
                                 </div>
@@ -198,7 +200,7 @@
                             <div class="group__container container">
                                 <div class="group__head">{{ app('dictionary')->dictionary('headers')->key('menu_structure')->get() }}</div>
                                 <div class="group__body">
-                                    <div class="items" data-items="menu_layout" data-items-lang="{{ $language->locale_code }}"></div>
+                                    <div class="items" data-list="menu_layout" data-list-lang="{{ $language->locale_code }}"></div>
                                     <div class="empty">Добавьте элементы меню из столбца слева.</div>
                                 </div>
                             </div>

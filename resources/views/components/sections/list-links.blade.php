@@ -26,15 +26,7 @@
             name="elements[{{ $locale->locale_code }}][aid]"
             value="{{ $data['aid'] }}"
             :data="[
-                'item-data' => 'add-list-link_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][title]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-link_'. $index,
+                'field-context' => 'items.list-link_'. $index,
             ]"
         />
 
@@ -50,10 +42,10 @@
 
             <div style="font-size: 14px;">Перечень ссылок</div>
 
-            <div data-items="item_{{ $data['aid'] }}" data-items-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
+            <div data-list="item_{{ $data['aid'] }}" data-list-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
                 @php $i = 0; @endphp
                 @foreach($data['content'] as $item)
-                <x-items.add-list-link
+                <x-items.list-link
                     index="{{ $i }}"
                     locale="{{ $locale->aid }}"
                     :form_data="[
@@ -68,7 +60,7 @@
                 @endforeach
             </div>
             
-            <div class="button" data-item-add="add-list-link" data-index="{{ $index }}" data-item-list="item_{{ $data['aid'] }}">
+            <div class="button" data-action="add" data-component="items.list-link" data-target-container="item_{{ $data['aid'] }}" data-field-set="{{ $index }}" data-multi-language="true">
                 <span class="button__icon"><span data-icon="plus"></span></span>
                 <span class="button__title">Добавить ссылку</span>
             </div>

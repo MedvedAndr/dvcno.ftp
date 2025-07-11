@@ -133,6 +133,11 @@ label[data-label="datetime"][data-status~="error"][data-status~="not_empty"] .la
     opacity                 : 0;
 }
 
+label[data-label="datetime"][data-status~="error"] .label__input .label__display {
+    border-color: var(--pink-raspberry-100);
+    background-color: var(--pink-raspberry-14);
+}
+
 label[data-label="datetime"] .label__calendar {
     display                 : none;
     position                : absolute;

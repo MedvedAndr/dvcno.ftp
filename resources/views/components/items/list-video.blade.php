@@ -1,27 +1,27 @@
 @props([
     'index' => 1,
-    'locale',
+    'locale' => null,
     'form_data' => [],
 ])
 
 <div class="accordion" data-item="item_{{ $form_data['aid'] }}_{{ $index }}" data-index="{{ $index }}">
     <div class="accordion__head">
         <div class="accordion__head_title">
-            <span data-sync="item_{{ $locale }}_{{ $form_data['aid'] }}_{{ $index }}">{{ $form_data['item']['title'] }}</span>
+            <span data-sync="item{{ $locale ? '_'. $locale : '' }}_{{ $form_data['aid'] }}_{{ $index }}">{{ data_get($form_data, 'item.title', '') }}</span>
             <span class="empty">[Заголовок отсутствует]</span>
         </div>
         <div class="accordion__head_icon"><span data-icon=""></span></div>
-        <div data-item-del="add-list-doc"><span data-icon="trash"></span></div>
+        <div data-action="delete" data-component="items.list-video"><span data-icon="trash"></span></div>
     </div>
 
     <div class="accordion__body">
         <div class="flex__col">
             <x-form.text
-                name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][title]"
-                value="{{ $form_data['item']['title'] ?? '' }}"
+                name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][title]"
+                value="{{ data_get($form_data, 'item.title', '') }}"
                 title="Заголовок видео"
                 :data="[
-                    'sync' => 'item_'. $locale .'_'. $form_data['aid'] .'_'. $index
+                    'sync' => 'item'. ($locale ? '_'. $locale : '') .'_'. $form_data['aid'] .'_'. $index
                 ]"
             />
 
@@ -31,8 +31,8 @@
                 {{-- TODO: переделать на выбор нескольких файлов (сейчас логика лько для одного файла) --}}    
                 <x-form.hidden
                     class="file__input"
-                    name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][image]"
-                    value="{{ $form_data['item']['image']['aid'] ?? '' }}"
+                    name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][image]"
+                    value="{{ data_get($form_data, 'item.image.aid', '') }}"
                 />
                 <div class="file__body">
                     @if(isset($form_data['item']['image']) && !is_null($form_data['item']['image']))
@@ -53,36 +53,36 @@
 
             <div data-radio-tabs="{{ $form_data['aid'] }}_{{ $index }}">
                 @php
-                $status_1 = $form_data['item']['type'] == 'video' ? 'data-status=active' : '';
-                $status_2 = $form_data['item']['type'] == 'link' ? 'data-status=active' : '';
-                $status_3 = $form_data['item']['type'] == 'iframe' ? 'data-status=active' : '';
+                $status_1 = !isset($form_data['item']['type']) || isset($form_data['item']['type']) && $form_data['item']['type'] == 'video' ? 'data-status=active' : '';
+                $status_2 = isset($form_data['item']['type']) && $form_data['item']['type'] == 'link' ? 'data-status=active' : '';
+                $status_3 = isset($form_data['item']['type']) && $form_data['item']['type'] == 'iframe' ? 'data-status=active' : '';
                 @endphp
                 <x-form.radio
-                    name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
+                    name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
                     value="video"
                     title="Видео"
                     :data="[
                         'radio-tab' => 'video'
                     ]"
-                    status="{{ $form_data['item']['type'] == 'video' ? 'checked' : null }}"
+                    status="{{ !isset($form_data['item']['type']) || isset($form_data['item']['type']) && $form_data['item']['type'] == 'video' ? 'checked' : null }}"
                 />
                 <x-form.radio
-                    name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
+                    name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
                     value="link"
                     title="Ссылка"
                     :data="[
                         'radio-tab' => 'link'
                     ]"
-                    status="{{ $form_data['item']['type'] == 'link' ? 'checked' : null }}"
+                    status="{{ isset($form_data['item']['type']) && $form_data['item']['type'] == 'link' ? 'checked' : null }}"
                 />
                 <x-form.radio
-                    name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
+                    name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][type]"
                     value="iframe"
                     title="iframe"
                     :data="[
                         'radio-tab' => 'iframe'
                     ]"
-                    status="{{ $form_data['item']['type'] == 'iframe' ? 'checked' : null }}"
+                    status="{{ isset($form_data['item']['type']) && $form_data['item']['type'] == 'iframe' ? 'checked' : null }}"
                 />
             </div>
 
@@ -95,8 +95,8 @@
                             {{-- TODO: переделать на выбор нескольких файлов (сейчас логика лько для одного файла) --}}    
                             <x-form.hidden
                                 class="file__input"
-                                name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][video_webm]"
-                                value="{{ $form_data['item']['video_webm']['aid'] ?? '' }}"
+                                name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][video_webm]"
+                                value="{{ data_get($form_data, 'item.video_webm.aid', '') }}"
                             />
                             <div class="file__body">
                                 @if(isset($form_data['item']['video_webm']))
@@ -120,8 +120,8 @@
                             {{-- TODO: переделать на выбор нескольких файлов (сейчас логика лько для одного файла) --}}    
                             <x-form.hidden
                                 class="file__input"
-                                name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][video_mp4]"
-                                value="{{ $form_data['item']['video_mp4']['aid'] ?? '' }}"
+                                name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][video_mp4]"
+                                value="{{ data_get($form_data, 'item.video_mp4.aid', '') }}"
                             />
                             <div class="file__body">
                                 @if(isset($form_data['item']['video_mp4']))
@@ -143,15 +143,15 @@
                 </div>
                 <div class="radio_tab__box" data-radio-tab-box="link" {{ $status_2 }}>
                     <x-form.text
-                        name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][link]"
-                        value="{{ $form_data['item']['link'] }}"
+                        name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][link]"
+                        value="{{ data_get($form_data, 'item.link', '') }}"
                         title="Ссылка на видео"
                     />
                 </div>
                 <div class="radio_tab__box" data-radio-tab-box="iframe" {{ $status_3 }}>
                     <x-form.textarea
-                        name="sections[{{ $locale }}][{{ $form_data['aid'] }}][content][list][{{ $index }}][iframe]"
-                        value="{{ $form_data['item']['iframe'] }}"
+                        name="sections{{ $locale ? '['. $locale .']' : '' }}[{{ $form_data['aid'] }}][content][list][{{ $index }}][iframe]"
+                        value="{{ data_get($form_data, 'item.iframe', '') }}"
                         title="iFrame"
                     />
                 </div>

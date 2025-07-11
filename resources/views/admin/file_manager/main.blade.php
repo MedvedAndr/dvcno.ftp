@@ -94,7 +94,6 @@
                     <div class="group__container container">
                         <div class="group__head">Инфо</div>
                         <div class="group__edit_body">
-                            <div class="items" data-items="menu_layout" data-items-lang="ru"></div>
                             <div class="items_empty">
                                 <div>Расширение: <span id="group__edit_ext"></span></div>
                             </div>

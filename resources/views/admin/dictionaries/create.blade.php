@@ -123,8 +123,8 @@
                         <div class="group__container container">
                             <div class="group__head">{{ app('dictionary')->dictionary('headers')->key('dictionary_items_list')->get() }}</div>
                             <div class="group__body">
-                                <div class="group__grid_list" data-items="term_list" data-items-lang="{{ $language->locale_code }}">
-                                    <x-items.add-term locale="{{ $language->aid }}" />
+                                <div class="group__grid_list" data-list="term_list" data-list-lang="{{ $language->locale_code }}"  data-empty="items.term">
+                                    <x-items.term locale="{{ $language->aid }}" />
                                     {{-- <x-items.add-term index="2" locale="{{ $language->locale_code }}" /> --}}
                                     {{-- <x-items.add-term index="3" locale="{{ $language->locale_code }}" /> --}}
                                     {{-- <x-items.add-term index="4" locale="{{ $language->locale_code }}" /> --}}
@@ -132,7 +132,7 @@
                                 </div>
 
                                 <div class="group__panel_footer flex__row_center">
-                                    <div class="button" data-item-add="add-term" data-item-list="term_list">
+                                    <div class="button" data-action="add" data-component="items.term" data-target-container="term_list" data-multi-language="true">
                                         <span class="button__icon"><span data-icon="plus"></span></span>
                                         <span class="button__title">{{ app('dictionary')->dictionary('buttons')->key('term_add')->get() }}</span>
                                     </div>

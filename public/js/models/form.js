@@ -426,7 +426,9 @@ function primeValidation(eventObject) {
     if($this_submit.attr('name') !== undefined && $this_submit.attr('name') !== '') {
         form_data.set('__send_name', $this_submit.attr('name'));
     }
-    
+    for (let pair of form_data.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+}
     jQuery.ajax({
         url         : $this_form.attr('action'),
         type        : $this_form.attr('method'),
