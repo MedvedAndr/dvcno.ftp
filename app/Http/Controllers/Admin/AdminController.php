@@ -766,13 +766,10 @@ class AdminController extends Controller
     }
 
     public function news() {
-        // AssetsManager::useBundle('tabs');
-        // AssetsManager::useBundle('form');
-        // AssetsManager::useBundle('ckeditor');
-        // AssetsManager::setStyle([
-        //     'href'      => asset('/css/models/fields.css'),
-        //     'priority'  => 500,
-        // ]);
+        AssetsManager::setStyle([
+            'href' => asset('/css/models/tables.css'),
+            'priority' => 500,
+        ]);
 
         $view_data = [];
         $template = [];
@@ -784,6 +781,86 @@ class AdminController extends Controller
             ],
         ];
 
+        $view_data['news_list'] = [];
+        $news_query = News::query()
+            ->select(
+                 'n.id as news_id',
+                         'n.aid as news_aid',
+                        'n.slug as news_slug',
+                       'n.title as news_title',
+                    'n.subtitle as news_subtitle',
+                 'n.description as news_description',
+                     'n.content as news_content',
+                   'n.thumbnail as news_thumbnail',
+                'n.time_to_read as news_time_to_read',
+                     'n.enabled as news_enabled',
+                   'n.date_from as news_date_from',
+                     'n.date_to as news_date_to',
+                  'n.created_at as news_created_at',
+                  'n.updated_at as news_updated_at',
+
+                 'l.locale_code as locale_code',
+            )
+            ->from('news as n')
+            ->join('languages as l', function($join) {
+                $join
+                    ->on('n.language_id', '=', 'l.aid');
+            })
+            ->orderByRaw("l.locale_code = ? DESC", [app('locale')])
+            ->orderBy('news_created_at', 'desc');
+
+        $news = $news_query->get();
+
+        $thumbnail_aids = [];
+
+        foreach($news as $news_ones) {
+            // Проверяем, что значение thumbnail не пустое и не равно null
+            if (!empty($news_ones->news_thumbnail)) {
+                foreach(json_decode($news_ones->news_thumbnail, true) as $thumbnail_aid) {
+                    $thumbnail_aids[$thumbnail_aid] = true;
+                }
+            }
+        }
+
+        $thumbnails = Files::whereIn('aid', array_keys($thumbnail_aids))->get()->keyBy('aid');
+
+        foreach($news as $news_ones) {
+            if(!isset($view_data['news_list'][$news_ones->news_aid])) {
+                $view_data['news_list'][$news_ones->news_aid] = [
+                    'id'            => [],
+                    'aid'           => $news_ones->news_aid,
+                    'slug'          => $news_ones->news_slug,
+                    'title'         => [],
+                    'subtitle'      => [],
+                    'description'   => [],
+                    'content'       => [],
+                    'thumbnail'     => $news_ones->news_thumbnail ? $thumbnails[json_decode($news_ones->news_thumbnail, true)[0]]->toArray() : null,
+                    'time_to_read'  => [],
+                    'enabled'       => $news_ones->news_enabled,
+                    'date_from'     => $news_ones->news_date_from,
+                    'date_to'       => $news_ones->news_date_to,
+                    'created_at'    => strtotime($news_ones->news_created_at),
+                    'updated_at'    => strtotime($news_ones->news_updated_at),
+                ];
+            }
+
+            $view_data['news_list'][$news_ones->news_aid]['id'][$news_ones->news_id] = true;
+            $view_data['news_list'][$news_ones->news_aid]['title'][$news_ones->locale_code] = $news_ones->news_title;
+            $view_data['news_list'][$news_ones->news_aid]['subtitle'][$news_ones->locale_code] = $news_ones->news_subtitle;
+            $view_data['news_list'][$news_ones->news_aid]['description'][$news_ones->locale_code] = $news_ones->news_description;
+
+            $view_data['news_list'][$news_ones->news_aid]['content'][$news_ones->locale_code] = $news_ones->news_content;
+            $view_data['news_list'][$news_ones->news_aid]['time_to_read'][$news_ones->locale_code] = $news_ones->news_time_to_read;
+        }
+
+        $view_data['news_list'] = array_values($view_data['news_list']);
+
+        $view_data['news_list'] = array_map(function($value) {
+            $value['id'] = array_keys($value['id']);
+
+            return $value;
+        }, $view_data['news_list']);
+        
         $template[] = view('admin.header', $view_data);
         $template[] = view('admin.news.main', $view_data);
         $template[] = view('admin.footer', $view_data);
