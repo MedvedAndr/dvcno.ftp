@@ -988,3 +988,7 @@ header + main {
     display: block;
     width: 100%;
 }
+
+label[data-label="ckeditor"].h100 .label__input .ck.ck-editor__editable_inline {
+    height: 100px;
+}
