@@ -20,7 +20,7 @@
         title="{{ app('dictionary')->dictionary('form_labels')->key('file_size')->get() }}"
     />
     
-    <div class="button__line error" data-item-del="add-file-type" data-item-once>
+    <div class="button__line error" data-action="delete" data-component="items.file-type">
         <span class="button__icon"><span data-icon="trash-2"></span></span>
     </div>
 </div>

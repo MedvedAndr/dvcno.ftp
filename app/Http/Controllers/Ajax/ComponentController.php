@@ -43,18 +43,49 @@ class ComponentController extends Controller {
         return response()->json($response);
     }
 
+    // public function getComponent(Request $request): JsonResponse {
+    //     $data = $request->data ?? [];
+    //     $response = [
+    //         'status' => 'success',
+    //         'data' => [],
+    //         'meta' => [
+    //             'component' => $request->component,
+    //             'data' => $request->data,
+    //         ],
+    //     ];
+
+    //     $response['data'] = view('components.'. $request->component, $data)->render();
+
+    //     return response()->json($response);
+    // }
+
     public function getComponent(Request $request): JsonResponse {
-        $data = $request->data ?? [];
         $response = [
             'status' => 'success',
             'data' => [],
-            'meta' => [
-                'component' => $request->component,
-                'data' => $request->data,
-            ],
+            'meta' => $request->only([
+                'component',
+                'index',
+                'data',
+                'multi_language'
+            ])
         ];
 
-        $response['data'] = view('components.'. $request->component, $data)->render();
+        if($response['meta']['multi_language']) {
+            foreach(app('languages') as $language) {
+                $response['data'][$language['locale_code']] = view('components.'. $response['meta']['component'], [
+                    'index' => $response['meta']['index'],
+                    'locale' => $language['aid'],
+                    'form_data' => $response['meta']['data']['elements'][$language['locale_code']] ?? null
+                ])->render();
+            }
+        }
+        else {
+            $response['data'] = view('components.'. $response['meta']['component'], [
+                'index' => $response['meta']['index'],
+                'form_data' => $response['meta']['data']['elements'] ?? null
+            ])->render();
+        }
 
         return response()->json($response);
     }

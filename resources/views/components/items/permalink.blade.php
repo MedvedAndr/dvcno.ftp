@@ -80,7 +80,7 @@
                         'sync' => 'enabled_'. $index
                     ]"
                 />
-                <div class="button error menu__delete" data-item-del="add-permalink">
+                <div class="button error menu__delete" data-action="delete" data-component="items.permalink">
                     <span class="button__title">Удалить</span>
                     <span class="button__icon"><span data-icon="trash-2"></span></span>
                 </div>

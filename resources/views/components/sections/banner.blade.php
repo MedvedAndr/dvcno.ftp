@@ -26,15 +26,7 @@
             name="elements[{{ $locale->locale_code }}][aid]"
             value="{{ $data['aid'] }}"
             :data="[
-                'item-data' => 'add-list-doc_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][title]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-doc_'. $index,
+                'field-context' => 'items.list-doc_'. $index,
             ]"
         />
 
@@ -42,39 +34,7 @@
             name="elements[{{ $locale->locale_code }}][aid]"
             value="{{ $data['aid'] }}"
             :data="[
-                'item-data' => 'add-list-video_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][title]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-video_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][type]"
-            value="video"
-            :data="[
-                'item-data' => 'add-list-video_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][link]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-video_'. $index,
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][iframe]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-video_'. $index,
+                'field-context' => 'items.list-video_'. $index,
             ]"
         />
 
@@ -196,11 +156,11 @@
 
             <div style="font-size: 14px;">Перечень документов</div>
 
-            <div data-items="item_{{ $data['aid'] }}_document" data-items-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
+            <div data-list="item_document_{{ $data['aid'] }}" data-list-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
                 @php $i = 0; @endphp
                 @isset($data['content']['documents'])
                 @foreach($data['content']['documents'] as $item)
-                <x-items.add-list-doc
+                <x-items.list-doc
                     index="{{ $i }}"
                     locale="{{ $locale->aid }}"
                     :form_data="[
@@ -216,18 +176,18 @@
                 @endisset
             </div>
 
-            <div class="button" data-item-add="add-list-doc" data-index="{{ $index }}" data-item-list="item_{{ $data['aid'] }}_document">
+            <div class="button" data-action="add" data-component="items.list-doc" data-target-container="item_document_{{ $data['aid'] }}" data-field-set="{{ $index }}" data-multi-language="true">
                 <span class="button__icon"><span data-icon="plus"></span></span>
                 <span class="button__title">Добавить документ</span>
             </div>
             
             <div style="font-size: 14px;">Перечень видео</div>
 
-            <div data-items="item_{{ $data['aid'] }}_video" data-items-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
+            <div data-list="item_{{ $data['aid'] }}_video" data-list-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
                 @php $i = 0; @endphp
                 @isset($data['content']['videos'])
                 @foreach($data['content']['videos'] as $item)
-                <x-items.add-list-video
+                <x-items.list-video
                     index="{{ $i }}"
                     locale="{{ $locale->aid }}"
                     :form_data="[
@@ -248,7 +208,7 @@
                 @endisset
             </div>
 
-            <div class="button" data-item-add="add-list-video" data-index="{{ $index }}" data-item-list="item_{{ $data['aid'] }}_video">
+            <div class="button" data-action="add" data-component="items.list-video" data-target-container="item_video_{{ $data['aid'] }}" data-field-set="{{ $index }}" data-multi-language="true">
                 <span class="button__icon"><span data-icon="plus"></span></span>
                 <span class="button__title">Добавить видео</span>
             </div>

@@ -4,7 +4,7 @@
     'form_data'  => []
 ])
 
-<div class="item add-term" data-item="item_{{ $index }}" data-index="{{ $index }}">
+<div class="item term" data-item="item_{{ $index }}" data-index="{{ $index }}">
     <x-form.text
         id="term_name_{{ $index }}_{{ $locale }}"
         name="terms[{{ $index }}][{{ $locale }}][name]"
@@ -33,7 +33,7 @@
     />
     
     <div class="flex__row_center">
-        <div class="button__line error" data-item-del="add-term" data-item-once>
+        <div class="button__line error" data-action="delete" data-component="items.term">
             <span class="button__title">{{ app('dictionary')->dictionary('buttons')->key('term_remove')->get() }}</span>
             <span class="button__icon"><span data-icon="trash-2"></span></span>
         </div>

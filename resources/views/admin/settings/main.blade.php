@@ -97,7 +97,7 @@
                                             </div>
                                             <div class="field__body">
                                                 @if($item['type'] === 'data_set')
-                                                <div class="items" data-items="file_types">
+                                                <div class="items" data-list="file_types" data-empty="items.file-type">
                                                     {{-- @dump(json_decode($item['value'], true)) --}}
                                                     @foreach (json_decode($item['setting_value'], true) as $file_type)
                                                     <x-form.hidden
@@ -110,7 +110,7 @@
                                                         value="{{ $item['setting_key'] }}"
                                                     />
 
-                                                    <x-items.add-file-type
+                                                    <x-items.file-type
                                                         index="{{ $loop->iteration }}"
                                                         :form_data="[
                                                             'file_type' => [
@@ -125,7 +125,7 @@
                                                 </div>
 
                                                 <div class="flex__row_center">
-                                                    <div class="button" data-item-add="add-file-type" data-item-list="file_types">
+                                                    <div class="button" data-action="add" data-component="items.file-type" data-target-container="file_types">
                                                         <span class="button__icon"><span data-icon="plus"></span></span>
                                                         <span class="button__title">{{ app('dictionary')->dictionary('buttons')->key('file_type_add')->get() }}</span>
                                                     </div>

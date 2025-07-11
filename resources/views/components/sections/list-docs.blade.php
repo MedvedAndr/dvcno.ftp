@@ -26,15 +26,7 @@
             name="elements[{{ $locale->locale_code }}][aid]"
             value="{{ $data['aid'] }}"
             :data="[
-                'item-data' => 'add-list-doc',
-            ]"
-        />
-
-        <x-form.hidden
-            name="elements[{{ $locale->locale_code }}][item][title]"
-            value=""
-            :data="[
-                'item-data' => 'add-list-doc',
+                'field-context' => 'items.list-doc',
             ]"
         />
 
@@ -56,11 +48,11 @@
 
             <div style="font-size: 14px;">Перечень документов</div>
 
-            <div data-items="item_{{ $data['aid'] }}" data-items-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
+            <div data-list="item_{{ $data['aid'] }}" data-list-lang="{{ $locale->locale_code }}" data-accordion="acc_{{ $data['aid'] }}">
                 @php $i = 0; @endphp
                 @isset($data['content']['list'])
                 @foreach($data['content']['list'] as $item)
-                <x-items.add-list-doc
+                <x-items.list-doc
                     index="{{ $i }}"
                     locale="{{ $locale->aid }}"
                     :form_data="[
@@ -76,7 +68,7 @@
                 @endisset
             </div>
 
-            <div class="button" data-item-add="add-list-doc" data-item-list="item_{{ $data['aid'] }}">
+            <div class="button" data-action="add" data-component="items.list-doc" data-target-container="item_{{ $data['aid'] }}" data-multi-language="true">
                 <span class="button__icon"><span data-icon="plus"></span></span>
                 <span class="button__title">Добавить документ</span>
             </div>
