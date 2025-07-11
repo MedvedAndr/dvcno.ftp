@@ -94,15 +94,12 @@
                                             <x-form.label title="Телефоны:"/>
                                         </div>
                                         <div class="field__body">
-                                            <x-form.text
-                                                name="departments[{{ $language->aid }}][phones][0]"
-                                            />{{--  --}}
-                                            <x-form.text
-                                                name="departments[{{ $language->aid }}][phones][1]"
-                                            />{{--  --}}
-                                            <x-form.text
-                                                name="departments[{{ $language->aid }}][phones][2]"
-                                            />{{--  --}}
+
+                                            <div data-list="add_phone" data-list-lang="{{ $language->locale_code }}">
+                                                <x-items.phone locale="{{ $language->aid }}" :form_data="['phone'=> 'dfsdfsdfsdfsd']" />
+                                            </div>
+                                            <div data-action="add" data-component="items.phone" data-target-container="add_phone" data-multi-language="true">Добавить</div>
+
                                         </div>
                                     </div>
 

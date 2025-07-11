@@ -431,6 +431,7 @@ jQuery(document).on('DOMContentLoaded', function() {
                     'multi_language'    : is_multi_language
                 }),
                 success : function(jquery_result) {
+                    console.log(jquery_result);
                     if(jquery_result.status === 'success') {
                         setGlobal('items_index.'+ String($this_button.attr('data-target-container')), jquery_result.meta.index);
                         
