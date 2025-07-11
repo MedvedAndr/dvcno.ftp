@@ -38,6 +38,10 @@ Route::controller(AdminController::class)->group(function() {
     Route::get('/news/create', 'createNews')->name('admin.news.create');
     Route::get('/news/edit/{aid}', 'editNews')->name('admin.news.edit');
 
+    Route::get('/departments', 'departments')->name('admin.departments');
+    Route::get('/departments/create', 'createDepartments')->name('admin.departments.create');
+    Route::get('/departments/edit/{aid}', 'editDepartments')->name('admin.departments.edit');
+
     Route::get('/languages', 'languages')->name('admin.languages');
     Route::get('/languages/view/{aid}', 'viewLanguage')->name('admin.languages.view');
     Route::get('/languages/create', 'createLanguage')->name('admin.languages.create');

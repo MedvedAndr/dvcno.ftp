@@ -93,6 +93,22 @@ $menus = [
                     ],
                 ],
             ],
+            [
+                'title'     => 'Подразделения',
+                'icon'      => 'cast',
+                'submenu'   => [
+                    [
+                        'title'     => 'Все подразделения',
+                        'route'     => 'admin.departments',
+                        'icon'      => 'list',
+                    ],
+                    [
+                        'title'     => 'Создать подразделение',
+                        'route'     => 'admin.departments.create',
+                        'icon'      => 'plus',
+                    ],
+                ],
+            ],
         ],
         'visible'   => true,
     ],
